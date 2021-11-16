@@ -28,7 +28,7 @@ class ViewController: UIViewController {
         let para = GalleryParameterModel()
         Task {
             do {
-                try await networkManager.requestGallery(parameter: para)
+                let model = try await networkManager.requestGallery(parameter: para)
             } catch {
                 print("Error: \(error)")
             }

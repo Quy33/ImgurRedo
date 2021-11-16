@@ -12,7 +12,7 @@ struct NetWorkManager {
     
     private let clientID = "11dd115895de7c5"
     
-    func requestGallery(parameter p: GalleryParameterModel) async throws {
+    func requestGallery(parameter p: GalleryParameterModel) async throws -> DataModel {
         guard var urlComponents = URLComponents(string: "\(baseURL)/gallery/\(p.section)/\(p.sort)/\(p.window)/\(p.page)") else {
             throw NetworkingError.invalidData
         }
@@ -30,9 +30,13 @@ struct NetWorkManager {
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {
             throw NetworkingError.invalidData
         }
+        return parseJSON(data)
     }
     //MARK: JSON Parser
-    
+    private func parseJSON(_ data: Data) throws -> DataModel {
+        let model = try JSONDecoder().decode(DataModel.self, from: data)
+        return model
+    }
 }
 //MARK: NetWorking Error Enums
 enum NetworkingError: Error {
