@@ -8,6 +8,7 @@
 import UIKit
 
 class ImgurCollectionViewCell: UICollectionViewCell {
+    @IBOutlet weak var typeFrame: UIView?
     
     static let identifier = "ImgurCollectionViewCell"
 
@@ -15,5 +16,9 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         // Initialization code
     }
-
+    
+    func configure() {
+        typeFrame?.layer.cornerRadius = 20
+        typeFrame?.layer.masksToBounds = true
+    }
 }

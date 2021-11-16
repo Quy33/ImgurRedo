@@ -30,7 +30,7 @@ struct NetWorkManager {
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {
             throw NetworkingError.invalidData
         }
-        return parseJSON(data)
+        return try parseJSON(data)
     }
     //MARK: JSON Parser
     private func parseJSON(_ data: Data) throws -> DataModel {

@@ -52,10 +52,10 @@ extension ViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = imgurCollectionView?.dequeueReusableCell(withReuseIdentifier: ImgurCollectionViewCell.identifier, for: indexPath) as! ImgurCollectionViewCell
-        
-//        cell.layer.cornerRadius = 10
-//        cell.layer.masksToBounds = true
-        
+            
+        cell.layer.cornerRadius = 10
+        cell.layer.masksToBounds = true
+        cell.configure()
         return cell
     }
 }
@@ -65,6 +65,6 @@ extension ViewController: UICollectionViewDelegate {
 }
 extension ViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 128, height: 128)
+        return CGSize(width: 240, height: 240)
     }
 }

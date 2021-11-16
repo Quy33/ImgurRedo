@@ -71,6 +71,7 @@
 			children = (
 				53D138C427425E0400E05A70 /* Main.storyboard */,
 				53D138D32742639000E05A70 /* ImgurCollectionViewCell.xib */,
+				53D138C927425E0800E05A70 /* LaunchScreen.storyboard */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -110,7 +111,6 @@
 				53537E64274398AA00849494 /* View */,
 				53537E5E27434FF100849494 /* Network Stuff */,
 				53D138C727425E0800E05A70 /* Assets.xcassets */,
-				53D138C927425E0800E05A70 /* LaunchScreen.storyboard */,
 				53D138CC27425E0800E05A70 /* Info.plist */,
 				53537E65274398B400849494 /* Model */,
 			);
