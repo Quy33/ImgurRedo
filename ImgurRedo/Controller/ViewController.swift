@@ -10,11 +10,8 @@ import UIKit
 class ViewController: UIViewController {
     
     @IBOutlet weak var imgurCollectionView: UICollectionView?
+    let networkManager = NetWorkManager()
     
-    private var task: Task<(),Error>?
-    private var task2 : Task<(),Never>?
-    private var networking = Networking()
-
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -24,12 +21,24 @@ class ViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         imgurCollectionView?.collectionViewLayout = layout
         
-
+        call()
     }
-
-    @IBAction func testPressed(_ sender: UIButton) {
+//MARK: Networking Calls
+    private func call() {
+        let para = GalleryParameterModel()
+        Task {
+            do {
+                try await networkManager.requestGallery(parameter: para)
+            } catch {
+                print("Error: \(error)")
+            }
+        }
     }
     
+//MARK: Buttons
+    @IBAction func testPressed(_ sender: UIButton) {
+    }
+//MARK: Small Functions
     private func registerCell() {
         let nib = UINib(nibName: ImgurCollectionViewCell.identifier, bundle: nil)
         imgurCollectionView?.register(nib, forCellWithReuseIdentifier: ImgurCollectionViewCell.identifier)
