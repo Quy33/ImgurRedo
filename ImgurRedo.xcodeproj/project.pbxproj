@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		53537E602743501B00849494 /* Networking file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53537E5F2743501B00849494 /* Networking file.swift */; };
 		53D138BF27425E0400E05A70 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D138BE27425E0400E05A70 /* AppDelegate.swift */; };
 		53D138C127425E0400E05A70 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D138C027425E0400E05A70 /* SceneDelegate.swift */; };
 		53D138C327425E0400E05A70 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D138C227425E0400E05A70 /* ViewController.swift */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		53537E5F2743501B00849494 /* Networking file.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Networking file.swift"; sourceTree = "<group>"; };
 		53D138BB27425E0400E05A70 /* ImgurRedo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImgurRedo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		53D138BE27425E0400E05A70 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		53D138C027425E0400E05A70 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -41,6 +43,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		53537E5E27434FF100849494 /* Network Stuff */ = {
+			isa = PBXGroup;
+			children = (
+				53537E5F2743501B00849494 /* Networking file.swift */,
+			);
+			path = "Network Stuff";
+			sourceTree = "<group>";
+		};
 		53D138B227425E0400E05A70 = {
 			isa = PBXGroup;
 			children = (
@@ -64,6 +74,7 @@
 				53D138C027425E0400E05A70 /* SceneDelegate.swift */,
 				53D138C227425E0400E05A70 /* ViewController.swift */,
 				53D138C427425E0400E05A70 /* Main.storyboard */,
+				53537E5E27434FF100849494 /* Network Stuff */,
 				53D138D62742639600E05A70 /* ImgurCollectionViewCell */,
 				53D138C727425E0800E05A70 /* Assets.xcassets */,
 				53D138C927425E0800E05A70 /* LaunchScreen.storyboard */,
@@ -154,6 +165,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				53D138C327425E0400E05A70 /* ViewController.swift in Sources */,
+				53537E602743501B00849494 /* Networking file.swift in Sources */,
 				53D138BF27425E0400E05A70 /* AppDelegate.swift in Sources */,
 				53D138C127425E0400E05A70 /* SceneDelegate.swift in Sources */,
 				53D138D42742639000E05A70 /* ImgurCollectionViewCell.swift in Sources */,

@@ -10,6 +10,10 @@ import UIKit
 class ViewController: UIViewController {
     
     @IBOutlet weak var imgurCollectionView: UICollectionView?
+    
+    private var task: Task<(),Error>?
+    private var task2 : Task<(),Never>?
+    private var networking = Networking()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,15 +21,21 @@ class ViewController: UIViewController {
         registerCell()
         imgurCollectionView?.dataSource = self
         imgurCollectionView?.delegate = self
-        var layout = UICollectionViewFlowLayout()
+        let layout = UICollectionViewFlowLayout()
         imgurCollectionView?.collectionViewLayout = layout
+        
+
     }
 
+    @IBAction func testPressed(_ sender: UIButton) {
+    }
+    
     private func registerCell() {
         let nib = UINib(nibName: ImgurCollectionViewCell.identifier, bundle: nil)
         imgurCollectionView?.register(nib, forCellWithReuseIdentifier: ImgurCollectionViewCell.identifier)
     }
 }
+//MARK: CollectionView DataSource
 extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         1
@@ -33,9 +43,14 @@ extension ViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = imgurCollectionView?.dequeueReusableCell(withReuseIdentifier: ImgurCollectionViewCell.identifier, for: indexPath) as! ImgurCollectionViewCell
+        
+//        cell.layer.cornerRadius = 10
+//        cell.layer.masksToBounds = true
+        
         return cell
     }
 }
+//MARK: CollectionView Delegate
 extension ViewController: UICollectionViewDelegate {
     
 }
