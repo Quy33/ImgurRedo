@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		53209BD227454E4E0098D13B /* ToolBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53209BD127454E4E0098D13B /* ToolBox.swift */; };
 		53537E602743501B00849494 /* Networking file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53537E5F2743501B00849494 /* Networking file.swift */; };
 		53537E622743988E00849494 /* NetWorkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53537E612743988E00849494 /* NetWorkManager.swift */; };
 		53537E672743996B00849494 /* GalleryParameterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53537E662743996B00849494 /* GalleryParameterModel.swift */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		53209BD127454E4E0098D13B /* ToolBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolBox.swift; sourceTree = "<group>"; };
 		53537E5F2743501B00849494 /* Networking file.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Networking file.swift"; sourceTree = "<group>"; };
 		53537E612743988E00849494 /* NetWorkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetWorkManager.swift; sourceTree = "<group>"; };
 		53537E662743996B00849494 /* GalleryParameterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryParameterModel.swift; sourceTree = "<group>"; };
@@ -56,6 +58,7 @@
 		53209BD02745354A0098D13B /* ToolBox */ = {
 			isa = PBXGroup;
 			children = (
+				53209BD127454E4E0098D13B /* ToolBox.swift */,
 			);
 			path = ToolBox;
 			sourceTree = "<group>";
@@ -204,6 +207,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				53D138C327425E0400E05A70 /* ViewController.swift in Sources */,
+				53209BD227454E4E0098D13B /* ToolBox.swift in Sources */,
 				53537E602743501B00849494 /* Networking file.swift in Sources */,
 				53537E672743996B00849494 /* GalleryParameterModel.swift in Sources */,
 				53537E622743988E00849494 /* NetWorkManager.swift in Sources */,
