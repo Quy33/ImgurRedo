@@ -10,19 +10,15 @@ import UIKit
 class ToolBox {
     
     static let placeHolderImg: UIImage = #imageLiteral(resourceName: "placeHolder")
+    static let blankURL = URL(string: "http://www.blankwebsite.com/")!
     
-    func concatStr(string: String ,size: ThumbnailSize) -> String {
+    static func concatStr(string: String ,size: ThumbnailSize) -> String {
         var result = string
         guard let index = result.lastIndex(of: ".") else {
             return ""
         }
         result.insert(size.rawValue, at: index)
         return result
-    }
-    
-    func sortType(link: String, animated: Bool, mp4: String?) -> String {
-        let urlString = animated ? mp4! : link
-        return urlString
     }
     
     static func sortLinks(item: GalleryDataModel,link: inout String, animated: inout Bool, type: inout String, mp4: inout String?) {
@@ -49,4 +45,4 @@ class ToolBox {
         case hugeThumbnail = "h"
     }
 }
-//URL(string: "http://www.blankwebsite.com/")!
+

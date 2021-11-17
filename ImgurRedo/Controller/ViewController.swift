@@ -36,6 +36,8 @@ class ViewController: UIViewController {
                 let dataModel = try await networkManager.requestGallery(parameter: para)
                 var galleryModel: [GalleryModel] = []
                 galleryModel = dataModel.data.map{ GalleryModel($0) }
+                //galleryModel.forEach{ print($0.url) }
+                let image = try await networkManager.singleDownload(url: galleryModel[0].url)
             } catch {
                 print("Error: \(error)")
             }

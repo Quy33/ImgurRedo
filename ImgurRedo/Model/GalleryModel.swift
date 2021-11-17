@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class GalleryModel: ToolBox {
+class GalleryModel {
     let id: String
     let title: String
     let isAlbum: Bool
@@ -18,15 +18,14 @@ class GalleryModel: ToolBox {
     let type: String
     let imagesCount: Int?
     var image: UIImage
-    static var thumbnailSize: ThumbnailSize = .mediumThumbnail
+    static var thumbnailSize: ToolBox.ThumbnailSize = .mediumThumbnail
     
     var url: URL {
-        var urlString = sortType(link: link, animated: animated, mp4: mp4)
-        urlString = concatStr(string: urlString, size: GalleryModel.thumbnailSize)
+        var urlString = animated ? mp4! : link
+        urlString = ToolBox.concatStr(string: urlString, size: GalleryModel.thumbnailSize)
         
         guard let link = URL(string: urlString) else {
-            let none = URL(string: "http://www.blankwebsite.com/")!
-            return none
+            return ToolBox.blankURL
         }
         return link
     }
@@ -43,7 +42,7 @@ class GalleryModel: ToolBox {
         self.image = image
     }
 
-    convenience override init() {
+    convenience init() {
         let placeHolder = ToolBox.placeHolderImg
         self.init(id: "", title: "", isAlbum: false, link: "", animated: false, type: "", imagesCount: nil, mp4: nil, image: placeHolder)
     }

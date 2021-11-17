@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct NetWorkManager {
     private let baseURL = "https://api.imgur.com/3"
@@ -36,6 +37,44 @@ struct NetWorkManager {
     private func parseJSON(_ data: Data) throws -> DataModel {
         let model = try JSONDecoder().decode(DataModel.self, from: data)
         return model
+    }
+    //MARK: Download Image Functions
+    func singleDownload(url: URL) async throws -> UIImage {
+        let request = URLRequest(url: url)
+        let (data,response) = try await URLSession.shared.data(for: request)
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+            throw NetworkingError.badImage
+        }
+        guard let image = UIImage(data: data) else {
+            throw NetworkingError.badImage
+        }
+        return image
+    }
+    
+    func batchesDownload(urls: [URL]) async throws -> [UIImage] {
+        typealias imageTuple = (index: Int, image: UIImage)
+        var results: [UIImage] = []
+        
+        results = try await withThrowingTaskGroup(of: imageTuple.self) { group -> [UIImage] in
+            
+            for (index,url) in urls.enumerated() {
+                group.addTask {
+                    let image: UIImage
+                    image = try await singleDownload(url: url)
+                    let tuple = (index: index, image: image)
+                    return tuple
+                }
+            }
+            
+            var results: [imageTuple] = []
+            for try await result in group {
+                results.append(result)
+            }
+            results = results.sorted{ $0.index < $1.index }
+            let images: [UIImage] = results.map { $0.image }
+            return images
+        }
+        return results
     }
 }
 //MARK: NetWorking Error Enums
