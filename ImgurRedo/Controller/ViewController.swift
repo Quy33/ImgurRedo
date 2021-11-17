@@ -34,7 +34,9 @@ class ViewController: UIViewController {
         Task {
             do {
                 let dataModel = try await networkManager.requestGallery(parameter: para)
-                let galleryModel = 
+                var galleryModel: [GalleryModel] = []
+                galleryModel = dataModel.data.map{ GalleryModel($0) }
+                galleryModel.forEach{ print($0.url) }
             } catch {
                 print("Error: \(error)")
             }
