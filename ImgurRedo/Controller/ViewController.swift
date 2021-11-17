@@ -12,9 +12,7 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var imgurCollectionView: UICollectionView?
     let networkManager = NetWorkManager()
-    let array = [#imageLiteral(resourceName: "Second"), #imageLiteral(resourceName: "First"), #imageLiteral(resourceName: "placeHolder")]
-
-    let testTitle = "Test"
+    var galleries: [GalleryModel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,10 +20,8 @@ class ViewController: UIViewController {
         registerCell()
         imgurCollectionView?.dataSource = self
         imgurCollectionView?.delegate = self
-        let layout = PinterestLayout()
-        layout.delegate = self
-        imgurCollectionView?.collectionViewLayout = layout
-        
+        setLayout(collectionView: imgurCollectionView)
+                
         call()
     }
 //MARK: Networking Calls
@@ -34,10 +30,22 @@ class ViewController: UIViewController {
         Task {
             do {
                 let dataModel = try await networkManager.requestGallery(parameter: para)
-                var galleryModel: [GalleryModel] = []
-                galleryModel = dataModel.data.map{ GalleryModel($0) }
+                galleries = dataModel.data.map{ GalleryModel($0) }
+                GalleryModel.thumbnailSize = .hugeThumbnail
                 //galleryModel.forEach{ print($0.url) }
-                let image = try await networkManager.singleDownload(url: galleryModel[0].url)
+                let urls = galleries.map{ $0.url }
+                let images = try await networkManager.batchesDownload(urls: urls)
+                
+                for (index,gallery) in galleries.enumerated() {
+                    gallery.image = images[index]
+                }
+                
+                DispatchQueue.main.async {
+                    self.imgurCollectionView?.reloadData()
+                    self.setLayout(collectionView: self.imgurCollectionView)
+                }
+                
+                
             } catch {
                 print("Error: \(error)")
             }
@@ -52,20 +60,36 @@ class ViewController: UIViewController {
         let nib = UINib(nibName: ImgurCollectionViewCell.identifier, bundle: nil)
         imgurCollectionView?.register(nib, forCellWithReuseIdentifier: ImgurCollectionViewCell.identifier)
     }
+    private func setLayout(collectionView: UICollectionView?) {
+        guard let collectionView = collectionView,
+        collectionView == imgurCollectionView else {
+            return
+        }
+        let layout = PinterestLayout()
+        layout.delegate = self
+        collectionView.collectionViewLayout = layout
+    }
 }
 //MARK: CollectionView DataSource
 extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return array.count
+        guard !galleries.isEmpty else {
+            return 0
+        }
+        return galleries.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = imgurCollectionView?.dequeueReusableCell(withReuseIdentifier: ImgurCollectionViewCell.identifier, for: indexPath) as! ImgurCollectionViewCell
+        
+        guard !galleries.isEmpty else {
+            return cell
+        }
             
         cell.layer.cornerRadius = 10
         cell.layer.masksToBounds = true
         
-        cell.configure(image: array[indexPath.row], title: testTitle)
+        cell.configure(image: galleries[indexPath.row].image, title: galleries[indexPath.row].title)
         return cell
     }
 }
@@ -79,14 +103,17 @@ extension ViewController: UICollectionViewDelegate {
 //MARK: Pinterest Layout
 extension ViewController: PinterestLayoutDelegate {
     func collectionView(collectionView: UICollectionView, heightForItemAtIndexPath indexPath: IndexPath, width: CGFloat) -> CGFloat {
-        let image = array[indexPath.row]
+        guard !galleries.isEmpty else {
+            return 0
+        }
+        let gallery = galleries[indexPath.row]
         
         let lowerFrameHeight: CGFloat = 50
 
-        let imageFrame = calculateImageRatio(image, frameWidth: width)
-        let labelFrame = calculateLabelFrame(text: testTitle, font: .systemFont(ofSize: 17), width: width)
+        let imageHeight = calculateHeight(gallery.image.size, frameWidth: width)
+        let labelFrame = calculateLabelFrame(text: gallery.title, font: .systemFont(ofSize: 17), width: width)
         
-        return imageFrame.height + lowerFrameHeight + labelFrame.height
+        return imageHeight + lowerFrameHeight + labelFrame.height
     }
 }
 //MARK: Stuff
@@ -105,5 +132,12 @@ extension UIViewController {
         let boundingRect = CGRect(x: 0, y: 0, width: width, height: CGFloat(MAXFLOAT))
         let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
         return rect
+    }
+    func calculateHeight(_ pictureSize: CGSize, frameWidth width: CGFloat )->CGFloat{
+        let wOffSet = pictureSize.width - width
+        let wOffSetPercent = (wOffSet*100)/pictureSize.width
+        let hOffSet = (wOffSetPercent*pictureSize.height)/100
+        let newHeight = pictureSize.height - hOffSet
+        return newHeight
     }
 }

@@ -59,9 +59,10 @@ struct NetWorkManager {
             
             for (index,url) in urls.enumerated() {
                 group.addTask {
-                    let image: UIImage
-                    image = try await singleDownload(url: url)
+                    print("Begin downloading \(index)")
+                    let image = try await singleDownload(url: url)
                     let tuple = (index: index, image: image)
+                    print("Finished \(index)")
                     return tuple
                 }
             }
