@@ -9,6 +9,8 @@ import UIKit
 
 class ImgurCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var typeFrame: UIView?
+    @IBOutlet weak var cellImage: UIImageView?
+    @IBOutlet weak var titleLabel: UILabel?
     
     static let identifier = "ImgurCollectionViewCell"
 
@@ -17,8 +19,10 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         // Initialization code
     }
     
-    func configure() {
-        typeFrame?.layer.cornerRadius = 20
-        typeFrame?.layer.masksToBounds = true
+    func configure(image: UIImage, title: String) {
+//        typeFrame?.layer.cornerRadius = 20
+//        typeFrame?.layer.masksToBounds = true
+        cellImage?.image = image
+        titleLabel?.text = title
     }
 }

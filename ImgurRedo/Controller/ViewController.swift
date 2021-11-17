@@ -6,11 +6,19 @@
 //
 
 import UIKit
+import AVKit
 
 class ViewController: UIViewController {
     
     @IBOutlet weak var imgurCollectionView: UICollectionView?
     let networkManager = NetWorkManager()
+    let array = [#imageLiteral(resourceName: "Second"), #imageLiteral(resourceName: "First"), #imageLiteral(resourceName: "placeHolder")]
+//    let testTitle = """
+//The PinterestLayout doesn’t utilize any of this. It also doesn’t seem to add the text height to the height of the cell height. However, it doesn’t seem to make a difference for this for some reason.
+//
+//What makes the PinterestLayout still work without these proper computations? I removed the padding heights in the cell height computation for PinterestLayout and it still worked without anything overlapping or being clipped.
+//"""
+    let testTitle = "Test"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,26 +52,32 @@ class ViewController: UIViewController {
         let nib = UINib(nibName: ImgurCollectionViewCell.identifier, bundle: nil)
         imgurCollectionView?.register(nib, forCellWithReuseIdentifier: ImgurCollectionViewCell.identifier)
     }
+//    private func calculateRatio(_ image: UIImage){
+//        let boundingRect = CGRect(x: 0, y: 0, width: <#T##CGFloat#>, height: <#T##CGFloat#>)
+//    }
 }
 //MARK: CollectionView DataSource
 extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 20
+        return array.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = imgurCollectionView?.dequeueReusableCell(withReuseIdentifier: ImgurCollectionViewCell.identifier, for: indexPath) as! ImgurCollectionViewCell
             
-        cell.layer.cornerRadius = 10
-        cell.layer.masksToBounds = true
+//        cell.layer.cornerRadius = 10
+//        cell.layer.masksToBounds = true
         
-        cell.configure()
+        cell.configure(image: array[indexPath.row], title: testTitle)
         return cell
     }
 }
 //MARK: CollectionView Delegate
 extension ViewController: UICollectionViewDelegate {
-    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath)
+        print(cell?.frame.height)
+    }
 }
 //extension ViewController: UICollectionViewDelegateFlowLayout {
 //    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -72,12 +86,39 @@ extension ViewController: UICollectionViewDelegate {
 //}
 //MARK: Pinterest Layout
 extension ViewController: PinterestLayoutDelegate {
-    func collectionView(collectionView: UICollectionView, heightForItemAtIndexPath indexPath: IndexPath) -> CGFloat {
+    func collectionView(collectionView: UICollectionView, heightForItemAtIndexPath indexPath: IndexPath, width: CGFloat, padding: CGFloat) -> CGFloat {
+        let image = array[indexPath.row]
+        let newWidth = width - (padding * 2)
+        
+        let boundingRect = CGRect(x: 0, y: 0, width: newWidth, height: CGFloat(MAXFLOAT))
+        let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
+//        let labelHeight = calculateLabelHeight(text: testTitle, font: .systemFont(ofSize: 17), width: newWidth)
+//        print(rect.height)
+        return rect.height + 50 + 30 + 12
+    }
+    
+//    func collectionView(collectionView: UICollectionView, heightForItemAtIndexPath indexPath: IndexPath) -> CGFloat {
 //        let random = CGFloat(arc4random_uniform(6) + 1) * 200
 //        return random
-        if (indexPath.item % 2) == 0 {
-            return 400
-        } else { return 300}
-        //return 400
+//    }
+}
+//MARK: Stuff
+extension UIViewController {
+    func calculateLabelHeight(text: String, font: UIFont, width: CGFloat) -> CGFloat {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: CGFloat.greatestFiniteMagnitude))
+        label.numberOfLines = 0
+        label.lineBreakMode = .byTruncatingTail
+        label.font = font
+        label.text = text
+
+        label.sizeToFit()
+        return label.frame.height
+    }
+    func calculateImageHeight(_ pictureSize: CGSize, frameWidth width: CGFloat )->CGFloat{
+        let wOffSet = pictureSize.width - width
+        let wOffSetPercent = (wOffSet*100)/pictureSize.width
+        let hOffSet = (wOffSetPercent*pictureSize.height)/100
+        let newHeight = pictureSize.height - hOffSet
+        return newHeight
     }
 }
