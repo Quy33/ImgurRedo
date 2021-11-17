@@ -20,8 +20,8 @@ class ImgurCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(image: UIImage, title: String) {
-//        typeFrame?.layer.cornerRadius = 20
-//        typeFrame?.layer.masksToBounds = true
+        typeFrame?.layer.cornerRadius = 20
+        typeFrame?.layer.masksToBounds = true
         cellImage?.image = image
         titleLabel?.text = title
     }
