@@ -6,7 +6,10 @@
 //
 
 import Foundation
+import UIKit
 class ToolBox {
+    
+    static let placeHolderImg: UIImage = #imageLiteral(resourceName: "placeHolder")
     
     func concatStr(string: String ,size: ThumbnailSize) -> String {
         var result = string

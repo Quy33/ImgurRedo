@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 class GalleryModel: ToolBox {
     let id: String
@@ -16,6 +17,7 @@ class GalleryModel: ToolBox {
     let mp4: String?
     let type: String
     let imagesCount: Int?
+    var image: UIImage
     static var thumbnailSize: ThumbnailSize = .mediumThumbnail
     
     var url: URL {
@@ -29,7 +31,7 @@ class GalleryModel: ToolBox {
         return link
     }
     
-    init(id: String, title: String, isAlbum: Bool, link: String, animated: Bool, type: String, imagesCount: Int?, mp4: String?) {
+    init(id: String, title: String, isAlbum: Bool, link: String, animated: Bool, type: String, imagesCount: Int?, mp4: String?, image: UIImage) {
         self.id = id
         self.title = title
         self.isAlbum = isAlbum
@@ -38,9 +40,12 @@ class GalleryModel: ToolBox {
         self.type = type
         self.imagesCount = imagesCount
         self.mp4 = mp4
+        self.image = image
     }
+
     convenience override init() {
-        self.init(id: "", title: "", isAlbum: false, link: "", animated: false, type: "", imagesCount: nil, mp4: nil)
+        let placeHolder = ToolBox.placeHolderImg
+        self.init(id: "", title: "", isAlbum: false, link: "", animated: false, type: "", imagesCount: nil, mp4: nil, image: placeHolder)
     }
     convenience init(_ item: GalleryDataModel) {
         var newLink = ""
@@ -53,7 +58,7 @@ class GalleryModel: ToolBox {
         
         newImagesCount = item.is_album ? item.images_count! : nil
         
-        self.init(id: item.id, title: item.title, isAlbum: item.is_album, link: newLink, animated: newAnimated, type: newType, imagesCount: newImagesCount, mp4: newMp4)
+        self.init(id: item.id, title: item.title, isAlbum: item.is_album, link: newLink, animated: newAnimated, type: newType, imagesCount: newImagesCount, mp4: newMp4, image: ToolBox.placeHolderImg)
     }
 }
 
