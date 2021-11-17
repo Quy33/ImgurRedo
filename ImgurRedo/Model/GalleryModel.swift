@@ -43,27 +43,17 @@ class GalleryModel: ToolBox {
         self.init(id: "", title: "", isAlbum: false, link: "", animated: false, type: "", imagesCount: nil, mp4: nil)
     }
     convenience init(_ item: GalleryDataModel) {
-        var link = ""
-        var animated = false
-        var type = ""
-        var imagesCount: Int?
-        var mp4: String?
+        var newLink = ""
+        var newAnimated = false
+        var newType = ""
+        var newImagesCount: Int?
+        var newMp4: String?
         
-        if item.is_album {
-            let firstImage = item.images![0]
-            link = firstImage.link
-            animated = firstImage.animated
-            type = firstImage.type
-            imagesCount = item.images_count
-            mp4 = firstImage.mp4
-        } else {
-            link = item.link
-            animated = item.animated!
-            type = item.type!
-            mp4 = item.mp4
-        }
+        ToolBox.sortLinks(item: item, link: &newLink, animated: &newAnimated, type: &newType, mp4: &newMp4)
         
-        self.init(id: item.id, title: item.title, isAlbum: item.is_album, link: link, animated: animated, type: type, imagesCount: imagesCount, mp4: mp4)
+        newImagesCount = item.is_album ? item.images_count! : nil
+        
+        self.init(id: item.id, title: item.title, isAlbum: item.is_album, link: newLink, animated: newAnimated, type: newType, imagesCount: newImagesCount, mp4: newMp4)
     }
 }
 
@@ -81,6 +71,21 @@ class ToolBox {
     func sortType(link: String, animated: Bool, mp4: String?) -> String {
         let urlString = animated ? mp4! : link
         return urlString
+    }
+    
+    static func sortLinks(item: GalleryDataModel,link: inout String, animated: inout Bool, type: inout String, mp4: inout String?) {
+        if item.is_album {
+            let firstImage = item.images![0]
+            link = firstImage.link
+            animated = firstImage.animated
+            type = firstImage.type
+            mp4 = firstImage.mp4
+        } else {
+            link = item.link
+            animated = item.animated!
+            type = item.type!
+            mp4 = item.mp4
+        }
     }
     
     enum ThumbnailSize: Character {
