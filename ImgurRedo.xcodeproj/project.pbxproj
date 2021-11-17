@@ -11,6 +11,7 @@
 		53537E622743988E00849494 /* NetWorkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53537E612743988E00849494 /* NetWorkManager.swift */; };
 		53537E672743996B00849494 /* GalleryParameterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53537E662743996B00849494 /* GalleryParameterModel.swift */; };
 		53537E692743A94500849494 /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53537E682743A94500849494 /* DataModel.swift */; };
+		53537E6B2743FDB100849494 /* PinterestLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53537E6A2743FDB000849494 /* PinterestLayout.swift */; };
 		53D138BF27425E0400E05A70 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D138BE27425E0400E05A70 /* AppDelegate.swift */; };
 		53D138C127425E0400E05A70 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D138C027425E0400E05A70 /* SceneDelegate.swift */; };
 		53D138C327425E0400E05A70 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D138C227425E0400E05A70 /* ViewController.swift */; };
@@ -26,6 +27,7 @@
 		53537E612743988E00849494 /* NetWorkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetWorkManager.swift; sourceTree = "<group>"; };
 		53537E662743996B00849494 /* GalleryParameterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryParameterModel.swift; sourceTree = "<group>"; };
 		53537E682743A94500849494 /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
+		53537E6A2743FDB000849494 /* PinterestLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinterestLayout.swift; sourceTree = "<group>"; };
 		53D138BB27425E0400E05A70 /* ImgurRedo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImgurRedo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		53D138BE27425E0400E05A70 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		53D138C027425E0400E05A70 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 			children = (
 				53D138C227425E0400E05A70 /* ViewController.swift */,
 				53D138D22742639000E05A70 /* ImgurCollectionViewCell.swift */,
+				53537E6A2743FDB000849494 /* PinterestLayout.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -195,6 +198,7 @@
 				53537E622743988E00849494 /* NetWorkManager.swift in Sources */,
 				53D138BF27425E0400E05A70 /* AppDelegate.swift in Sources */,
 				53D138C127425E0400E05A70 /* SceneDelegate.swift in Sources */,
+				53537E6B2743FDB100849494 /* PinterestLayout.swift in Sources */,
 				53537E692743A94500849494 /* DataModel.swift in Sources */,
 				53D138D42742639000E05A70 /* ImgurCollectionViewCell.swift in Sources */,
 			);
