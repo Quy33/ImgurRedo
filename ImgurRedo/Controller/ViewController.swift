@@ -33,8 +33,8 @@ class ViewController: UIViewController {
         let para = GalleryParameterModel()
         Task {
             do {
-                let model = try await networkManager.requestGallery(parameter: para)
-                
+                let dataModel = try await networkManager.requestGallery(parameter: para)
+                let galleryModel = 
             } catch {
                 print("Error: \(error)")
             }
