@@ -12,6 +12,7 @@ class ImgurCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var cellImage: UIImageView?
     @IBOutlet weak var titleLabel: UILabel?
     
+    
     static let identifier = "ImgurCollectionViewCell"
 
     override func awakeFromNib() {

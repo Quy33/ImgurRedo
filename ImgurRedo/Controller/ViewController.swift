@@ -26,7 +26,7 @@ class ViewController: UIViewController {
         layout.delegate = self
         imgurCollectionView?.collectionViewLayout = layout
         
-        //call()
+        call()
     }
 //MARK: Networking Calls
     private func call() {
@@ -34,6 +34,7 @@ class ViewController: UIViewController {
         Task {
             do {
                 let model = try await networkManager.requestGallery(parameter: para)
+                
             } catch {
                 print("Error: \(error)")
             }
@@ -76,16 +77,14 @@ extension ViewController: UICollectionViewDelegate {
 extension ViewController: PinterestLayoutDelegate {
     func collectionView(collectionView: UICollectionView, heightForItemAtIndexPath indexPath: IndexPath, width: CGFloat) -> CGFloat {
         let image = array[indexPath.row]
+        
+        let lowerFrameHeight: CGFloat = 50
 
         let imageFrame = calculateImageRatio(image, frameWidth: width)
         let labelFrame = calculateLabelFrame(text: testTitle, font: .systemFont(ofSize: 17), width: width)
-        return imageFrame.height + 50 + labelFrame.height
+        
+        return imageFrame.height + lowerFrameHeight + labelFrame.height
     }
-    
-//    func collectionView(collectionView: UICollectionView, heightForItemAtIndexPath indexPath: IndexPath, width: CGFloat) -> CGFloat {
-//        let random = CGFloat(arc4random_uniform(6) + 1) * 200
-//        return random
-//    }
 }
 //MARK: Stuff
 extension UIViewController {

@@ -14,4 +14,7 @@ struct GalleryModel: Decodable {
     let id: String
     let title: String
     let is_album: Bool
+    let link: String
+    let animated: Bool?
+    let mp4: String?
 }
