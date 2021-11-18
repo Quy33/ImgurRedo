@@ -32,7 +32,7 @@ class ViewController: UIViewController {
                 let dataModel = try await networkManager.requestGallery(parameter: para)
                 galleries = dataModel.data.map{ GalleryModel($0) }
                 GalleryModel.thumbnailSize = .smallThumbnail
-                //galleryModel.forEach{ print($0.url) }
+                //galleries.forEach{ print($0.type) }
                 let urls = galleries.map{ $0.url }
                 let images = try await networkManager.batchesDownload(urls: urls)
                 
@@ -88,8 +88,10 @@ extension ViewController: UICollectionViewDataSource {
             
         cell.layer.cornerRadius = 10
         cell.layer.masksToBounds = true
+        let gallery = galleries[indexPath.row]
         
-        cell.configure(image: galleries[indexPath.row].image, title: galleries[indexPath.row].title)
+        cell.configure(image: gallery.image, title: gallery.title, count: gallery.imagesCount, views: gallery.views, type: gallery.type)
+        
         return cell
     }
 }

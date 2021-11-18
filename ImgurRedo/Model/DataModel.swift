@@ -20,6 +20,7 @@ struct GalleryDataModel: Decodable {
     let mp4: String?
     let images_count: Int?
     let images: [GalleryDataAlbumModel]?
+    let views: Int
 }
 struct GalleryDataAlbumModel: Decodable {
     let link: String
