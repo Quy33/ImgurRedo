@@ -7,7 +7,7 @@
 
 import UIKit
 
-typealias ConfigTuple = (top: String?, title: String?, image: UIImage, description: String?, bottom: String?)
+
 
 class DetailViewController: UIViewController {
     
@@ -33,7 +33,6 @@ class DetailViewController: UIViewController {
         detailTableView?.delegate = self
         registerCell(tableView: detailTableView)
         call()
-        // Do any additional setup after loading the view.
     }
     
     private func call(){
@@ -97,17 +96,19 @@ extension DetailViewController: UITableViewDataSource {
         
         if !galleryGot.isAlbum {
             
-            let configuration: ConfigTuple = (top: imageItem.title, title: nil, image: imageItem.image, description: nil, bottom: imageItem.title)
+            let configuration: ConfigTuple = (top: imageItem.title, title: nil, image: imageItem.image, description: nil, bottom: imageItem.description, isBottom: true)
             
             cell.config(configuration)
+            
         } else {
             let albumImageItem = albumItem.images[indexPath.row]
             let itemCount = albumItem.images.count
-            var configuration: ConfigTuple = (top: albumItem.title, title: albumImageItem.title, image: albumImageItem.image, description: albumImageItem.description, bottom: albumItem.description)
+            var configuration: ConfigTuple = (top: albumItem.title, title: albumImageItem.title, image: albumImageItem.image, description: albumImageItem.description, bottom: albumItem.description, isBottom: false)
             
             if itemCount == 1 {
-                configuration.title = nil
-                configuration.description = nil
+                configuration.title = albumImageItem.title
+                configuration.description = albumImageItem.description
+                configuration.isBottom = true
                 
                 cell.config(configuration)
             } else {
@@ -117,6 +118,7 @@ extension DetailViewController: UITableViewDataSource {
                     cell.config(configuration)
                 case itemCount - 1:
                     configuration.top = nil
+                    configuration.isBottom = true
                     cell.config(configuration)
                 default:
                     configuration.top = nil
@@ -133,10 +135,99 @@ extension DetailViewController: UITableViewDataSource {
 extension DetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if let detailCell = cell as? DetailTableViewCell {
-            if !isCached {
-                calculateHeights()
+            if !heights.isEmpty {
+                if !isCached {
+                    let vPadding: CGFloat = 0
+                    let hPadding: CGFloat = 0
+                    let width = detailCell.outerFrame!.frame.width
+                    
+                    if galleryGot.isAlbum {
+                        let itemCount = albumItem.images.count
+                        var config: ConfigTuple = (top: albumItem.title,
+                                                   title: nil,
+                                                   image: ToolBox.placeHolderImg,
+                                                   description: nil,
+                                                   bottom: albumItem.description, isBottom: false)
+                        
+                        if itemCount == 1 {
+                            let item = albumItem.images[0]
+                            config.title = item.title
+                            config.description = item.description
+                            config.image = item.image
+                            config.isBottom = true
+                            
+                            heights[0] = calculate(config: config, cell: detailCell, hPadding: hPadding, vPadding: vPadding)
+                        } else {
+                            let items = albumItem.images
+                            for (index,item) in items.enumerated() {
+                                config.title = item.title
+                                config.description = item.description
+                                config.image = item.image
+                                
+                                switch index {
+                                case 0:
+                                    config.bottom = nil
+                                    heights[index] = calculate(config: config, cell: detailCell, hPadding: hPadding, vPadding: vPadding)
+                                case itemCount - 1:
+                                    config.top = nil
+                                    config.isBottom = true
+                                    heights[index] = calculate(config: config, cell: detailCell, hPadding: hPadding, vPadding: vPadding)
+                                default:
+                                    config.top = nil
+                                    config.bottom = nil
+                                    heights[index] = calculate(config: config, cell: detailCell, hPadding: hPadding, vPadding: vPadding)
+                                }
+                            }
+                        }
+                    } else {
+                        let config: ConfigTuple = (top: imageItem.title,
+                                      title: nil,
+                                      image: imageItem.image,
+                                      description: nil,
+                                      bottom: imageItem.description,
+                                      isBottom: true)
+                        heights[0] = calculate(config: config, cell: detailCell, hPadding: hPadding, vPadding: vPadding)
+                    }
+                    isCached = true
+                    detailTableView?.reloadData()
+                }
             }
 //            print(detailCell.outerFrame?.frame.width)
+        }
+    }
+    
+    func calculate(config: ConfigTuple,cell: DetailTableViewCell, hPadding: CGFloat, vPadding: CGFloat) -> CGFloat {
+        let width = cell.outerFrame?.frame.width ?? 0
+        let top = config.top ?? ""
+        let title = config.title ?? ""
+        let description = config.description ?? ""
+        let bottom = config.bottom ?? ""
+        
+        let topLabel = calculateLabelFrame(text: top, width: width, hPadding: hPadding, vPadding: vPadding)
+        let titleLabel = calculateLabelFrame(text: title, width: width, hPadding: hPadding, vPadding: vPadding)
+        let descLabel = calculateLabelFrame(text: description, width: width, hPadding: hPadding, vPadding: vPadding)
+        let bottomLabel = calculateLabelFrame(text: bottom, width: width, hPadding: hPadding, vPadding: vPadding)
+        let image = calculateImageRatio(config.image, frameWidth: width)
+        var separator: CGFloat = cell.separatorFrame?.frame.height ?? 0
+        separator = config.isBottom ? 0 : separator
+        
+        let result = topLabel.height + titleLabel.height + descLabel.height + bottomLabel.height + image.height + separator
+        return result
+        
+    }
+    private func calculateElementHeights() {
+        
+    }
+//
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard !heights.isEmpty else {
+            return 0
+        }
+        return heights[indexPath.row]
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let cell = tableView.cellForRow(at: indexPath) as? DetailTableViewCell {
+            print(cell.frame.height)
         }
     }
 }

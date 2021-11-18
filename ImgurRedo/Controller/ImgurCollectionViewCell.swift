@@ -15,8 +15,8 @@ class ImgurCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var countLabel: UILabel?
     @IBOutlet weak var viewsLabel: UILabel?
     @IBOutlet weak var typeLabel: UILabel?
-    @IBOutlet weak var countImage: UIImageView?
     @IBOutlet weak var bottomFrame: UIView?
+    @IBOutlet weak var countFrame: UIView?
     
     static let identifier = "ImgurCollectionViewCell"
 
@@ -40,12 +40,10 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         let countString = String(count ?? 1)
         countLabel?.text = countString
         
-        if count == nil {
-            countLabel?.isHidden = true
-            countImage?.isHidden = true
+        if count == nil || count == 1 {
+            countFrame?.isHidden = true
         } else {
-            countLabel?.isHidden = false
-            countImage?.isHidden = false
+            countFrame?.isHidden = false
         }
         var isType = ""
         var isHidden = false

@@ -7,6 +7,8 @@
 
 import UIKit
 
+typealias ConfigTuple = (top: String?, title: String?, image: UIImage, description: String?, bottom: String?, isBottom: Bool)
+
 class DetailTableViewCell: UITableViewCell {
     
     @IBOutlet weak var outerFrame: UIView?
@@ -21,7 +23,7 @@ class DetailTableViewCell: UITableViewCell {
     @IBOutlet weak var descriptionFrame: UIView!
     @IBOutlet weak var bottomFrame: UIView!
     
-    @IBOutlet weak var SeparatorFrame: UIView!
+    @IBOutlet weak var separatorFrame: UIView?
     
     static let identifier = "DetailTableViewCell"
 
@@ -36,15 +38,18 @@ class DetailTableViewCell: UITableViewCell {
         configLabel(label: titleLabel, frame: titleFrame, text: configTuple.title)
         configLabel(label: descriptionLabel, frame: descriptionFrame, text: configTuple.description)
         configLabel(label: bottomLabel, frame: bottomFrame, text: configTuple.bottom)
+        if configTuple.isBottom {
+            separatorFrame?.isHidden = true
+        } else {
+            separatorFrame?.isHidden = false
+        }
     }
     
     func configLabel(label: UILabel,frame: UIView, text: String?){
         label.text = text
         if text == nil {
-            label.isHidden = true
             frame.isHidden = true
         } else {
-            label.isHidden = false
             frame.isHidden = false
         }
     }
