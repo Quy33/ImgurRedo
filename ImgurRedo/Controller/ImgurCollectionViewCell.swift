@@ -16,16 +16,18 @@ class ImgurCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var viewsLabel: UILabel?
     @IBOutlet weak var typeLabel: UILabel?
     @IBOutlet weak var countImage: UIImageView?
-    
+    @IBOutlet weak var bottomFrame: UIView?
     
     static let identifier = "ImgurCollectionViewCell"
 
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
     }
     
     func configure(image: UIImage, title: String, count: Int?, views: Int, type: String) {
+        
         let typeHeight = typeLabel?.frame.height ?? 0
         typeFrame?.layer.cornerRadius = typeHeight / 2
         typeFrame?.layer.masksToBounds = true
@@ -57,7 +59,6 @@ class ImgurCollectionViewCell: UICollectionViewCell {
             isHidden = true
         }
         typeLabel?.text = isType
-        //typeLabel?.isHidden = isHidden
         typeFrame?.isHidden = isHidden
     }
 }

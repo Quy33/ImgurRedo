@@ -4,6 +4,7 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -33,26 +34,82 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="rcN-8D-qb4">
+                        <barButtonItem key="leftBarButtonItem" style="plain" id="NAc-88-YEg">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="wbY-E0-OYK">
+                                <rect key="frame" x="20" y="5" width="92" height="34.5"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Reload"/>
+                                <connections>
+                                    <action selector="reloadPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="XYM-rJ-0sY"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" style="plain" id="M8g-VL-Hyv">
                             <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="s7E-Bu-LLr">
                                 <rect key="frame" x="319" y="5" width="75" height="34.5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Add"/>
                                 <connections>
-                                    <action selector="testPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eQA-yE-HM6"/>
+                                    <action selector="addPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nxX-Wn-Tlq"/>
                                 </connections>
                             </button>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="imgurCollectionView" destination="bFY-rP-wtT" id="Qhs-hf-7rN"/>
+                        <segue destination="AdG-SP-yln" kind="show" identifier="DetailViewController" id="EYf-qG-kyB"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="928.98550724637687" y="80.357142857142847"/>
+        </scene>
+        <!--Detail View Controller-->
+        <scene sceneID="1kd-ZV-I4Y">
+            <objects>
+                <viewController id="AdG-SP-yln" customClass="DetailViewController" customModule="ImgurRedo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="X8i-ai-bTL">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="AtM-MK-yRq">
+                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="knm-CG-FpU"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="AtM-MK-yRq" firstAttribute="top" secondItem="knm-CG-FpU" secondAttribute="top" id="0Vh-BQ-K8o"/>
+                            <constraint firstItem="AtM-MK-yRq" firstAttribute="leading" secondItem="knm-CG-FpU" secondAttribute="leading" id="HJp-s1-lq7"/>
+                            <constraint firstItem="knm-CG-FpU" firstAttribute="trailing" secondItem="AtM-MK-yRq" secondAttribute="trailing" id="r5U-Pr-UQ7"/>
+                            <constraint firstItem="knm-CG-FpU" firstAttribute="bottom" secondItem="AtM-MK-yRq" secondAttribute="bottom" id="ypu-We-6OF"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="xrQ-DT-l1a">
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="fRR-zf-jK8">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="5LH-I5-ZGg">
+                                <rect key="frame" x="302" y="5" width="92" height="34.5"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                <connections>
+                                    <action selector="testPressed:" destination="AdG-SP-yln" eventType="touchUpInside" id="1Wb-cr-hDH"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="detailTableView" destination="AtM-MK-yRq" id="U4p-xt-rDi"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JXa-q8-4PK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1861" y="80"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="UK6-zU-fuE">
@@ -73,4 +130,9 @@
             <point key="canvasLocation" x="18.840579710144929" y="80.357142857142847"/>
         </scene>
     </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>

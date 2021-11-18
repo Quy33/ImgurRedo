@@ -11,8 +11,11 @@ import AVKit
 class ViewController: UIViewController {
     
     @IBOutlet weak var imgurCollectionView: UICollectionView?
-    let networkManager = NetWorkManager()
-    var galleries: [GalleryModel] = []
+    private let networkManager = NetWorkManager()
+    private var galleries: [GalleryModel] = []
+    private var pageAt = 0
+    private var indexPathToMove = IndexPath(item: 0, section: 0)
+    static var isDownloading = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,41 +24,90 @@ class ViewController: UIViewController {
         imgurCollectionView?.dataSource = self
         imgurCollectionView?.delegate = self
         setLayout(collectionView: imgurCollectionView)
+        GalleryModel.thumbnailSize = .smallThumbnail
                 
-        call()
+        initialDownload()
     }
 //MARK: Networking Calls
-    private func call() {
+    private func initialDownload() {
         let para = GalleryParameterModel()
+        
+        guard !ViewController.isDownloading else {
+            print("Download is occuring")
+            return
+        }
+        print("Begin download")
+        ViewController.isDownloading = true
         Task {
             do {
-                let dataModel = try await networkManager.requestGallery(parameter: para)
-                galleries = dataModel.data.map{ GalleryModel($0) }
-                GalleryModel.thumbnailSize = .smallThumbnail
-                //galleries.forEach{ print($0.type) }
-                let urls = galleries.map{ $0.url }
-                let images = try await networkManager.batchesDownload(urls: urls)
                 
-                for (index,gallery) in galleries.enumerated() {
-                    gallery.image = images[index]
-                }
+                galleries = try await performDownload(parameter: para)
                 
                 DispatchQueue.main.async {
-                    self.imgurCollectionView?.reloadData()
-                    self.setLayout(collectionView: self.imgurCollectionView)
+                    self.reset(collectionView: self.imgurCollectionView)
                 }
-                
-                
+                print("Finished Download")
+                ViewController.isDownloading = false
             } catch {
                 print("Error: \(error)")
             }
         }
     }
+    private func downloadNextPage(page: Int) {
+        
+        guard !ViewController.isDownloading else {
+            print("Download is occuring")
+            return
+        }
+        
+        let para = GalleryParameterModel(page: page)
+        print("Begin adding more")
+        ViewController.isDownloading = true
+        Task {
+            do {
+                
+                let newGalleries = try await performDownload(parameter: para)
+                
+                galleries.append(contentsOf: newGalleries)
+                
+                DispatchQueue.main.async {
+                    self.reload(collectionView: self.imgurCollectionView)
+                }
+                print("Finished adding more")
+                ViewController.isDownloading = false
+            } catch {
+                print("Error: \(error)")
+            }
+        }
+    }
+    private func performDownload(parameter: GalleryParameterModel) async throws -> [GalleryModel] {
+        let dataModel = try await networkManager.requestGallery(parameter: parameter)
+        let newGalleries = dataModel.data.map{ GalleryModel($0) }
+        let urls = newGalleries.map{ $0.url }
+        let images = try await networkManager.batchesDownload(urls: urls)
+        
+        for (index,gallery) in newGalleries.enumerated() {
+            gallery.image = images[index]
+        }
+        return newGalleries
+    }
     
 //MARK: Buttons
-    @IBAction func testPressed(_ sender: UIButton) {
+    @IBAction func addPressed(_ sender: UIButton) {
+        pageAt += 1
+        downloadNextPage(page: pageAt)
     }
-//MARK: Small Functions
+    @IBAction func reloadPressed(_ sender: UIButton) {
+        guard !ViewController.isDownloading else {
+            print("Download is occuring")
+            return
+        }
+        pageAt = 0
+        galleries = []
+        imgurCollectionView?.reloadData()
+        initialDownload()
+    }
+    //MARK: Small Functions
     private func registerCell() {
         let nib = UINib(nibName: ImgurCollectionViewCell.identifier, bundle: nil)
         imgurCollectionView?.register(nib, forCellWithReuseIdentifier: ImgurCollectionViewCell.identifier)
@@ -68,6 +120,23 @@ class ViewController: UIViewController {
         let layout = PinterestLayout()
         layout.delegate = self
         collectionView.collectionViewLayout = layout
+    }
+    private func reset(collectionView: UICollectionView?) {
+        guard let collectionView = collectionView,
+        collectionView == imgurCollectionView else {
+            return
+        }
+        collectionView.reloadData()
+        setLayout(collectionView: collectionView)
+    }
+    private func reload(collectionView: UICollectionView?) {
+        guard let collectionView = collectionView,
+        collectionView == imgurCollectionView else {
+            return
+        }
+        let contentOffset = collectionView.contentOffset
+        reset(collectionView: collectionView)
+        collectionView.setContentOffset(contentOffset, animated: false)
     }
 }
 //MARK: CollectionView DataSource
@@ -98,8 +167,16 @@ extension ViewController: UICollectionViewDataSource {
 //MARK: CollectionView Delegate
 extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as! ImgurCollectionViewCell
-        print(cell.titleLabel?.frame.height)
+        indexPathToMove = indexPath
+        performSegue(withIdentifier: DetailViewController.identifier, sender: self)
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let gallery = galleries[indexPathToMove.item]
+        let galleryTuple = (isAlbum: gallery.isAlbum, id: gallery.id)
+        
+        if let destination = segue.destination as? DetailViewController {
+            destination.galleryGot = galleryTuple
+        }
     }
 }
 
@@ -115,15 +192,14 @@ extension ViewController: PinterestLayoutDelegate {
 
         let imageFrame = calculateImageRatio(gallery.image, frameWidth: width)
         
-
         let titleHPadding: CGFloat = 10
         let titleVPadding: CGFloat = 20
+        
         let titleWidth = width - (titleHPadding * 2)
+        var titleFrame = calculateLabelFrame(text: gallery.title, font: .systemFont(ofSize: 17), width: titleWidth)
+        titleFrame = titleFrame.insetBy(dx: 0, dy: -titleVPadding)
         
-        let titleFrame = calculateLabelFrame(text: gallery.title, font: .systemFont(ofSize: 17), width: titleWidth)
-        let titleHeight = titleFrame.height + (titleVPadding * 2)
-        
-        return imageFrame.height + lowerFrameHeight + titleHeight
+        return imageFrame.height + lowerFrameHeight + titleFrame.height
     }
 }
 //MARK: Stuff
