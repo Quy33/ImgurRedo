@@ -31,7 +31,7 @@ class ViewController: UIViewController {
             do {
                 let dataModel = try await networkManager.requestGallery(parameter: para)
                 galleries = dataModel.data.map{ GalleryModel($0) }
-                GalleryModel.thumbnailSize = .hugeThumbnail
+                GalleryModel.thumbnailSize = .smallThumbnail
                 //galleryModel.forEach{ print($0.url) }
                 let urls = galleries.map{ $0.url }
                 let images = try await networkManager.batchesDownload(urls: urls)
@@ -96,7 +96,8 @@ extension ViewController: UICollectionViewDataSource {
 //MARK: CollectionView Delegate
 extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath)
+        let cell = collectionView.cellForItem(at: indexPath) as! ImgurCollectionViewCell
+        print(cell.titleLabel?.frame.height)
     }
 }
 
@@ -110,10 +111,17 @@ extension ViewController: PinterestLayoutDelegate {
         
         let lowerFrameHeight: CGFloat = 50
 
-        let imageHeight = calculateHeight(gallery.image.size, frameWidth: width)
-        let labelFrame = calculateLabelFrame(text: gallery.title, font: .systemFont(ofSize: 17), width: width)
+        let imageFrame = calculateImageRatio(gallery.image, frameWidth: width)
         
-        return imageHeight + lowerFrameHeight + labelFrame.height
+
+        let titleHPadding: CGFloat = 10
+        let titleVPadding: CGFloat = 20
+        let titleWidth = width - (titleHPadding * 2)
+        
+        let titleFrame = calculateLabelFrame(text: gallery.title, font: .systemFont(ofSize: 17), width: titleWidth)
+        let titleHeight = titleFrame.height + (titleVPadding * 2)
+        
+        return imageFrame.height + lowerFrameHeight + titleHeight
     }
 }
 //MARK: Stuff
@@ -121,7 +129,7 @@ extension UIViewController {
     func calculateLabelFrame(text: String, font: UIFont, width: CGFloat) -> CGRect {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: CGFloat.greatestFiniteMagnitude))
         label.numberOfLines = 0
-        label.lineBreakMode = .byTruncatingTail
+        label.lineBreakMode = .byWordWrapping
         label.font = font
         label.text = text
 
@@ -132,12 +140,5 @@ extension UIViewController {
         let boundingRect = CGRect(x: 0, y: 0, width: width, height: CGFloat(MAXFLOAT))
         let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
         return rect
-    }
-    func calculateHeight(_ pictureSize: CGSize, frameWidth width: CGFloat )->CGFloat{
-        let wOffSet = pictureSize.width - width
-        let wOffSetPercent = (wOffSet*100)/pictureSize.width
-        let hOffSet = (wOffSetPercent*pictureSize.height)/100
-        let newHeight = pictureSize.height - hOffSet
-        return newHeight
     }
 }
