@@ -13,6 +13,8 @@ struct NetWorkManager {
     
     private let clientID = "11dd115895de7c5"
     
+    private let header = (key: "Authorization", value: "Client-ID 11dd115895de7c5")
+    
     func requestGallery(parameter p: GalleryParameterModel) async throws -> DataModel {
         guard var urlComponents = URLComponents(string: "\(baseURL)/gallery/\(p.section)/\(p.sort)/\(p.window)/\(p.page)") else {
             throw NetworkingError.invalidData
@@ -31,11 +33,15 @@ struct NetWorkManager {
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {
             throw NetworkingError.invalidData
         }
-        return try parseJSON(data)
+        return try parseGallery(data)
     }
     //MARK: JSON Parser
-    private func parseJSON(_ data: Data) throws -> DataModel {
+    private func parseGallery(_ data: Data) throws -> DataModel {
         let model = try JSONDecoder().decode(DataModel.self, from: data)
+        return model
+    }
+    private func parseDetail(_ data: Data) throws -> DetailDataModel {
+        let model = try JSONDecoder().decode(DetailDataModel.self, from: data)
         return model
     }
     //MARK: Download Image Functions
@@ -74,6 +80,24 @@ struct NetWorkManager {
             return images
         }
         return results
+    }
+//MARK: Detail Screen Networking
+    func requestDetail(isAlbum: Bool, id: String) async throws -> DetailDataModel {
+        let detail = isAlbum ? "album" : "image"
+        let urlString = "\(baseURL)/\(detail)/\(id)"
+        
+        guard let url = URL(string: urlString) else {
+            throw NetworkingError.invalidData
+        }
+        
+        var request = URLRequest(url: url)
+        request.setValue(header.value, forHTTPHeaderField: header.key)
+        
+        let (data,response) = try await URLSession.shared.data(for: request)
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+            throw NetworkingError.invalidData
+        }
+        return try parseDetail(data)
     }
 }
 //MARK: NetWorking Error Enums

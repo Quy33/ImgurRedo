@@ -12,7 +12,7 @@ class ToolBox {
     static let placeHolderImg: UIImage = #imageLiteral(resourceName: "placeHolder")
     static let blankURL = URL(string: "http://www.blankwebsite.com/")!
     
-    static func concatStr(string: String ,size: ThumbnailSize) -> String {
+    func concatStr(string: String ,size: ThumbnailSize) -> String {
         var result = string
         guard let index = result.lastIndex(of: ".") else {
             return ""

@@ -17,6 +17,8 @@
 		5394B64327460E2A004D0A5B /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5394B64227460E2A004D0A5B /* DetailViewController.swift */; };
 		5394B64627461196004D0A5B /* DetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5394B64427461196004D0A5B /* DetailTableViewCell.swift */; };
 		5394B64727461196004D0A5B /* DetailTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5394B64527461196004D0A5B /* DetailTableViewCell.xib */; };
+		5394B649274635F3004D0A5B /* DetailDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5394B648274635F3004D0A5B /* DetailDataModel.swift */; };
+		5394B64B274638E8004D0A5B /* DetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5394B64A274638E8004D0A5B /* DetailModel.swift */; };
 		53D138BF27425E0400E05A70 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D138BE27425E0400E05A70 /* AppDelegate.swift */; };
 		53D138C127425E0400E05A70 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D138C027425E0400E05A70 /* SceneDelegate.swift */; };
 		53D138C327425E0400E05A70 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D138C227425E0400E05A70 /* ViewController.swift */; };
@@ -38,6 +40,8 @@
 		5394B64227460E2A004D0A5B /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		5394B64427461196004D0A5B /* DetailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTableViewCell.swift; sourceTree = "<group>"; };
 		5394B64527461196004D0A5B /* DetailTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DetailTableViewCell.xib; sourceTree = "<group>"; };
+		5394B648274635F3004D0A5B /* DetailDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailDataModel.swift; sourceTree = "<group>"; };
+		5394B64A274638E8004D0A5B /* DetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailModel.swift; sourceTree = "<group>"; };
 		53D138BB27425E0400E05A70 /* ImgurRedo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImgurRedo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		53D138BE27425E0400E05A70 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		53D138C027425E0400E05A70 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -107,6 +111,8 @@
 				53537E662743996B00849494 /* GalleryParameterModel.swift */,
 				53537E682743A94500849494 /* DataModel.swift */,
 				53537E6C27450AFC00849494 /* GalleryModel.swift */,
+				5394B648274635F3004D0A5B /* DetailDataModel.swift */,
+				5394B64A274638E8004D0A5B /* DetailModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -218,9 +224,11 @@
 			files = (
 				53D138C327425E0400E05A70 /* ViewController.swift in Sources */,
 				53209BD227454E4E0098D13B /* ToolBox.swift in Sources */,
+				5394B649274635F3004D0A5B /* DetailDataModel.swift in Sources */,
 				53537E602743501B00849494 /* Networking file.swift in Sources */,
 				5394B64627461196004D0A5B /* DetailTableViewCell.swift in Sources */,
 				5394B64327460E2A004D0A5B /* DetailViewController.swift in Sources */,
+				5394B64B274638E8004D0A5B /* DetailModel.swift in Sources */,
 				53537E672743996B00849494 /* GalleryParameterModel.swift in Sources */,
 				53537E622743988E00849494 /* NetWorkManager.swift in Sources */,
 				53537E6D27450AFC00849494 /* GalleryModel.swift in Sources */,

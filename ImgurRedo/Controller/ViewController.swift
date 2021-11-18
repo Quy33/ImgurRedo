@@ -159,7 +159,9 @@ extension ViewController: UICollectionViewDataSource {
         cell.layer.masksToBounds = true
         let gallery = galleries[indexPath.row]
         
-        cell.configure(image: gallery.image, title: gallery.title, count: gallery.imagesCount, views: gallery.views, type: gallery.type)
+        let newTitle = gallery.title ?? ""
+        
+        cell.configure(image: gallery.image, title: newTitle, count: gallery.imagesCount, views: gallery.views, type: gallery.type)
         
         return cell
     }
@@ -194,10 +196,14 @@ extension ViewController: PinterestLayoutDelegate {
         
         let titleHPadding: CGFloat = 10
         let titleVPadding: CGFloat = 20
+        var titleFrame: CGRect = CGRect()
         
-        let titleWidth = width - (titleHPadding * 2)
-        var titleFrame = calculateLabelFrame(text: gallery.title, font: .systemFont(ofSize: 17), width: titleWidth)
-        titleFrame = titleFrame.insetBy(dx: 0, dy: -titleVPadding)
+        if let title = gallery.title {
+            let titleWidth = width - (titleHPadding * 2)
+            titleFrame = calculateLabelFrame(text: title, font: .systemFont(ofSize: 17), width: titleWidth)
+            titleFrame = titleFrame.insetBy(dx: 0, dy: -titleVPadding)
+        }
+        
         
         return imageFrame.height + lowerFrameHeight + titleFrame.height
     }

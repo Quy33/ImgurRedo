@@ -5,26 +5,25 @@
 //  Created by Mcrew-Tech on 17/11/2021.
 //
 
-import Foundation
 import UIKit
 
-class GalleryModel {
-    let id: String
-    let title: String
-    let isAlbum: Bool
+class GalleryModel: ToolBox {
+    final let id: String
+    let title: String?
+    final let isAlbum: Bool
     let link: String
     let animated: Bool
     let mp4: String?
     let type: String
-    let imagesCount: Int?
+    final let imagesCount: Int?
     var image: UIImage
-    let views: Int
+    final let views: Int
     
-    static var thumbnailSize: ToolBox.ThumbnailSize = .mediumThumbnail
+    static var thumbnailSize: ThumbnailSize = .mediumThumbnail
     
     var url: URL {
         var urlString = animated ? mp4! : link
-        urlString = ToolBox.concatStr(string: urlString, size: GalleryModel.thumbnailSize)
+        urlString = concatStr(string: urlString, size: GalleryModel.thumbnailSize)
         
         guard let link = URL(string: urlString) else {
             return ToolBox.blankURL
@@ -32,7 +31,7 @@ class GalleryModel {
         return link
     }
     
-    init(id: String, title: String, isAlbum: Bool, link: String, animated: Bool, type: String, imagesCount: Int?, mp4: String?, image: UIImage, views: Int) {
+    init(id: String, title: String?, isAlbum: Bool, link: String, animated: Bool, type: String, imagesCount: Int?, mp4: String?, image: UIImage, views: Int) {
         self.id = id
         self.title = title
         self.isAlbum = isAlbum
@@ -45,7 +44,7 @@ class GalleryModel {
         self.views = views
     }
 
-    convenience init() {
+    convenience override init() {
         let placeHolder = ToolBox.placeHolderImg
         self.init(id: "", title: "", isAlbum: false, link: "", animated: false, type: "", imagesCount: nil, mp4: nil, image: placeHolder, views: 0)
     }
@@ -63,6 +62,18 @@ class GalleryModel {
         newViews = item.views
         
         self.init(id: item.id, title: item.title, isAlbum: item.is_album, link: newLink, animated: newAnimated, type: newType, imagesCount: newImagesCount, mp4: newMp4, image: ToolBox.placeHolderImg, views: newViews)
+    }
+    init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage) {
+        self.title = title
+        self.link = link
+        self.animated = animated
+        self.type = type
+        self.mp4 = mp4
+        self.image = image
+        self.id = ""
+        self.isAlbum = false
+        self.views = 0
+        self.imagesCount = nil
     }
 }
 
