@@ -61,6 +61,6 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         typeLabel?.adjustsFontSizeToFitWidth = true
         typeFrame?.isHidden = isHidden
         typeFrame?.layer.borderWidth = 3
-        typeFrame?.layer.borderColor = UIColor.darkGray.cgColor
+        typeFrame?.layer.borderColor = UIColor.black.cgColor
     }
 }
