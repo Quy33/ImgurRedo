@@ -12,6 +12,9 @@ import AVFoundation
 class DetailViewController: UIViewController {
     
     @IBOutlet weak var detailTableView: UITableView?
+    @IBOutlet weak var tableViewFrame: UIView?
+    @IBOutlet weak var loadingFrame: UIView?
+    @IBOutlet weak var spinner: UIActivityIndicatorView?
     
     static let identifier = "DetailViewController"
     private let networkManager = NetWorkManager()
@@ -33,13 +36,18 @@ class DetailViewController: UIViewController {
         detailTableView?.dataSource = self
         detailTableView?.delegate = self
         registerCell(tableView: detailTableView)
+        
         DetailModel.gallerySize = .hugeThumbnail
         DetailModel.galleryIsThumnail = false
-        loadDetails()
         
+        spinner?.hidesWhenStopped = true
+        loadingFrame?.isHidden = true
+        
+        loadDetails()
     }
     
     private func loadDetails(){
+        callUpdateUI(isDone: false)
         Task {
             do {
                 let model = try await networkManager.requestDetail(isAlbum: galleryGot.isAlbum, id: galleryGot.id)
@@ -59,6 +67,7 @@ class DetailViewController: UIViewController {
                 }
                 DispatchQueue.main.async {
                     self.detailTableView?.reloadData()
+                    self.callUpdateUI(isDone: true)
                 }
             } catch {
                 print("Error: \(error)")
@@ -72,6 +81,10 @@ class DetailViewController: UIViewController {
         }
         let nib = UINib(nibName: DetailTableViewCell.identifier, bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: DetailTableViewCell.identifier)
+    }
+    //MARK: Call to update UI
+    private func callUpdateUI(isDone: Bool) {
+        updateUI(activityIndicator: spinner, frameToHide: tableViewFrame, frameToLoad: loadingFrame, isDone: isDone)
     }
     //MARK: Video Player
     private func playVideo(url: URL){

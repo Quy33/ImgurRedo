@@ -11,6 +11,10 @@ import AVKit
 class ViewController: UIViewController {
     
     @IBOutlet weak var imgurCollectionView: UICollectionView?
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView?
+    @IBOutlet weak var loadingFrame: UIView?
+    @IBOutlet weak var collectionViewFrame: UIView?
+    
     private let networkManager = NetWorkManager()
     private var galleries: [GalleryModel] = []
     private var pageAt = 0
@@ -25,6 +29,10 @@ class ViewController: UIViewController {
         imgurCollectionView?.delegate = self
         setLayout(collectionView: imgurCollectionView)
         GalleryModel.gallerySize = .hugeThumbnail
+        
+        activityIndicator?.hidesWhenStopped = true
+        loadingFrame?.isHidden = true
+        
         initialDownload()
     }
 //MARK: Networking Calls
@@ -36,12 +44,14 @@ class ViewController: UIViewController {
             return
         }
         ViewController.isDownloading = true
+        callUpdateUI(isDone: false)
         Task {
             do {
                 galleries = try await performDownload(parameter: para)
                 
                 DispatchQueue.main.async {
                     self.reset(collectionView: self.imgurCollectionView)
+                    self.callUpdateUI(isDone: true)
                 }
                 ViewController.isDownloading = false
             } catch {
@@ -132,6 +142,9 @@ class ViewController: UIViewController {
         reset(collectionView: collectionView)
         collectionView.setContentOffset(contentOffset, animated: false)
     }
+    private func callUpdateUI(isDone: Bool) {
+        updateUI(activityIndicator: activityIndicator, frameToHide: collectionViewFrame, frameToLoad: loadingFrame, isDone: isDone)
+    }
 }
 //MARK: CollectionView DataSource
 extension ViewController: UICollectionViewDataSource {
@@ -220,6 +233,23 @@ extension UIViewController {
         let boundingRect = CGRect(x: 0, y: 0, width: width, height: CGFloat(MAXFLOAT))
         let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
         return rect
+    }
+    func updateUI(activityIndicator: UIActivityIndicatorView?, frameToHide: UIView? , frameToLoad: UIView?, isDone: Bool){
+        guard let activityIndicator = activityIndicator,
+              let frameToLoad = frameToLoad,
+              let frameToHide = frameToHide else {
+            return
+        }
+
+        if isDone {
+            frameToLoad.isHidden = true
+            frameToHide.isHidden = false
+            activityIndicator.stopAnimating()
+        } else {
+            frameToLoad.isHidden = false
+            frameToHide.isHidden = true
+            activityIndicator.startAnimating()
+        }
     }
 }
 
