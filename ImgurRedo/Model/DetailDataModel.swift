@@ -7,10 +7,10 @@
 
 import Foundation
 
-struct DetailDataModel: Decodable {
+struct DetailDataModel: Codable {
     let data: DetailImageModel
 }
-struct DetailImageModel: Decodable {
+struct DetailImageModel: Codable {
     let title: String
     let description: String?
     let type: String?
@@ -19,7 +19,7 @@ struct DetailImageModel: Decodable {
     let mp4: String?
     let images: [DetailDataAlbumModel]?
 }
-struct DetailDataAlbumModel: Decodable {
+struct DetailDataAlbumModel: Codable {
     let title: String?
     let description: String?
     let type: String
