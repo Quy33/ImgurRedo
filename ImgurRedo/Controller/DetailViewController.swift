@@ -34,7 +34,8 @@ class DetailViewController: UIViewController {
         detailTableView?.dataSource = self
         detailTableView?.delegate = self
         registerCell(tableView: detailTableView)
-        DetailModel.detailSize = .hugeThumbnail
+        DetailModel.gallerySize = .hugeThumbnail
+        DetailModel.galleryIsThumnail = false
         loadDetails()
         
     }

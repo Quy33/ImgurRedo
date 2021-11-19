@@ -23,8 +23,8 @@ class ViewController: UIViewController {
         registerCell()
         imgurCollectionView?.dataSource = self
         imgurCollectionView?.delegate = self
+        setLayout(collectionView: imgurCollectionView)
         GalleryModel.gallerySize = .hugeThumbnail
-        setLayout(collectionView: imgurCollectionView)                
         initialDownload()
     }
 //MARK: Networking Calls

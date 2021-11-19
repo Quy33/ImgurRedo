@@ -10,11 +10,15 @@ import UIKit
 class DetailModel: GalleryModel {
     let description: String?
     
-    static var detailSize: ThumbnailSize = .mediumThumbnail
-    
-    override var thumbnailSize: ToolBox.ThumbnailSize {
-        DetailModel.detailSize
-    }
+//    static var detailSize: ThumbnailSize = .mediumThumbnail
+//    static var detailIsThumbnail = true
+//    
+//    override var thumbnailSize: ToolBox.ThumbnailSize {
+//        DetailModel.detailSize
+//    }
+//    override var isThumbnail: Bool {
+//        DetailModel.detailIsThumbnail
+//    }
 
     init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage, description: String?) {
         self.description = description
