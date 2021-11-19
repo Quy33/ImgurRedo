@@ -185,6 +185,11 @@ extension ViewController: UICollectionViewDelegate {
             destination.galleryGot = galleryTuple
         }
     }
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard !galleries.isEmpty else {
+            return
+        }
+    }
 }
 
 //MARK: Pinterest Layout
