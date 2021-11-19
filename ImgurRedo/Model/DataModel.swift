@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct DataModel: Codable {
+struct DataModel: Codable {    
     let data: [GalleryDataModel]
 }
 struct GalleryDataModel: Codable {

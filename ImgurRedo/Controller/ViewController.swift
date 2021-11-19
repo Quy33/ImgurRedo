@@ -35,7 +35,6 @@ class ViewController: UIViewController {
             print("Download is occuring")
             return
         }
-        print("Begin download")
         ViewController.isDownloading = true
         Task {
             do {
@@ -44,7 +43,6 @@ class ViewController: UIViewController {
                 DispatchQueue.main.async {
                     self.reset(collectionView: self.imgurCollectionView)
                 }
-                print("Finished Download")
                 ViewController.isDownloading = false
             } catch {
                 print("Error: \(error)")
@@ -59,7 +57,6 @@ class ViewController: UIViewController {
         }
         
         let para = GalleryParameterModel(page: page)
-        print("Begin adding more")
         ViewController.isDownloading = true
         Task {
             do {
@@ -71,7 +68,6 @@ class ViewController: UIViewController {
                 DispatchQueue.main.async {
                     self.reload(collectionView: self.imgurCollectionView)
                 }
-                print("Finished adding more")
                 ViewController.isDownloading = false
             } catch {
                 print("Error: \(error)")
