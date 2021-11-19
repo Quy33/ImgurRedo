@@ -58,7 +58,7 @@ class DetailTableViewCell: UITableViewCell {
         }
     }
     
-    func configLabel(label: UILabel,frame: UIView, text: String?){
+    private func configLabel(label: UILabel,frame: UIView, text: String?){
         label.text = text
         if text == nil {
             frame.isHidden = true

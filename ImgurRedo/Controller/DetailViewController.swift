@@ -30,7 +30,6 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(galleryGot)
         detailTableView?.dataSource = self
         detailTableView?.delegate = self
         registerCell(tableView: detailTableView)
@@ -65,9 +64,6 @@ class DetailViewController: UIViewController {
                 print("Error: \(error)")
             }
         }
-    }
-    //MARK: Test Button
-    @IBAction func testPressed(_ sender: UIButton) {
     }
     //MARK: Cell registration
     private func registerCell(tableView: UITableView?) {
@@ -144,7 +140,7 @@ class DetailViewController: UIViewController {
             heights[0] = calculate(config: imageConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
         }
     }
-    func calculate(config: ConfigTuple,cell: DetailTableViewCell, hPadding: CGFloat, vPadding: CGFloat) -> CGFloat {
+    private func calculate(config: ConfigTuple,cell: DetailTableViewCell, hPadding: CGFloat, vPadding: CGFloat) -> CGFloat {
         let width = cell.outerFrame?.frame.width ?? 0
         
         let labelItems = Mirror.init(reflecting: config).children.map{ $0.value as? String }
@@ -172,7 +168,6 @@ class DetailViewController: UIViewController {
         
         let result = labelsHeights + image.height + separator
         return result
-        
     }
 }
 //MARK: TableView Data Source

@@ -89,19 +89,7 @@
                             <constraint firstItem="knm-CG-FpU" firstAttribute="bottom" secondItem="AtM-MK-yRq" secondAttribute="bottom" id="ypu-We-6OF"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="xrQ-DT-l1a">
-                        <barButtonItem key="rightBarButtonItem" style="plain" id="fRR-zf-jK8">
-                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="5LH-I5-ZGg">
-                                <rect key="frame" x="302" y="5" width="92" height="34.5"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
-                                <connections>
-                                    <action selector="testPressed:" destination="AdG-SP-yln" eventType="touchUpInside" id="1Wb-cr-hDH"/>
-                                </connections>
-                            </button>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="xrQ-DT-l1a"/>
                     <connections>
                         <outlet property="detailTableView" destination="AtM-MK-yRq" id="U4p-xt-rDi"/>
                     </connections>
