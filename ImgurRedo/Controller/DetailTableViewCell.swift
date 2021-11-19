@@ -46,7 +46,7 @@ class DetailTableViewCell: UITableViewCell {
             separatorFrame?.isHidden = false
         }
         
-        playIcon.layer.cornerRadius = 20
+        playIcon.layer.cornerRadius = playIcon.frame.height / 2
         playIcon.layer.masksToBounds = true
         playIcon.layer.borderWidth = 5
         playIcon.layer.borderColor = UIColor.lightGray.cgColor

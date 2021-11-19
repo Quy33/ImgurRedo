@@ -149,9 +149,19 @@ class DetailViewController: UIViewController {
         let labelItems = Mirror.init(reflecting: config).children.map{ $0.value as? String }
         var labelsHeights: CGFloat = 0
         
+        for (index,label) in labelItems.enumerated() {
+            if index == 0 {
+                let topFont: UIFont = .systemFont(ofSize: 22, weight: .medium)
+                let rect = calculateLabelFrame(text: label, width: width, font: topFont, hPadding: hPadding, vPadding: vPadding)
+                labelsHeights += rect.height
+            } else {
+                let otherFont: UIFont = .systemFont(ofSize: 20, weight: .light)
+                let rect = calculateLabelFrame(text: label, width: width, font: otherFont, hPadding: hPadding, vPadding: vPadding)
+                labelsHeights += rect.height
+            }
+        }
         labelItems.forEach { label in
-            let rect = calculateLabelFrame(text: label, width: width, hPadding: hPadding, vPadding: vPadding)
-            labelsHeights += rect.height
+            
         }
         
         let image = calculateImageRatio(config.image, frameWidth: width)

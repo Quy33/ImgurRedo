@@ -39,7 +39,6 @@ class ViewController: UIViewController {
         ViewController.isDownloading = true
         Task {
             do {
-                
                 galleries = try await performDownload(parameter: para)
                 
                 DispatchQueue.main.async {
@@ -193,14 +192,15 @@ extension ViewController: PinterestLayoutDelegate {
         
         let titleHPadding: CGFloat = 10
         let titleVPadding: CGFloat = 20
-        let titleFrame = calculateLabelFrame(text: gallery.title, width: width, hPadding: titleHPadding, vPadding: titleVPadding)
+        let font: UIFont = .systemFont(ofSize: 17)
+        let titleFrame = calculateLabelFrame(text: gallery.title, width: width, font: font, hPadding: titleHPadding, vPadding: titleVPadding)
 
         return imageFrame.height + lowerFrameHeight + titleFrame.height
     }
 }
 //MARK: Extension to calculate Height
 extension UIViewController {
-    func calculateLabelFrame(text: String?, width: CGFloat, hPadding: CGFloat, vPadding: CGFloat ) -> CGRect {
+    func calculateLabelFrame(text: String?, width: CGFloat,font: UIFont, hPadding: CGFloat, vPadding: CGFloat) -> CGRect {
         guard let string = text else {
             return CGRect(x: 0, y: 0, width: 0, height: 0)
         }
@@ -211,7 +211,7 @@ extension UIViewController {
         
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.font = UIFont.systemFont(ofSize: 17)
+        label.font = font
         label.text = string
         label.sizeToFit()
 
