@@ -19,7 +19,7 @@ class DetailModel: GalleryModel {
         self.init(title: nil, link: "", animated: false, type: "", mp4: nil, image: ToolBox.placeHolderImg, description: nil)
     }
     convenience init(_ model: DetailImageModel) {
-        self.init(title: model.title, link: model.link, animated: model.animated!, type: model.type!, mp4: model.mp4!, image: ToolBox.placeHolderImg, description: model.description)
+        self.init(title: model.title, link: model.link, animated: model.animated!, type: model.type!, mp4: model.mp4, image: ToolBox.placeHolderImg, description: model.description)
     }
 }
 class DetailAlbumModel {

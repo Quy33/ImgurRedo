@@ -196,11 +196,7 @@ extension ViewController: PinterestLayoutDelegate {
         
         let titleHPadding: CGFloat = 10
         let titleVPadding: CGFloat = 20
-        var titleFrame: CGRect = CGRect()
-        
-        if let title = gallery.title {
-            titleFrame = calculateLabelFrame(text: title, width: width, hPadding: titleHPadding, vPadding: titleVPadding)
-        }
+        var titleFrame = calculateLabelFrame(text: gallery.title, width: width, hPadding: titleHPadding, vPadding: titleVPadding)
 
         return imageFrame.height + lowerFrameHeight + titleFrame.height
     }
@@ -208,7 +204,10 @@ extension ViewController: PinterestLayoutDelegate {
 //MARK: Stuff
 extension UIViewController {
 
-    func calculateLabelFrame(text: String, width: CGFloat, hPadding: CGFloat, vPadding: CGFloat ) -> CGRect {
+    func calculateLabelFrame(text: String?, width: CGFloat, hPadding: CGFloat, vPadding: CGFloat ) -> CGRect {
+        guard let string = text else {
+            return CGRect(x: 0, y: 0, width: 0, height: 0)
+        }
         let horizontalPadding = hPadding * 2
         let insetWidth = width - horizontalPadding
         
@@ -217,7 +216,7 @@ extension UIViewController {
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.font = UIFont.systemFont(ofSize: 17)
-        label.text = text
+        label.text = string
         label.sizeToFit()
 
         let frameWithPadding = label.frame.insetBy(dx: 0, dy: -vPadding)
@@ -230,24 +229,5 @@ extension UIViewController {
         let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
         return rect
     }
-    func calculateLabel(text: String, font: UIFont, width: CGFloat) -> CGRect {
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: CGFloat.greatestFiniteMagnitude))
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        label.font = font
-        label.text = text
-    
-        label.sizeToFit()
-        return label.frame
-    }
 }
-//func calculateLabelFrame(text: String, font: UIFont, width: CGFloat) -> CGRect {
-//    let label = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: CGFloat.greatestFiniteMagnitude))
-//    label.numberOfLines = 0
-//    label.lineBreakMode = .byWordWrapping
-//    label.font = font
-//    label.text = text
-//
-//    label.sizeToFit()
-//    return label.frame
-//}
+

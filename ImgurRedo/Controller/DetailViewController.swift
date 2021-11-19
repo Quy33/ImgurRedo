@@ -22,8 +22,10 @@ class DetailViewController: UIViewController {
     
 //    var galleryGot = (isAlbum: true, id: "n2j8gBs")
 //    var galleryGot = (isAlbum: true, id: "Xc9G5qf") /// Stacks
-    var galleryGot = (isAlbum: true, id: "azlYGAV")
+//    var galleryGot = (isAlbum: true, id: "azlYGAV")
 //    var galleryGot = (isAlbum: false, id: "Dkmocay") /// Image
+    var galleryGot = (isAlbum: true, id: "2eOWNGV")
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,10 +34,10 @@ class DetailViewController: UIViewController {
         detailTableView?.dataSource = self
         detailTableView?.delegate = self
         registerCell(tableView: detailTableView)
-        call()
+        loadDetails()
     }
     
-    private func call(){
+    private func loadDetails(){
         Task {
             do {
                 let model = try await networkManager.requestDetail(isAlbum: galleryGot.isAlbum, id: galleryGot.id)
@@ -73,6 +75,7 @@ class DetailViewController: UIViewController {
         let nib = UINib(nibName: DetailTableViewCell.identifier, bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: DetailTableViewCell.identifier)
     }
+    //MARK: Height Calculation
 }
 //MARK: TableView Data Source
 extension DetailViewController: UITableViewDataSource {
@@ -137,88 +140,85 @@ extension DetailViewController: UITableViewDelegate {
         if let detailCell = cell as? DetailTableViewCell {
             if !heights.isEmpty {
                 if !isCached {
-                    let vPadding: CGFloat = 0
-                    let hPadding: CGFloat = 0
-                    let width = detailCell.outerFrame!.frame.width
-                    
-                    if galleryGot.isAlbum {
-                        let itemCount = albumItem.images.count
-                        var config: ConfigTuple = (top: albumItem.title,
-                                                   title: nil,
-                                                   image: ToolBox.placeHolderImg,
-                                                   description: nil,
-                                                   bottom: albumItem.description, isBottom: false)
-                        
-                        if itemCount == 1 {
-                            let item = albumItem.images[0]
-                            config.title = item.title
-                            config.description = item.description
-                            config.image = item.image
-                            config.isBottom = true
-                            
-                            heights[0] = calculate(config: config, cell: detailCell, hPadding: hPadding, vPadding: vPadding)
-                        } else {
-                            let items = albumItem.images
-                            for (index,item) in items.enumerated() {
-                                config.title = item.title
-                                config.description = item.description
-                                config.image = item.image
-                                
-                                switch index {
-                                case 0:
-                                    config.bottom = nil
-                                    heights[index] = calculate(config: config, cell: detailCell, hPadding: hPadding, vPadding: vPadding)
-                                case itemCount - 1:
-                                    config.top = nil
-                                    config.isBottom = true
-                                    heights[index] = calculate(config: config, cell: detailCell, hPadding: hPadding, vPadding: vPadding)
-                                default:
-                                    config.top = nil
-                                    config.bottom = nil
-                                    heights[index] = calculate(config: config, cell: detailCell, hPadding: hPadding, vPadding: vPadding)
-                                }
-                            }
-                        }
-                    } else {
-                        let config: ConfigTuple = (top: imageItem.title,
-                                      title: nil,
-                                      image: imageItem.image,
-                                      description: nil,
-                                      bottom: imageItem.description,
-                                      isBottom: true)
-                        heights[0] = calculate(config: config, cell: detailCell, hPadding: hPadding, vPadding: vPadding)
-                    }
+                    calculateElementHeights(cell: detailCell)
                     isCached = true
                     detailTableView?.reloadData()
                 }
             }
-//            print(detailCell.outerFrame?.frame.width)
         }
     }
     
     func calculate(config: ConfigTuple,cell: DetailTableViewCell, hPadding: CGFloat, vPadding: CGFloat) -> CGFloat {
         let width = cell.outerFrame?.frame.width ?? 0
-        let top = config.top ?? ""
-        let title = config.title ?? ""
-        let description = config.description ?? ""
-        let bottom = config.bottom ?? ""
+        let top = config.top 
+        let title = config.title
+        let description = config.description
+        let bottom = config.bottom
         
         let topLabel = calculateLabelFrame(text: top, width: width, hPadding: hPadding, vPadding: vPadding)
         let titleLabel = calculateLabelFrame(text: title, width: width, hPadding: hPadding, vPadding: vPadding)
         let descLabel = calculateLabelFrame(text: description, width: width, hPadding: hPadding, vPadding: vPadding)
         let bottomLabel = calculateLabelFrame(text: bottom, width: width, hPadding: hPadding, vPadding: vPadding)
         let image = calculateImageRatio(config.image, frameWidth: width)
-        var separator: CGFloat = cell.separatorFrame?.frame.height ?? 0
+        var separator = cell.separatorFrame?.frame.height ?? 0
         separator = config.isBottom ? 0 : separator
         
         let result = topLabel.height + titleLabel.height + descLabel.height + bottomLabel.height + image.height + separator
         return result
         
     }
-    private func calculateElementHeights() {
+    private func calculateElementHeights(cell: DetailTableViewCell) {
+        let vPadding: CGFloat = 20
+        let hPadding: CGFloat = 10
         
+        if galleryGot.isAlbum {
+            let itemCount = albumItem.images.count
+            var albumConfig: ConfigTuple = (top: albumItem.title,
+                                       title: nil,
+                                       image: ToolBox.placeHolderImg,
+                                       description: nil,
+                                       bottom: albumItem.description, isBottom: false)
+            
+            if itemCount == 1 {
+                let item = albumItem.images[0]
+                albumConfig.title = item.title
+                albumConfig.description = item.description
+                albumConfig.image = item.image
+                albumConfig.isBottom = true
+                
+                heights[0] = calculate(config: albumConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
+            } else {
+                let items = albumItem.images
+                for (index,item) in items.enumerated() {
+                    albumConfig.title = item.title
+                    albumConfig.description = item.description
+                    albumConfig.image = item.image
+                    
+                    switch index {
+                    case 0:
+                        albumConfig.bottom = nil
+                        heights[index] = calculate(config: albumConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
+                    case itemCount - 1:
+                        albumConfig.top = nil
+                        albumConfig.isBottom = true
+                        heights[index] = calculate(config: albumConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
+                    default:
+                        albumConfig.top = nil
+                        albumConfig.bottom = nil
+                        heights[index] = calculate(config: albumConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
+                    }
+                }
+            }
+        } else {
+            let imageConfig: ConfigTuple = (top: imageItem.title,
+                          title: nil,
+                          image: imageItem.image,
+                          description: nil,
+                          bottom: imageItem.description,
+                          isBottom: true)
+            heights[0] = calculate(config: imageConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
+        }
     }
-//
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard !heights.isEmpty else {
             return 0
