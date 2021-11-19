@@ -9,7 +9,12 @@ import UIKit
 
 class DetailModel: GalleryModel {
     let description: String?
-
+    
+    static var detailSize: ThumbnailSize = .mediumThumbnail
+    
+    override var thumbnailSize: ToolBox.ThumbnailSize {
+        DetailModel.detailSize
+    }
 
     init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage, description: String?) {
         self.description = description

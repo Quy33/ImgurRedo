@@ -23,9 +23,8 @@ class ViewController: UIViewController {
         registerCell()
         imgurCollectionView?.dataSource = self
         imgurCollectionView?.delegate = self
-        setLayout(collectionView: imgurCollectionView)
-        GalleryModel.thumbnailSize = .smallThumbnail
-                
+        GalleryModel.gallerySize = .hugeThumbnail
+        setLayout(collectionView: imgurCollectionView)                
         initialDownload()
     }
 //MARK: Networking Calls
@@ -158,10 +157,8 @@ extension ViewController: UICollectionViewDataSource {
         cell.layer.cornerRadius = 10
         cell.layer.masksToBounds = true
         let gallery = galleries[indexPath.row]
-        
-        let newTitle = gallery.title ?? ""
-        
-        cell.configure(image: gallery.image, title: newTitle, count: gallery.imagesCount, views: gallery.views, type: gallery.type)
+                
+        cell.configure(image: gallery.image, title: gallery.title!, count: gallery.imagesCount, views: gallery.views, type: gallery.type)
         
         return cell
     }
@@ -196,14 +193,13 @@ extension ViewController: PinterestLayoutDelegate {
         
         let titleHPadding: CGFloat = 10
         let titleVPadding: CGFloat = 20
-        var titleFrame = calculateLabelFrame(text: gallery.title, width: width, hPadding: titleHPadding, vPadding: titleVPadding)
+        let titleFrame = calculateLabelFrame(text: gallery.title, width: width, hPadding: titleHPadding, vPadding: titleVPadding)
 
         return imageFrame.height + lowerFrameHeight + titleFrame.height
     }
 }
-//MARK: Stuff
+//MARK: Extension to calculate Height
 extension UIViewController {
-
     func calculateLabelFrame(text: String?, width: CGFloat, hPadding: CGFloat, vPadding: CGFloat ) -> CGRect {
         guard let string = text else {
             return CGRect(x: 0, y: 0, width: 0, height: 0)

@@ -28,8 +28,8 @@ class ImgurCollectionViewCell: UICollectionViewCell {
     
     func configure(image: UIImage, title: String, count: Int?, views: Int, type: String) {
         
-        let typeHeight = typeLabel?.frame.height ?? 0
-        typeFrame?.layer.cornerRadius = typeHeight / 2
+        let typeRect = typeLabel?.frame ?? CGRect(x: 0, y: 0, width: 0, height: 0)
+        typeFrame?.layer.cornerRadius = typeRect.height / 3
         typeFrame?.layer.masksToBounds = true
         
         
@@ -45,6 +45,7 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         } else {
             countFrame?.isHidden = false
         }
+        
         var isType = ""
         var isHidden = false
         switch type {

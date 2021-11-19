@@ -7,7 +7,7 @@
 
 import UIKit
 
-typealias ConfigTuple = (top: String?, title: String?, image: UIImage, description: String?, bottom: String?, isBottom: Bool)
+typealias ConfigTuple = (top: String?, title: String?, image: UIImage, description: String?, bottom: String?, isBottom: Bool, animated: Bool)
 
 class DetailTableViewCell: UITableViewCell {
     
@@ -24,6 +24,7 @@ class DetailTableViewCell: UITableViewCell {
     @IBOutlet weak var bottomFrame: UIView!
     
     @IBOutlet weak var separatorFrame: UIView?
+    @IBOutlet weak var playIcon: UIImageView!
     
     static let identifier = "DetailTableViewCell"
 
@@ -38,10 +39,22 @@ class DetailTableViewCell: UITableViewCell {
         configLabel(label: titleLabel, frame: titleFrame, text: configTuple.title)
         configLabel(label: descriptionLabel, frame: descriptionFrame, text: configTuple.description)
         configLabel(label: bottomLabel, frame: bottomFrame, text: configTuple.bottom)
+        
         if configTuple.isBottom {
             separatorFrame?.isHidden = true
         } else {
             separatorFrame?.isHidden = false
+        }
+        
+        playIcon.layer.cornerRadius = 20
+        playIcon.layer.masksToBounds = true
+        playIcon.layer.borderWidth = 5
+        playIcon.layer.borderColor = UIColor.lightGray.cgColor
+        
+        if configTuple.animated {
+            playIcon.isHidden = false
+        } else {
+            playIcon.isHidden = true
         }
     }
     

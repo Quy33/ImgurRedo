@@ -6,8 +6,8 @@
 //
 
 import UIKit
-
-
+import AVKit
+import AVFoundation
 
 class DetailViewController: UIViewController {
     
@@ -34,7 +34,9 @@ class DetailViewController: UIViewController {
         detailTableView?.dataSource = self
         detailTableView?.delegate = self
         registerCell(tableView: detailTableView)
+        DetailModel.detailSize = .hugeThumbnail
         loadDetails()
+        
     }
     
     private func loadDetails(){
@@ -63,11 +65,10 @@ class DetailViewController: UIViewController {
             }
         }
     }
-
+    //MARK: Test Button
     @IBAction func testPressed(_ sender: UIButton) {
-        detailTableView?.reloadData()
     }
-    
+    //MARK: Cell registration
     private func registerCell(tableView: UITableView?) {
         guard let tableView = tableView else {
             return
@@ -75,7 +76,93 @@ class DetailViewController: UIViewController {
         let nib = UINib(nibName: DetailTableViewCell.identifier, bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: DetailTableViewCell.identifier)
     }
+    //MARK: Video Player
+    private func playVideo(url: URL){
+        let player = AVPlayer(url: url)
+        
+        let vc = AVPlayerViewController()
+        vc.player = player
+        
+        self.present(vc, animated: true) {
+            vc.player?.play()
+        }
+    }
     //MARK: Height Calculation
+    private func calculateElementHeights(cell: DetailTableViewCell) {
+        let vPadding: CGFloat = 20
+        let hPadding: CGFloat = 10
+        
+        if galleryGot.isAlbum {
+            let itemCount = albumItem.images.count
+            var albumConfig: ConfigTuple = (top: albumItem.title,
+                                       title: nil,
+                                       image: ToolBox.placeHolderImg,
+                                       description: nil,
+                                            bottom: albumItem.description, isBottom: false, animated: false)
+            
+            if itemCount == 1 {
+                let item = albumItem.images[0]
+                albumConfig.title = item.title
+                albumConfig.description = item.description
+                albumConfig.image = item.image
+                albumConfig.isBottom = true
+                albumConfig.animated = item.animated
+                
+                heights[0] = calculate(config: albumConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
+            } else {
+                let items = albumItem.images
+                for (index,item) in items.enumerated() {
+                    albumConfig.title = item.title
+                    albumConfig.description = item.description
+                    albumConfig.image = item.image
+                    albumConfig.animated = item.animated
+                    
+                    switch index {
+                    case 0:
+                        albumConfig.bottom = nil
+                        heights[index] = calculate(config: albumConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
+                    case itemCount - 1:
+                        albumConfig.top = nil
+                        albumConfig.isBottom = true
+                        heights[index] = calculate(config: albumConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
+                    default:
+                        albumConfig.top = nil
+                        albumConfig.bottom = nil
+                        heights[index] = calculate(config: albumConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
+                    }
+                }
+            }
+        } else {
+            let imageConfig: ConfigTuple = (top: imageItem.title,
+                                            title: nil,
+                                            image: imageItem.image,
+                                            description: nil,
+                                            bottom: imageItem.description,
+                                            isBottom: true,
+                                            animated: imageItem.animated)
+            heights[0] = calculate(config: imageConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
+        }
+    }
+    func calculate(config: ConfigTuple,cell: DetailTableViewCell, hPadding: CGFloat, vPadding: CGFloat) -> CGFloat {
+        let width = cell.outerFrame?.frame.width ?? 0
+        
+        let labelItems = Mirror.init(reflecting: config).children.map{ $0.value as? String }
+        var labelsHeights: CGFloat = 0
+        
+        labelItems.forEach { label in
+            let rect = calculateLabelFrame(text: label, width: width, hPadding: hPadding, vPadding: vPadding)
+            labelsHeights += rect.height
+        }
+        
+        let image = calculateImageRatio(config.image, frameWidth: width)
+        
+        var separator = cell.separatorFrame?.frame.height ?? 0
+        separator = config.isBottom ? 0 : separator
+        
+        let result = labelsHeights + image.height + separator
+        return result
+        
+    }
 }
 //MARK: TableView Data Source
 extension DetailViewController: UITableViewDataSource {
@@ -96,17 +183,28 @@ extension DetailViewController: UITableViewDataSource {
             return cell
         }
         
-        
         if !galleryGot.isAlbum {
             
-            let configuration: ConfigTuple = (top: imageItem.title, title: nil, image: imageItem.image, description: nil, bottom: imageItem.description, isBottom: true)
+            let configuration: ConfigTuple = (top: imageItem.title,
+                                              title: nil,
+                                              image: imageItem.image,
+                                              description: nil,
+                                              bottom: imageItem.description,
+                                              isBottom: true,
+                                              animated: imageItem.animated)
             
             cell.config(configuration)
             
         } else {
             let albumImageItem = albumItem.images[indexPath.row]
             let itemCount = albumItem.images.count
-            var configuration: ConfigTuple = (top: albumItem.title, title: albumImageItem.title, image: albumImageItem.image, description: albumImageItem.description, bottom: albumItem.description, isBottom: false)
+            var configuration: ConfigTuple = (top: albumItem.title,
+                                              title: albumImageItem.title,
+                                              image: albumImageItem.image,
+                                              description:albumImageItem.description,
+                                              bottom: albumItem.description,
+                                              isBottom: false,
+                                              animated: albumImageItem.animated)
             
             if itemCount == 1 {
                 configuration.title = albumImageItem.title
@@ -130,7 +228,6 @@ extension DetailViewController: UITableViewDataSource {
                 }
             }
         }
-        
         return cell
     }
 }
@@ -147,78 +244,6 @@ extension DetailViewController: UITableViewDelegate {
             }
         }
     }
-    
-    func calculate(config: ConfigTuple,cell: DetailTableViewCell, hPadding: CGFloat, vPadding: CGFloat) -> CGFloat {
-        let width = cell.outerFrame?.frame.width ?? 0
-        let top = config.top 
-        let title = config.title
-        let description = config.description
-        let bottom = config.bottom
-        
-        let topLabel = calculateLabelFrame(text: top, width: width, hPadding: hPadding, vPadding: vPadding)
-        let titleLabel = calculateLabelFrame(text: title, width: width, hPadding: hPadding, vPadding: vPadding)
-        let descLabel = calculateLabelFrame(text: description, width: width, hPadding: hPadding, vPadding: vPadding)
-        let bottomLabel = calculateLabelFrame(text: bottom, width: width, hPadding: hPadding, vPadding: vPadding)
-        let image = calculateImageRatio(config.image, frameWidth: width)
-        var separator = cell.separatorFrame?.frame.height ?? 0
-        separator = config.isBottom ? 0 : separator
-        
-        let result = topLabel.height + titleLabel.height + descLabel.height + bottomLabel.height + image.height + separator
-        return result
-        
-    }
-    private func calculateElementHeights(cell: DetailTableViewCell) {
-        let vPadding: CGFloat = 20
-        let hPadding: CGFloat = 10
-        
-        if galleryGot.isAlbum {
-            let itemCount = albumItem.images.count
-            var albumConfig: ConfigTuple = (top: albumItem.title,
-                                       title: nil,
-                                       image: ToolBox.placeHolderImg,
-                                       description: nil,
-                                       bottom: albumItem.description, isBottom: false)
-            
-            if itemCount == 1 {
-                let item = albumItem.images[0]
-                albumConfig.title = item.title
-                albumConfig.description = item.description
-                albumConfig.image = item.image
-                albumConfig.isBottom = true
-                
-                heights[0] = calculate(config: albumConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
-            } else {
-                let items = albumItem.images
-                for (index,item) in items.enumerated() {
-                    albumConfig.title = item.title
-                    albumConfig.description = item.description
-                    albumConfig.image = item.image
-                    
-                    switch index {
-                    case 0:
-                        albumConfig.bottom = nil
-                        heights[index] = calculate(config: albumConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
-                    case itemCount - 1:
-                        albumConfig.top = nil
-                        albumConfig.isBottom = true
-                        heights[index] = calculate(config: albumConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
-                    default:
-                        albumConfig.top = nil
-                        albumConfig.bottom = nil
-                        heights[index] = calculate(config: albumConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
-                    }
-                }
-            }
-        } else {
-            let imageConfig: ConfigTuple = (top: imageItem.title,
-                          title: nil,
-                          image: imageItem.image,
-                          description: nil,
-                          bottom: imageItem.description,
-                          isBottom: true)
-            heights[0] = calculate(config: imageConfig, cell: cell, hPadding: hPadding, vPadding: vPadding)
-        }
-    }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard !heights.isEmpty else {
             return 0
@@ -226,8 +251,18 @@ extension DetailViewController: UITableViewDelegate {
         return heights[indexPath.row]
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let cell = tableView.cellForRow(at: indexPath) as? DetailTableViewCell {
-            print(cell.frame.height)
+        if galleryGot.isAlbum {
+            if albumItem.images[indexPath.row].animated {
+                if let mp4Link = URL(string: albumItem.images[indexPath.row].mp4!) {
+                    playVideo(url: mp4Link)
+                }
+            }
+        } else {
+            if imageItem.animated {
+                if let mp4Link = URL(string: imageItem.mp4!) {
+                    playVideo(url: mp4Link)
+                }
+            }
         }
     }
 }
