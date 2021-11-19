@@ -9,16 +9,6 @@ import UIKit
 
 class DetailModel: GalleryModel {
     let description: String?
-    
-//    static var detailSize: ThumbnailSize = .mediumThumbnail
-//    static var detailIsThumbnail = true
-//    
-//    override var thumbnailSize: ToolBox.ThumbnailSize {
-//        DetailModel.detailSize
-//    }
-//    override var isThumbnail: Bool {
-//        DetailModel.detailIsThumbnail
-//    }
 
     init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage, description: String?) {
         self.description = description
@@ -48,7 +38,7 @@ class DetailAlbumModel {
         let albumImages = model.images!
         var images: [DetailModel] = []
         for image in albumImages {
-            let newImage = DetailModel(title: nil, link: image.link, animated: image.animated, type: image.type, mp4: image.mp4, image: ToolBox.placeHolderImg, description: image.description)
+            let newImage = DetailModel(title: image.title, link: image.link, animated: image.animated, type: image.type, mp4: image.mp4, image: ToolBox.placeHolderImg, description: image.description)
             images.append(newImage)
         }
 

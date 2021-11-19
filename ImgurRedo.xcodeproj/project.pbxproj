@@ -73,12 +73,12 @@
 			path = ToolBox;
 			sourceTree = "<group>";
 		};
-		53537E5E27434FF100849494 /* Network Stuff */ = {
+		53537E5E27434FF100849494 /* Unused */ = {
 			isa = PBXGroup;
 			children = (
 				53537E5F2743501B00849494 /* Networking file.swift */,
 			);
-			path = "Network Stuff";
+			path = Unused;
 			sourceTree = "<group>";
 		};
 		53537E632743989700849494 /* Controller */ = {
@@ -140,7 +140,7 @@
 				53D138C027425E0400E05A70 /* SceneDelegate.swift */,
 				53537E632743989700849494 /* Controller */,
 				53537E64274398AA00849494 /* View */,
-				53537E5E27434FF100849494 /* Network Stuff */,
+				53537E5E27434FF100849494 /* Unused */,
 				53D138C727425E0800E05A70 /* Assets.xcassets */,
 				53D138CC27425E0800E05A70 /* Info.plist */,
 				53537E65274398B400849494 /* Model */,

@@ -48,7 +48,7 @@ class DetailTableViewCell: UITableViewCell {
         
         playIcon.layer.cornerRadius = playIcon.frame.height / 2
         playIcon.layer.masksToBounds = true
-        playIcon.layer.borderWidth = 5
+        playIcon.layer.borderWidth = 3
         playIcon.layer.borderColor = UIColor.lightGray.cgColor
         
         if configTuple.animated {

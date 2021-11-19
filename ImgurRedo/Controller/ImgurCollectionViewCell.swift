@@ -28,8 +28,8 @@ class ImgurCollectionViewCell: UICollectionViewCell {
     
     func configure(image: UIImage, title: String, count: Int?, views: Int, type: String) {
         
-        let typeRect = typeLabel?.frame ?? CGRect(x: 0, y: 0, width: 0, height: 0)
-        typeFrame?.layer.cornerRadius = typeRect.height / 3
+        let typeRect = typeFrame?.frame ?? CGRect(x: 0, y: 0, width: 0, height: 0)
+        typeFrame?.layer.cornerRadius = typeRect.height / 2
         typeFrame?.layer.masksToBounds = true
         
         
@@ -58,6 +58,9 @@ class ImgurCollectionViewCell: UICollectionViewCell {
             isHidden = true
         }
         typeLabel?.text = isType
+        typeLabel?.adjustsFontSizeToFitWidth = true
         typeFrame?.isHidden = isHidden
+        typeFrame?.layer.borderWidth = 3
+        typeFrame?.layer.borderColor = UIColor.darkGray.cgColor
     }
 }

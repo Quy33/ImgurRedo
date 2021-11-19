@@ -60,7 +60,7 @@ class GalleryModel: ToolBox {
 
     convenience override init() {
         let placeHolder = ToolBox.placeHolderImg
-        self.init(id: "", title: "", isAlbum: false, link: "", animated: false, type: "", imagesCount: nil, mp4: nil, image: placeHolder, views: 0)
+        self.init(id: "", title: nil, isAlbum: false, link: "", animated: false, type: "", imagesCount: nil, mp4: nil, image: placeHolder, views: 0)
     }
     convenience init(_ item: GalleryDataModel) {
         var newLink = ""

@@ -28,23 +28,23 @@
                                         <color key="backgroundColor" systemColor="linkColor"/>
                                     </imageView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="erE-lM-zUp">
-                                        <rect key="frame" x="249" y="147" width="45" height="40.5"/>
+                                        <rect key="frame" x="254" y="147.5" width="40" height="40"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="MP4" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ze1-pI-zKn">
-                                                <rect key="frame" x="5" y="10" width="35" height="20.5"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="mp4" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ze1-pI-zKn">
+                                                <rect key="frame" x="5" y="5" width="30" height="30"/>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
-                                        <color key="backgroundColor" systemColor="opaqueSeparatorColor"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="40" id="2Hd-pb-k2G"/>
-                                            <constraint firstAttribute="trailing" secondItem="Ze1-pI-zKn" secondAttribute="trailing" constant="5" id="3kA-4t-bFt"/>
-                                            <constraint firstItem="Ze1-pI-zKn" firstAttribute="top" secondItem="erE-lM-zUp" secondAttribute="top" constant="10" id="BeV-B4-jKc"/>
-                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="U6L-dy-dl1"/>
-                                            <constraint firstItem="Ze1-pI-zKn" firstAttribute="leading" secondItem="erE-lM-zUp" secondAttribute="leading" constant="5" id="afx-fE-exp"/>
-                                            <constraint firstAttribute="bottom" secondItem="Ze1-pI-zKn" secondAttribute="bottom" constant="10" id="oqA-5i-hWK"/>
+                                            <constraint firstAttribute="bottom" secondItem="Ze1-pI-zKn" secondAttribute="bottom" constant="5" id="AfX-Sb-UgN"/>
+                                            <constraint firstItem="Ze1-pI-zKn" firstAttribute="leading" secondItem="erE-lM-zUp" secondAttribute="leading" constant="5" id="IUc-eO-Cnd"/>
+                                            <constraint firstAttribute="trailing" secondItem="Ze1-pI-zKn" secondAttribute="trailing" constant="5" id="KX1-5B-o7h"/>
+                                            <constraint firstAttribute="width" constant="40" id="Qdo-B4-yiC"/>
+                                            <constraint firstAttribute="height" constant="40" id="f6O-uC-7ED"/>
+                                            <constraint firstItem="Ze1-pI-zKn" firstAttribute="top" secondItem="erE-lM-zUp" secondAttribute="top" constant="5" id="s7p-4I-WCL"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -188,9 +188,6 @@
         </systemColor>
         <systemColor name="linkColor">
             <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="opaqueSeparatorColor">
-            <color red="0.77647058823529413" green="0.77647058823529413" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
