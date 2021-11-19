@@ -77,17 +77,17 @@ class GalleryModel: ToolBox {
         self.init(id: item.id, title: item.title, isAlbum: item.is_album, link: newLink, animated: newAnimated, type: newType, imagesCount: newImagesCount, mp4: newMp4, image: ToolBox.placeHolderImg, views: newViews)
     }
     //Designated init for inheritance
-//    init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage) {
-//        self.title = title
-//        self.link = link
-//        self.animated = animated
-//        self.type = type
-//        self.mp4 = mp4
-//        self.image = image
-//        self.id = ""
-//        self.isAlbum = false
-//        self.views = 0
-//        self.imagesCount = nil
-//    }
+    init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage) {
+        self.title = title
+        self.link = link
+        self.animated = animated
+        self.type = type
+        self.mp4 = mp4
+        self.image = image
+        self.id = ""
+        self.isAlbum = false
+        self.views = 0
+        self.imagesCount = nil
+    }
 }
 
