@@ -31,14 +31,12 @@ class GalleryModel: ToolBox {
     
     var url: URL {
         var urlString = ""
-        
         if isThumbnail {
             urlString = animated ? mp4! : link
             urlString = concatStr(string: urlString, size: thumbnailSize)
         } else {
             urlString = animated ? concatStr(string: mp4!, size: thumbnailSize) : link
         }
-        
         guard let link = URL(string: urlString) else {
             return ToolBox.blankURL
         }
@@ -62,6 +60,7 @@ class GalleryModel: ToolBox {
         let placeHolder = ToolBox.placeHolderImg
         self.init(id: "", title: nil, isAlbum: false, link: "", animated: false, type: "", imagesCount: nil, mp4: nil, image: placeHolder, views: 0)
     }
+    
     convenience init(_ item: GalleryDataModel) {
         var newLink = ""
         var newAnimated = false
@@ -77,17 +76,18 @@ class GalleryModel: ToolBox {
         
         self.init(id: item.id, title: item.title, isAlbum: item.is_album, link: newLink, animated: newAnimated, type: newType, imagesCount: newImagesCount, mp4: newMp4, image: ToolBox.placeHolderImg, views: newViews)
     }
-    init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage) {
-        self.title = title
-        self.link = link
-        self.animated = animated
-        self.type = type
-        self.mp4 = mp4
-        self.image = image
-        self.id = ""
-        self.isAlbum = false
-        self.views = 0
-        self.imagesCount = nil
-    }
+    //Designated init for inheritance
+//    init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage) {
+//        self.title = title
+//        self.link = link
+//        self.animated = animated
+//        self.type = type
+//        self.mp4 = mp4
+//        self.image = image
+//        self.id = ""
+//        self.isAlbum = false
+//        self.views = 0
+//        self.imagesCount = nil
+//    }
 }
 

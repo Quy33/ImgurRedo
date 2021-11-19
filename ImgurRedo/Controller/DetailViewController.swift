@@ -23,10 +23,6 @@ class DetailViewController: UIViewController {
     private var heights: [CGFloat] = []
     private var isCached = false
     
-//    var galleryGot = (isAlbum: true, id: "n2j8gBs")
-//    var galleryGot = (isAlbum: true, id: "Xc9G5qf") /// Stacks
-//    var galleryGot = (isAlbum: true, id: "azlYGAV")
-//    var galleryGot = (isAlbum: false, id: "Dkmocay") /// Image
     var galleryGot = (isAlbum: true, id: "2eOWNGV")
     
     
@@ -71,6 +67,9 @@ class DetailViewController: UIViewController {
                 }
             } catch {
                 print("Error: \(error)")
+                DispatchQueue.main.async {
+                    self.updateError(activityIndicator: self.spinner)
+                }
             }
         }
     }

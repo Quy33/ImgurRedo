@@ -12,7 +12,13 @@ class DetailModel: GalleryModel {
 
     init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage, description: String?) {
         self.description = description
-        super.init(title: title, link: link, animated: animated, type: type, mp4: mp4, image: image)
+        //Property that won't be used in Detail screen
+        let id = ""
+        let isAlbum = false
+        let imagesCount: Int? = nil
+        let views = 0
+        //...
+        super.init(id: id, title: title, isAlbum: isAlbum, link: link, animated: false, type: type, imagesCount: imagesCount, mp4: mp4, image: image, views: views)
     }
     convenience init() {
         self.init(title: nil, link: "", animated: false, type: "", mp4: nil, image: ToolBox.placeHolderImg, description: nil)

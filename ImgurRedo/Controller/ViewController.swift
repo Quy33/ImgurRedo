@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView?
     @IBOutlet weak var loadingFrame: UIView?
     @IBOutlet weak var collectionViewFrame: UIView?
+    @IBOutlet weak var errorLabel: UILabel?
     
     private let networkManager = NetWorkManager()
     private var galleries: [GalleryModel] = []
@@ -56,6 +57,10 @@ class ViewController: UIViewController {
                 ViewController.isDownloading = false
             } catch {
                 print("Error: \(error)")
+                ViewController.isDownloading = false
+                DispatchQueue.main.async {
+                    self.updateError(activityIndicator: self.activityIndicator)
+                }
             }
         }
     }
@@ -81,6 +86,7 @@ class ViewController: UIViewController {
                 ViewController.isDownloading = false
             } catch {
                 print("Error: \(error)")
+                ViewController.isDownloading = false
             }
         }
     }
@@ -143,6 +149,7 @@ class ViewController: UIViewController {
         collectionView.setContentOffset(contentOffset, animated: false)
     }
     private func callUpdateUI(isDone: Bool) {
+        errorLabel?.isHidden = true
         updateUI(activityIndicator: activityIndicator, frameToHide: collectionViewFrame, frameToLoad: loadingFrame, isDone: isDone)
     }
 }
@@ -183,11 +190,6 @@ extension ViewController: UICollectionViewDelegate {
         
         if let destination = segue.destination as? DetailViewController {
             destination.galleryGot = galleryTuple
-        }
-    }
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard !galleries.isEmpty else {
-            return
         }
     }
 }
@@ -255,6 +257,10 @@ extension UIViewController {
             frameToHide.isHidden = true
             activityIndicator.startAnimating()
         }
+    }
+    func updateError(activityIndicator: UIActivityIndicatorView?) {
+        guard let activityIndicator = activityIndicator else { return }
+        activityIndicator.stopAnimating()
     }
 }
 
