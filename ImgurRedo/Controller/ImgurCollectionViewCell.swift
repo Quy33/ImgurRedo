@@ -18,20 +18,36 @@ class ImgurCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var bottomFrame: UIView?
     @IBOutlet weak var countFrame: UIView?
     
+    @IBOutlet weak var imageFrame: UIView?
+    @IBOutlet weak var titleFrame: UIView?
+    @IBOutlet weak var loadingView: UIView?
+    @IBOutlet weak var spinner: UIActivityIndicatorView?
+    
+    
     
     static let identifier = "ImgurCollectionViewCell"
 
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        spinner?.hidesWhenStopped = true
     }
     
-    func configure(image: UIImage, title: String, count: Int?, views: Int, type: String) {
+    func configure(image: UIImage, title: String, count: Int?, views: Int, type: String, isLast: Bool) {
         
-        let typeRect = typeFrame?.frame ?? CGRect(x: 0, y: 0, width: 0, height: 0)
-        typeFrame?.layer.cornerRadius = typeRect.height / 2
-        typeFrame?.layer.masksToBounds = true
-        
+        if isLast {
+            imageFrame?.isHidden = true
+            titleFrame?.isHidden = true
+            bottomFrame?.isHidden = true
+            loadingView?.isHidden = false
+            spinner?.startAnimating()
+        } else {
+            imageFrame?.isHidden = false
+            titleFrame?.isHidden = false
+            bottomFrame?.isHidden = false
+            loadingView?.isHidden = true
+            spinner?.stopAnimating()
+        }
         
         cellImage?.image = image
         titleLabel?.text = title
@@ -46,8 +62,13 @@ class ImgurCollectionViewCell: UICollectionViewCell {
             countFrame?.isHidden = false
         }
         
+        let typeRect = typeFrame?.frame ?? CGRect(x: 0, y: 0, width: 0, height: 0)
+        typeFrame?.layer.cornerRadius = typeRect.height / 2
+        typeFrame?.layer.masksToBounds = true
+        
         var isType = ""
         var isHidden = false
+        
         switch type {
         case "image/gif":
             isType = "GIF"

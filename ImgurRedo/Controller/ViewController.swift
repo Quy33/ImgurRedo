@@ -179,23 +179,31 @@ class ViewController: UIViewController {
 extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard !galleries.isEmpty else {
-            return 0
+            return 1
         }
-        return galleries.count
+        return galleries.count + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = imgurCollectionView?.dequeueReusableCell(withReuseIdentifier: ImgurCollectionViewCell.identifier, for: indexPath) as! ImgurCollectionViewCell
         
-        guard !galleries.isEmpty else {
-            return cell
-        }
-            
         cell.layer.cornerRadius = 10
         cell.layer.masksToBounds = true
-        let gallery = galleries[indexPath.row]
-                
-        cell.configure(image: gallery.image, title: gallery.title!, count: gallery.imagesCount, views: gallery.views, type: gallery.type)
+        
+        guard !galleries.isEmpty else {
+            cell.configure(image: ToolBox.placeHolderImg, title: "Test Title", count: 0, views: 0, type: "image", isLast: true)
+            return cell
+        }
+
+        if indexPath.row == galleries.count {
+            cell.configure(image: ToolBox.placeHolderImg, title: "Test Title", count: 0, views: 0, type: "image", isLast: true)
+            return cell
+        } else {
+            
+            let gallery = galleries[indexPath.row]
+            
+            cell.configure(image: gallery.image, title: gallery.title!, count: gallery.imagesCount, views: gallery.views, type: gallery.type, isLast: false)
+        }
         
         return cell
     }
@@ -240,7 +248,10 @@ extension ViewController: UICollectionViewDelegate {
 extension ViewController: PinterestLayoutDelegate {
     func collectionView(collectionView: UICollectionView, heightForItemAtIndexPath indexPath: IndexPath, width: CGFloat) -> CGFloat {
         guard !galleries.isEmpty else {
-            return 0
+            return 300
+        }
+        if indexPath.row == galleries.count {
+            return 300
         }
         let gallery = galleries[indexPath.row]
 
