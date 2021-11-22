@@ -29,6 +29,7 @@ class ViewController: UIViewController {
         imgurCollectionView?.delegate = self
         imgurCollectionView?.refreshControl = UIRefreshControl()
         imgurCollectionView?.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
+        
         setLayout(collectionView: imgurCollectionView)
         GalleryModel.gallerySize = .hugeThumbnail
         
@@ -116,7 +117,7 @@ class ViewController: UIViewController {
         imgurCollectionView?.reloadData()
         initialDownload()
     }
-    //MARK: Small Functions
+    //MARK: Update CollectionView
     private func registerCell() {
         let nib = UINib(nibName: ImgurCollectionViewCell.identifier, bundle: nil)
         imgurCollectionView?.register(nib, forCellWithReuseIdentifier: ImgurCollectionViewCell.identifier)
@@ -136,8 +137,8 @@ class ViewController: UIViewController {
         collectionView == imgurCollectionView else {
             return
         }
-        collectionView.reloadData()
         setLayout(collectionView: collectionView)
+        collectionView.reloadData()
     }
     private func reload(collectionView: UICollectionView?) {
         guard let collectionView = collectionView,
@@ -148,6 +149,7 @@ class ViewController: UIViewController {
         reset(collectionView: collectionView)
         collectionView.setContentOffset(contentOffset, animated: false)
     }
+    //MARK: Refresh Control
     private func updateError(isError: Bool) {
         guard let imgurCollectionView = imgurCollectionView, let loadingFrame = loadingFrame else {
             return
@@ -160,7 +162,6 @@ class ViewController: UIViewController {
             imgurCollectionView.isHidden = false
         }
     }
-    //MARK: Refresh Control
     @objc private func didPullToRefresh() {
         guard !ViewController.isDownloading else {
             print("Download is occuring")
