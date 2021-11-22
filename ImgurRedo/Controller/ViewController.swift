@@ -223,7 +223,6 @@ extension ViewController: PinterestLayoutDelegate {
         let gallery = galleries[indexPath.row]
 
         let imageFrame = calculateImageRatio(gallery.image, frameWidth: width)
-//        lowerFrameHeight = 50
                 
         let titleHPadding: CGFloat = 10
         let titleVPadding: CGFloat = 20

@@ -171,9 +171,6 @@ class DetailViewController: UIViewController {
                 labelsHeights += rect.height
             }
         }
-        labelItems.forEach { label in
-            
-        }
         
         let image = calculateImageRatio(config.image, frameWidth: width)
         
