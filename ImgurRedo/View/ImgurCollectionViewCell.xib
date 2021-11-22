@@ -140,9 +140,9 @@
                                 <color key="backgroundColor" systemColor="labelColor"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="Qfc-2G-JR4" secondAttribute="bottom" id="FGy-oW-foh"/>
+                                    <constraint firstAttribute="height" constant="50" id="FOr-YE-jAE"/>
                                     <constraint firstAttribute="trailing" secondItem="Qfc-2G-JR4" secondAttribute="trailing" constant="5" id="Iei-xN-FNZ"/>
                                     <constraint firstItem="Qfc-2G-JR4" firstAttribute="leading" secondItem="aJZ-Qz-fvD" secondAttribute="leading" constant="5" id="nq5-O9-2Iq"/>
-                                    <constraint firstAttribute="height" constant="50" id="uxQ-00-jOV"/>
                                     <constraint firstItem="Qfc-2G-JR4" firstAttribute="top" secondItem="aJZ-Qz-fvD" secondAttribute="top" id="z6m-aZ-W8p"/>
                                 </constraints>
                             </view>
