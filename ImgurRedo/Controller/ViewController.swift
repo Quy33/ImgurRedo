@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var loadingFrame: UIView?
     @IBOutlet weak var collectionViewFrame: UIView?
     @IBOutlet weak var errorLabel: UILabel?
+    @IBOutlet weak var reloadErrorBtn: UIButton?
     
     private let networkManager = NetWorkManager()
     private var galleries: [GalleryModel] = []
@@ -33,6 +34,8 @@ class ViewController: UIViewController {
         
         activityIndicator?.hidesWhenStopped = true
         loadingFrame?.isHidden = true
+        errorLabel?.isHidden = true
+        reloadErrorBtn?.isHidden = true
         
         initialDownload()
     }
@@ -49,7 +52,6 @@ class ViewController: UIViewController {
         Task {
             do {
                 galleries = try await performDownload(parameter: para)
-                
                 DispatchQueue.main.async {
                     self.reset(collectionView: self.imgurCollectionView)
                     self.callUpdateUI(isDone: true)
@@ -59,11 +61,14 @@ class ViewController: UIViewController {
                 print("Error: \(error)")
                 ViewController.isDownloading = false
                 DispatchQueue.main.async {
-                    self.updateError(activityIndicator: self.activityIndicator)
+                    self.updateError(activityIndicator: self.activityIndicator,
+                                     errorLabel: self.errorLabel,
+                                     reloadButton: self.reloadErrorBtn)
                 }
             }
         }
     }
+    
     private func downloadNextPage(page: Int) {
         
         guard !ViewController.isDownloading else {
@@ -117,6 +122,12 @@ class ViewController: UIViewController {
         imgurCollectionView?.reloadData()
         initialDownload()
     }
+    @IBAction func reloadErrorPressed(_ sender: UIButton) {
+        pageAt = 0
+        galleries = []
+        imgurCollectionView?.reloadData()
+        initialDownload()
+    }
     //MARK: Small Functions
     private func registerCell() {
         let nib = UINib(nibName: ImgurCollectionViewCell.identifier, bundle: nil)
@@ -150,7 +161,7 @@ class ViewController: UIViewController {
     }
     private func callUpdateUI(isDone: Bool) {
         errorLabel?.isHidden = true
-        updateUI(activityIndicator: activityIndicator, frameToHide: collectionViewFrame, frameToLoad: loadingFrame, isDone: isDone)
+        updateUI(activityIndicator: activityIndicator, frameToHide: collectionViewFrame, frameToLoad: loadingFrame,errorLabel: errorLabel, reloadButton: reloadErrorBtn, isDone: isDone)
     }
 }
 //MARK: CollectionView DataSource
@@ -241,12 +252,14 @@ extension UIViewController {
         let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
         return rect
     }
-    func updateUI(activityIndicator: UIActivityIndicatorView?, frameToHide: UIView? , frameToLoad: UIView?, isDone: Bool){
+    func updateUI(activityIndicator: UIActivityIndicatorView?, frameToHide: UIView? , frameToLoad: UIView?,errorLabel: UILabel?, reloadButton: UIButton?, isDone: Bool){
         guard let activityIndicator = activityIndicator,
               let frameToLoad = frameToLoad,
               let frameToHide = frameToHide else {
             return
         }
+        errorLabel?.isHidden = true
+        reloadButton?.isHidden = true
 
         if isDone {
             frameToLoad.isHidden = true
@@ -258,9 +271,16 @@ extension UIViewController {
             activityIndicator.startAnimating()
         }
     }
-    func updateError(activityIndicator: UIActivityIndicatorView?) {
-        guard let activityIndicator = activityIndicator else { return }
-        activityIndicator.stopAnimating()
+    func updateError(activityIndicator: UIActivityIndicatorView?,errorLabel: UILabel?, reloadButton: UIButton?) {
+//        guard let activityIndicator = activityIndicator,
+//              let errorLabel = errorLabel,
+//              let reloadButton = reloadButton
+//        else {
+//            return
+//        }
+        activityIndicator?.stopAnimating()
+        errorLabel?.isHidden = false
+        reloadButton?.isHidden = false
     }
 }
 

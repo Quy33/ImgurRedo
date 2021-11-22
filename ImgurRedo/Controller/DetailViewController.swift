@@ -15,6 +15,8 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var tableViewFrame: UIView?
     @IBOutlet weak var loadingFrame: UIView?
     @IBOutlet weak var spinner: UIActivityIndicatorView?
+    @IBOutlet weak var errorLabel: UILabel?
+    @IBOutlet weak var reloadErrorBtn: UIButton?
     
     static let identifier = "DetailViewController"
     private let networkManager = NetWorkManager()
@@ -68,7 +70,7 @@ class DetailViewController: UIViewController {
             } catch {
                 print("Error: \(error)")
                 DispatchQueue.main.async {
-                    self.updateError(activityIndicator: self.spinner)
+                    self.updateError(activityIndicator: self.spinner, errorLabel: self.errorLabel, reloadButton: self.reloadErrorBtn)
                 }
             }
         }
@@ -83,7 +85,7 @@ class DetailViewController: UIViewController {
     }
     //MARK: Call to update UI
     private func callUpdateUI(isDone: Bool) {
-        updateUI(activityIndicator: spinner, frameToHide: tableViewFrame, frameToLoad: loadingFrame, isDone: isDone)
+        updateUI(activityIndicator: spinner, frameToHide: tableViewFrame, frameToLoad: loadingFrame, errorLabel: errorLabel, reloadButton: reloadErrorBtn, isDone: isDone)
     }
     //MARK: Video Player
     private func playVideo(url: URL){
@@ -180,6 +182,10 @@ class DetailViewController: UIViewController {
         
         let result = labelsHeights + image.height + separator
         return result
+    }
+    //MARK: Buttons
+    @IBAction func reloadErrorPressed(_ sender: UIButton?){
+        loadDetails()
     }
 }
 //MARK: TableView Data Source
