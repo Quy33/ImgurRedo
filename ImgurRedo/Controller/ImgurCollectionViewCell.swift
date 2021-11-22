@@ -18,12 +18,12 @@ class ImgurCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var bottomFrame: UIView?
     @IBOutlet weak var countFrame: UIView?
     
+    
     static let identifier = "ImgurCollectionViewCell"
 
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        
     }
     
     func configure(image: UIImage, title: String, count: Int?, views: Int, type: String) {

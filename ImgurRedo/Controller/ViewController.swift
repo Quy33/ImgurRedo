@@ -21,6 +21,7 @@ class ViewController: UIViewController {
     private var galleries: [GalleryModel] = []
     private var pageAt = 0
     private var indexPathToMove = IndexPath(item: 0, section: 0)
+    private var lowerFrameHeight: CGFloat = 0
     static var isDownloading = false
     
     override func viewDidLoad() {
@@ -34,7 +35,6 @@ class ViewController: UIViewController {
         
         activityIndicator?.hidesWhenStopped = true
         loadingFrame?.isHidden = true
-
         
         initialDownload()
     }
@@ -132,6 +132,7 @@ class ViewController: UIViewController {
         let nib = UINib(nibName: ImgurCollectionViewCell.identifier, bundle: nil)
         imgurCollectionView?.register(nib, forCellWithReuseIdentifier: ImgurCollectionViewCell.identifier)
     }
+    
     private func setLayout(collectionView: UICollectionView?) {
         guard let collectionView = collectionView,
         collectionView == imgurCollectionView else {
@@ -202,6 +203,15 @@ extension ViewController: UICollectionViewDelegate {
             destination.galleryGot = galleryTuple
         }
     }
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? ImgurCollectionViewCell else {
+            return
+        }
+        if lowerFrameHeight == 0 {
+            lowerFrameHeight = cell.bottomFrame!.frame.height
+            reload(collectionView: imgurCollectionView)
+        }
+    }
 }
 
 //MARK: Pinterest Layout
@@ -211,11 +221,10 @@ extension ViewController: PinterestLayoutDelegate {
             return 0
         }
         let gallery = galleries[indexPath.row]
-        
-        let lowerFrameHeight: CGFloat = 50
 
         let imageFrame = calculateImageRatio(gallery.image, frameWidth: width)
-        
+//        lowerFrameHeight = 50
+                
         let titleHPadding: CGFloat = 10
         let titleVPadding: CGFloat = 20
         let font: UIFont = .systemFont(ofSize: 17)
@@ -283,4 +292,5 @@ extension UIViewController {
         reloadButton.isHidden = false
     }
 }
+//MARK: Testing
 
