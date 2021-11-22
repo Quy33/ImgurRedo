@@ -28,6 +28,7 @@ class ViewController: UIViewController {
         imgurCollectionView?.dataSource = self
         imgurCollectionView?.delegate = self
         imgurCollectionView?.refreshControl = UIRefreshControl()
+        
         imgurCollectionView?.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
         
         setLayout(collectionView: imgurCollectionView)
@@ -37,6 +38,7 @@ class ViewController: UIViewController {
         
         initialDownload()
     }
+
 //MARK: Networking Calls
     private func initialDownload() {
         let para = GalleryParameterModel()
@@ -221,6 +223,17 @@ extension ViewController: UICollectionViewDelegate {
             reload(collectionView: imgurCollectionView)
         }
     }
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        guard !galleries.isEmpty else {
+//            return
+//        }
+//       let height = scrollView.frame.size.height
+//       let contentYoffset = scrollView.contentOffset.y
+//       let distanceFromBottom = scrollView.contentSize.height - contentYoffset
+//       if distanceFromBottom < height {
+//           imgurCollectionView?.refreshControl?.beginRefreshing()
+//       }
+//   }
 }
 
 //MARK: Pinterest Layout
