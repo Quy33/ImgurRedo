@@ -4,7 +4,6 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -114,75 +113,51 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="N1w-iC-jh3" userLabel="Detail Stack View">
                                 <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zp6-dC-5Ie" userLabel="Loading Frame">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="177"/>
+                                    <view contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="zFM-En-icM" userLabel="Loading Frame">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="87"/>
                                         <subviews>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="0TX-dA-1A7">
-                                                <rect key="frame" x="50" y="39.5" width="314" height="98.5"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="p0O-ct-4qt">
+                                                <rect key="frame" x="50" y="9" width="314" height="69"/>
                                                 <subviews>
-                                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="3Sc-9r-WgV">
-                                                        <rect key="frame" x="0.0" y="0.0" width="314" height="37"/>
-                                                        <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    </activityIndicatorView>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LZg-7V-nxp" userLabel="Error Text">
-                                                        <rect key="frame" x="0.0" y="42" width="314" height="20.5"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y4S-Gl-Iia" userLabel="Error Text">
+                                                        <rect key="frame" x="0.0" y="0.0" width="314" height="31"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="283-qs-5yq" userLabel="Reload_Error">
-                                                        <rect key="frame" x="0.0" y="67.5" width="314" height="31"/>
-                                                        <color key="tintColor" systemColor="systemBackgroundColor"/>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dii-yp-sCD">
+                                                        <rect key="frame" x="0.0" y="38" width="314" height="31"/>
+                                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <state key="normal" title="Button"/>
                                                         <buttonConfiguration key="configuration" style="plain" title="Reload"/>
                                                         <connections>
-                                                            <action selector="reloadErrorPressed:" destination="AdG-SP-yln" eventType="touchUpInside" id="0FY-lz-Pzm"/>
+                                                            <action selector="reloadErrorPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="EF8-gx-ZoD"/>
+                                                            <action selector="reloadErrorPressed:" destination="AdG-SP-yln" eventType="touchUpInside" id="u23-IW-xhh"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
-                                                <constraints>
-                                                    <constraint firstItem="3Sc-9r-WgV" firstAttribute="top" secondItem="0TX-dA-1A7" secondAttribute="top" id="Dwa-Nz-KnD"/>
-                                                    <constraint firstItem="3Sc-9r-WgV" firstAttribute="leading" secondItem="0TX-dA-1A7" secondAttribute="leading" id="GNO-Au-NAh"/>
-                                                    <constraint firstItem="LZg-7V-nxp" firstAttribute="leading" secondItem="0TX-dA-1A7" secondAttribute="leading" id="IOy-1j-gX9"/>
-                                                    <constraint firstAttribute="trailing" secondItem="283-qs-5yq" secondAttribute="trailing" id="Osd-qo-ptU"/>
-                                                    <constraint firstAttribute="trailing" secondItem="3Sc-9r-WgV" secondAttribute="trailing" id="Vc5-fY-mNd"/>
-                                                    <constraint firstItem="283-qs-5yq" firstAttribute="leading" secondItem="0TX-dA-1A7" secondAttribute="leading" id="c7o-Ot-B4k"/>
-                                                    <constraint firstAttribute="trailing" secondItem="LZg-7V-nxp" secondAttribute="trailing" id="rZX-rn-6P2"/>
-                                                    <constraint firstAttribute="bottom" secondItem="283-qs-5yq" secondAttribute="bottom" id="twB-KL-Bqb"/>
-                                                </constraints>
                                             </stackView>
                                         </subviews>
-                                        <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstItem="0TX-dA-1A7" firstAttribute="centerY" secondItem="zp6-dC-5Ie" secondAttribute="centerY" id="nvM-km-CVQ"/>
-                                            <constraint firstItem="0TX-dA-1A7" firstAttribute="leading" secondItem="zp6-dC-5Ie" secondAttribute="leading" constant="50" id="rzx-51-NZ9"/>
-                                            <constraint firstAttribute="trailing" secondItem="0TX-dA-1A7" secondAttribute="trailing" constant="50" id="ulm-0h-ZDs"/>
+                                            <constraint firstItem="p0O-ct-4qt" firstAttribute="leading" secondItem="zFM-En-icM" secondAttribute="leading" constant="50" id="4pJ-Jt-lOP"/>
+                                            <constraint firstItem="p0O-ct-4qt" firstAttribute="centerY" secondItem="zFM-En-icM" secondAttribute="centerY" id="D2g-ya-XGm"/>
+                                            <constraint firstAttribute="trailing" secondItem="p0O-ct-4qt" secondAttribute="trailing" constant="50" id="M8e-8l-zl6"/>
                                         </constraints>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JKs-6n-1SI" userLabel="TableView Frame">
-                                        <rect key="frame" x="0.0" y="177" width="414" height="597"/>
-                                        <subviews>
-                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="AtM-MK-yRq">
-                                                <rect key="frame" x="0.0" y="0.0" width="414" height="597"/>
-                                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <color key="sectionIndexBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            </tableView>
-                                        </subviews>
-                                        <constraints>
-                                            <constraint firstItem="AtM-MK-yRq" firstAttribute="top" secondItem="JKs-6n-1SI" secondAttribute="top" id="BXT-A1-ZjS"/>
-                                            <constraint firstAttribute="trailing" secondItem="AtM-MK-yRq" secondAttribute="trailing" id="L3X-dt-DCN"/>
-                                            <constraint firstItem="AtM-MK-yRq" firstAttribute="leading" secondItem="JKs-6n-1SI" secondAttribute="leading" id="Q8J-5h-DPi"/>
-                                            <constraint firstAttribute="bottom" secondItem="AtM-MK-yRq" secondAttribute="bottom" id="oEX-tA-2aU"/>
-                                        </constraints>
-                                    </view>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="AtM-MK-yRq">
+                                        <rect key="frame" x="0.0" y="87" width="414" height="687"/>
+                                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="sectionIndexBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </tableView>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="JKs-6n-1SI" secondAttribute="trailing" id="6Mb-Lm-wki"/>
-                                    <constraint firstAttribute="bottom" secondItem="JKs-6n-1SI" secondAttribute="bottom" id="Kc7-Ml-PsG"/>
-                                    <constraint firstItem="zp6-dC-5Ie" firstAttribute="top" secondItem="N1w-iC-jh3" secondAttribute="top" id="RU3-Dn-nQ9"/>
-                                    <constraint firstItem="JKs-6n-1SI" firstAttribute="leading" secondItem="N1w-iC-jh3" secondAttribute="leading" id="hJ4-dx-4x6"/>
-                                    <constraint firstAttribute="trailing" secondItem="zp6-dC-5Ie" secondAttribute="trailing" id="ioe-J8-l8Q"/>
-                                    <constraint firstItem="zp6-dC-5Ie" firstAttribute="leading" secondItem="N1w-iC-jh3" secondAttribute="leading" id="uC1-Oi-yN3"/>
+                                    <constraint firstAttribute="bottom" secondItem="AtM-MK-yRq" secondAttribute="bottom" id="KnU-Cb-yGd"/>
+                                    <constraint firstAttribute="trailing" secondItem="zFM-En-icM" secondAttribute="trailing" id="N2D-qu-TGh"/>
+                                    <constraint firstAttribute="trailing" secondItem="AtM-MK-yRq" secondAttribute="trailing" id="QOt-gK-WNg"/>
+                                    <constraint firstItem="zFM-En-icM" firstAttribute="top" secondItem="N1w-iC-jh3" secondAttribute="top" id="eBO-Fj-RfJ"/>
+                                    <constraint firstItem="AtM-MK-yRq" firstAttribute="leading" secondItem="N1w-iC-jh3" secondAttribute="leading" id="fwh-0v-a1o"/>
+                                    <constraint firstItem="zFM-En-icM" firstAttribute="leading" secondItem="N1w-iC-jh3" secondAttribute="leading" id="tlB-dL-Q1s"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -198,11 +173,8 @@
                     <navigationItem key="navigationItem" id="xrQ-DT-l1a"/>
                     <connections>
                         <outlet property="detailTableView" destination="AtM-MK-yRq" id="U4p-xt-rDi"/>
-                        <outlet property="errorLabel" destination="LZg-7V-nxp" id="40D-V8-zan"/>
-                        <outlet property="loadingFrame" destination="zp6-dC-5Ie" id="cQq-ZK-piA"/>
-                        <outlet property="reloadErrorBtn" destination="283-qs-5yq" id="r3Z-zw-XhZ"/>
-                        <outlet property="spinner" destination="3Sc-9r-WgV" id="fzK-oK-dEo"/>
-                        <outlet property="tableViewFrame" destination="JKs-6n-1SI" id="agi-75-wTT"/>
+                        <outlet property="errorLabel" destination="Y4S-Gl-Iia" id="EGi-Vn-LHO"/>
+                        <outlet property="loadingFrame" destination="zFM-En-icM" id="OKN-jl-dq0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JXa-q8-4PK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -230,9 +202,4 @@
             <point key="canvasLocation" x="18.840579710144929" y="80.357142857142847"/>
         </scene>
     </scenes>
-    <resources>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-    </resources>
 </document>

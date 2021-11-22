@@ -12,11 +12,8 @@ import AVFoundation
 class DetailViewController: UIViewController {
     
     @IBOutlet weak var detailTableView: UITableView?
-    @IBOutlet weak var tableViewFrame: UIView?
     @IBOutlet weak var loadingFrame: UIView?
-    @IBOutlet weak var spinner: UIActivityIndicatorView?
     @IBOutlet weak var errorLabel: UILabel?
-    @IBOutlet weak var reloadErrorBtn: UIButton?
     
     static let identifier = "DetailViewController"
     private let networkManager = NetWorkManager()
@@ -27,25 +24,24 @@ class DetailViewController: UIViewController {
     
     var galleryGot = (isAlbum: true, id: "2eOWNGV")
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         detailTableView?.dataSource = self
         detailTableView?.delegate = self
+        detailTableView?.refreshControl = UIRefreshControl()
         registerCell(tableView: detailTableView)
         
         DetailModel.gallerySize = .hugeThumbnail
         DetailModel.galleryIsThumnail = false
         
-        spinner?.hidesWhenStopped = true
         loadingFrame?.isHidden = true
         
         loadDetails()
     }
     
     private func loadDetails(){
-//        callUpdateUI(isDone: false)
+        detailTableView?.refreshControl?.beginRefreshing()
         Task {
             do {
                 let model = try await networkManager.requestDetail(isAlbum: galleryGot.isAlbum, id: galleryGot.id)
@@ -64,13 +60,14 @@ class DetailViewController: UIViewController {
                     heights = [0]
                 }
                 DispatchQueue.main.async {
+                    self.detailTableView?.refreshControl?.endRefreshing()
                     self.detailTableView?.reloadData()
-//                    self.callUpdateUI(isDone: true)
                 }
             } catch {
                 print("Error: \(error)")
                 DispatchQueue.main.async {
-//                    self.updateUIError(activityIndicator: self.spinner, errorLabel: self.errorLabel, reloadButton: self.reloadErrorBtn)
+                    self.detailTableView?.refreshControl?.endRefreshing()
+                    self.updateError(isError: true)
                 }
             }
         }
@@ -84,9 +81,15 @@ class DetailViewController: UIViewController {
         tableView.register(nib, forCellReuseIdentifier: DetailTableViewCell.identifier)
     }
     //MARK: Call to update UI
-//    private func callUpdateUI(isDone: Bool) {
-//        updateUI(activityIndicator: spinner, frameToHide: tableViewFrame, frameToLoad: loadingFrame, errorLabel: errorLabel, reloadButton: reloadErrorBtn, isDone: isDone)
-//    }
+    private func updateError(isError: Bool) {
+        if isError {
+            loadingFrame?.isHidden = false
+            detailTableView?.isHidden = true
+        } else {
+            loadingFrame?.isHidden = true
+            detailTableView?.isHidden = false
+        }
+    }
     //MARK: Video Player
     private func playVideo(url: URL){
         let player = AVPlayer(url: url)
@@ -182,6 +185,7 @@ class DetailViewController: UIViewController {
     }
     //MARK: Buttons
     @IBAction func reloadErrorPressed(_ sender: UIButton?){
+        updateError(isError: false)
         loadDetails()
     }
 }
