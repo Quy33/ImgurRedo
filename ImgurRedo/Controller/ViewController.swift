@@ -34,8 +34,7 @@ class ViewController: UIViewController {
         
         activityIndicator?.hidesWhenStopped = true
         loadingFrame?.isHidden = true
-        errorLabel?.isHidden = true
-        reloadErrorBtn?.isHidden = true
+
         
         initialDownload()
     }
@@ -61,7 +60,7 @@ class ViewController: UIViewController {
                 print("Error: \(error)")
                 ViewController.isDownloading = false
                 DispatchQueue.main.async {
-                    self.updateError(activityIndicator: self.activityIndicator,
+                    self.updateUIError(activityIndicator: self.activityIndicator,
                                      errorLabel: self.errorLabel,
                                      reloadButton: self.reloadErrorBtn)
                 }
@@ -252,14 +251,17 @@ extension UIViewController {
         let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
         return rect
     }
+    //MARK: UI Loading functions
     func updateUI(activityIndicator: UIActivityIndicatorView?, frameToHide: UIView? , frameToLoad: UIView?,errorLabel: UILabel?, reloadButton: UIButton?, isDone: Bool){
+        
         guard let activityIndicator = activityIndicator,
+              let frameToHide = frameToHide,
               let frameToLoad = frameToLoad,
-              let frameToHide = frameToHide else {
-            return
-        }
-        errorLabel?.isHidden = true
-        reloadButton?.isHidden = true
+              let errorLabel = errorLabel,
+              let reloadButton = reloadButton else { return }
+        
+        errorLabel.isHidden = true
+        reloadButton.isHidden = true
 
         if isDone {
             frameToLoad.isHidden = true
@@ -271,16 +273,14 @@ extension UIViewController {
             activityIndicator.startAnimating()
         }
     }
-    func updateError(activityIndicator: UIActivityIndicatorView?,errorLabel: UILabel?, reloadButton: UIButton?) {
-//        guard let activityIndicator = activityIndicator,
-//              let errorLabel = errorLabel,
-//              let reloadButton = reloadButton
-//        else {
-//            return
-//        }
-        activityIndicator?.stopAnimating()
-        errorLabel?.isHidden = false
-        reloadButton?.isHidden = false
+    func updateUIError(activityIndicator: UIActivityIndicatorView?,errorLabel: UILabel?, reloadButton: UIButton?) {
+        guard let activityIndicator = activityIndicator,
+              let errorLabel = errorLabel,
+              let reloadButton = reloadButton else { return }
+        
+        activityIndicator.stopAnimating()
+        errorLabel.isHidden = false
+        reloadButton.isHidden = false
     }
 }
 

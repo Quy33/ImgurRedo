@@ -70,7 +70,7 @@ class DetailViewController: UIViewController {
             } catch {
                 print("Error: \(error)")
                 DispatchQueue.main.async {
-                    self.updateError(activityIndicator: self.spinner, errorLabel: self.errorLabel, reloadButton: self.reloadErrorBtn)
+                    self.updateUIError(activityIndicator: self.spinner, errorLabel: self.errorLabel, reloadButton: self.reloadErrorBtn)
                 }
             }
         }
