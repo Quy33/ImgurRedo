@@ -19,79 +19,53 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="8bW-X0-cnh" userLabel="Gallery Stack View">
                                 <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="249" translatesAutoresizingMaskIntoConstraints="NO" id="Pdm-HV-xIo">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="669"/>
-                                        <subviews>
-                                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="249" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="bFY-rP-wtT">
-                                                <rect key="frame" x="0.0" y="0.0" width="414" height="669"/>
-                                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <collectionViewLayout key="collectionViewLayout" id="UZp-dw-fBk"/>
-                                                <cells/>
-                                            </collectionView>
-                                        </subviews>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                        <constraints>
-                                            <constraint firstAttribute="trailing" secondItem="bFY-rP-wtT" secondAttribute="trailing" id="LEW-B6-mcD"/>
-                                            <constraint firstItem="bFY-rP-wtT" firstAttribute="top" secondItem="Pdm-HV-xIo" secondAttribute="top" id="PsI-1K-Ode"/>
-                                            <constraint firstItem="bFY-rP-wtT" firstAttribute="leading" secondItem="Pdm-HV-xIo" secondAttribute="leading" id="TTr-Ux-JQt"/>
-                                            <constraint firstAttribute="bottom" secondItem="bFY-rP-wtT" secondAttribute="bottom" id="nLX-AL-Xp5"/>
-                                        </constraints>
-                                    </view>
+                                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="249" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="bFY-rP-wtT">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="671"/>
+                                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <collectionViewLayout key="collectionViewLayout" id="UZp-dw-fBk"/>
+                                        <cells/>
+                                    </collectionView>
                                     <view contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3sy-tU-IDb" userLabel="Loading Frame">
-                                        <rect key="frame" x="0.0" y="674" width="414" height="100"/>
+                                        <rect key="frame" x="0.0" y="676" width="414" height="98"/>
                                         <subviews>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="lSU-Hu-7H1" userLabel="Loading Stacks">
-                                                <rect key="frame" x="50" y="1" width="314" height="98.5"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="o8k-0x-Ssz">
+                                                <rect key="frame" x="50" y="14.5" width="314" height="69"/>
                                                 <subviews>
-                                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="hKi-fp-R6j">
-                                                        <rect key="frame" x="0.0" y="0.0" width="314" height="37"/>
-                                                        <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    </activityIndicatorView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mz9-Jk-dpz" userLabel="Error Text">
-                                                        <rect key="frame" x="0.0" y="42" width="314" height="20.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="314" height="31"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3AO-Ma-dK4" userLabel="Reload_Error">
-                                                        <rect key="frame" x="0.0" y="67.5" width="314" height="31"/>
-                                                        <color key="tintColor" systemColor="systemBackgroundColor"/>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="64Y-09-4rj">
+                                                        <rect key="frame" x="0.0" y="38" width="314" height="31"/>
+                                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <state key="normal" title="Button"/>
                                                         <buttonConfiguration key="configuration" style="plain" title="Reload"/>
                                                         <connections>
-                                                            <action selector="reloadErrorPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="d1h-uI-doY"/>
+                                                            <action selector="reloadErrorPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="scl-FW-unL"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
-                                                <constraints>
-                                                    <constraint firstItem="Mz9-Jk-dpz" firstAttribute="leading" secondItem="lSU-Hu-7H1" secondAttribute="leading" id="4W4-f2-ln2"/>
-                                                    <constraint firstAttribute="bottom" secondItem="3AO-Ma-dK4" secondAttribute="bottom" id="8sW-NY-k5C"/>
-                                                    <constraint firstAttribute="trailing" secondItem="3AO-Ma-dK4" secondAttribute="trailing" id="CJx-T2-l5A"/>
-                                                    <constraint firstItem="hKi-fp-R6j" firstAttribute="leading" secondItem="lSU-Hu-7H1" secondAttribute="leading" id="JYq-uf-ibU"/>
-                                                    <constraint firstItem="hKi-fp-R6j" firstAttribute="top" secondItem="lSU-Hu-7H1" secondAttribute="top" id="NJ2-x6-NHc"/>
-                                                    <constraint firstAttribute="trailing" secondItem="hKi-fp-R6j" secondAttribute="trailing" id="WnO-zI-bAE"/>
-                                                    <constraint firstAttribute="trailing" secondItem="Mz9-Jk-dpz" secondAttribute="trailing" id="hXV-hy-VoW"/>
-                                                    <constraint firstItem="3AO-Ma-dK4" firstAttribute="leading" secondItem="lSU-Hu-7H1" secondAttribute="leading" id="pxa-JJ-OOT"/>
-                                                </constraints>
                                             </stackView>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstAttribute="trailing" secondItem="lSU-Hu-7H1" secondAttribute="trailing" constant="50" id="emJ-jO-8em"/>
-                                            <constraint firstItem="lSU-Hu-7H1" firstAttribute="leading" secondItem="3sy-tU-IDb" secondAttribute="leading" constant="50" id="nUG-WR-0sh"/>
-                                            <constraint firstItem="lSU-Hu-7H1" firstAttribute="centerY" secondItem="3sy-tU-IDb" secondAttribute="centerY" id="sS4-LJ-4nM"/>
+                                            <constraint firstAttribute="trailing" secondItem="o8k-0x-Ssz" secondAttribute="trailing" constant="50" id="QRl-yh-FlG"/>
+                                            <constraint firstItem="o8k-0x-Ssz" firstAttribute="centerY" secondItem="3sy-tU-IDb" secondAttribute="centerY" id="nXl-Wt-8wY"/>
+                                            <constraint firstItem="o8k-0x-Ssz" firstAttribute="leading" secondItem="3sy-tU-IDb" secondAttribute="leading" constant="50" id="xzi-n3-qwV"/>
                                         </constraints>
                                     </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="Pdm-HV-xIo" firstAttribute="top" secondItem="8bW-X0-cnh" secondAttribute="top" id="MmH-Uj-ATO"/>
                                     <constraint firstAttribute="trailing" secondItem="3sy-tU-IDb" secondAttribute="trailing" id="UBC-Dh-laq"/>
                                     <constraint firstItem="3sy-tU-IDb" firstAttribute="leading" secondItem="8bW-X0-cnh" secondAttribute="leading" id="UW9-8t-kr2"/>
-                                    <constraint firstAttribute="trailing" secondItem="Pdm-HV-xIo" secondAttribute="trailing" id="ZZB-wF-ZDZ"/>
+                                    <constraint firstItem="bFY-rP-wtT" firstAttribute="leading" secondItem="8bW-X0-cnh" secondAttribute="leading" id="be0-ow-GRw"/>
                                     <constraint firstAttribute="bottom" secondItem="3sy-tU-IDb" secondAttribute="bottom" id="fBg-cj-QPv"/>
-                                    <constraint firstItem="Pdm-HV-xIo" firstAttribute="leading" secondItem="8bW-X0-cnh" secondAttribute="leading" id="ifb-gG-y34"/>
+                                    <constraint firstItem="bFY-rP-wtT" firstAttribute="top" secondItem="8bW-X0-cnh" secondAttribute="top" id="hGd-nM-qUD"/>
+                                    <constraint firstAttribute="trailing" secondItem="bFY-rP-wtT" secondAttribute="trailing" id="wtd-I8-zHH"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -105,18 +79,6 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="rcN-8D-qb4">
-                        <barButtonItem key="leftBarButtonItem" style="plain" id="NAc-88-YEg">
-                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="wbY-E0-OYK">
-                                <rect key="frame" x="20" y="5" width="92" height="34.5"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Reload"/>
-                                <connections>
-                                    <action selector="reloadPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="XYM-rJ-0sY"/>
-                                </connections>
-                            </button>
-                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" style="plain" id="M8g-VL-Hyv">
                             <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="s7E-Bu-LLr">
                                 <rect key="frame" x="319" y="5" width="75" height="34.5"/>
@@ -131,12 +93,9 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="activityIndicator" destination="hKi-fp-R6j" id="aAu-Oz-ffw"/>
-                        <outlet property="collectionViewFrame" destination="Pdm-HV-xIo" id="1Aa-cf-hBZ"/>
                         <outlet property="errorLabel" destination="Mz9-Jk-dpz" id="hO0-GT-qdJ"/>
                         <outlet property="imgurCollectionView" destination="bFY-rP-wtT" id="Qhs-hf-7rN"/>
                         <outlet property="loadingFrame" destination="3sy-tU-IDb" id="Kni-a1-wy9"/>
-                        <outlet property="reloadErrorBtn" destination="3AO-Ma-dK4" id="rfm-Qz-ANM"/>
                         <segue destination="AdG-SP-yln" kind="show" identifier="DetailViewController" id="EYf-qG-kyB"/>
                     </connections>
                 </viewController>
@@ -178,7 +137,6 @@
                                                         <buttonConfiguration key="configuration" style="plain" title="Reload"/>
                                                         <connections>
                                                             <action selector="reloadErrorPressed:" destination="AdG-SP-yln" eventType="touchUpInside" id="0FY-lz-Pzm"/>
-                                                            <action selector="reloadErrorPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="4VD-0z-MJe"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>

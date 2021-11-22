@@ -11,11 +11,8 @@ import AVKit
 class ViewController: UIViewController {
     
     @IBOutlet weak var imgurCollectionView: UICollectionView?
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView?
     @IBOutlet weak var loadingFrame: UIView?
-    @IBOutlet weak var collectionViewFrame: UIView?
     @IBOutlet weak var errorLabel: UILabel?
-    @IBOutlet weak var reloadErrorBtn: UIButton?
     
     private let networkManager = NetWorkManager()
     private var galleries: [GalleryModel] = []
@@ -35,10 +32,7 @@ class ViewController: UIViewController {
         setLayout(collectionView: imgurCollectionView)
         GalleryModel.gallerySize = .hugeThumbnail
         
-        activityIndicator?.hidesWhenStopped = true
         loadingFrame?.isHidden = true
-        
-        
         
         initialDownload()
     }
@@ -51,29 +45,27 @@ class ViewController: UIViewController {
             return
         }
         ViewController.isDownloading = true
-        callUpdateUI(isDone: false)
+        imgurCollectionView?.refreshControl?.beginRefreshing()
         Task {
             do {
                 galleries = try await performDownload(parameter: para)
                 DispatchQueue.main.async {
+                    self.imgurCollectionView?.refreshControl?.endRefreshing()
                     self.reset(collectionView: self.imgurCollectionView)
-                    self.callUpdateUI(isDone: true)
                 }
                 ViewController.isDownloading = false
             } catch {
                 print("Error: \(error)")
                 ViewController.isDownloading = false
                 DispatchQueue.main.async {
-                    self.updateUIError(activityIndicator: self.activityIndicator,
-                                     errorLabel: self.errorLabel,
-                                     reloadButton: self.reloadErrorBtn)
+                    self.imgurCollectionView?.refreshControl?.endRefreshing()
+                    self.updateError(isError: true)
                 }
             }
         }
     }
     
     private func downloadNextPage(page: Int) {
-        
         guard !ViewController.isDownloading else {
             print("Download is occuring")
             return
@@ -115,19 +107,12 @@ class ViewController: UIViewController {
         pageAt += 1
         downloadNextPage(page: pageAt)
     }
-    @IBAction func reloadPressed(_ sender: UIButton) {
-        guard !ViewController.isDownloading else {
-            print("Download is occuring")
-            return
-        }
-        pageAt = 0
-        galleries.removeAll()
-        imgurCollectionView?.reloadData()
-        initialDownload()
-    }
     @IBAction func reloadErrorPressed(_ sender: UIButton) {
         pageAt = 0
         galleries.removeAll()
+        
+        updateError(isError: false)
+        
         imgurCollectionView?.reloadData()
         initialDownload()
     }
@@ -163,13 +148,28 @@ class ViewController: UIViewController {
         reset(collectionView: collectionView)
         collectionView.setContentOffset(contentOffset, animated: false)
     }
-    private func callUpdateUI(isDone: Bool) {
-        errorLabel?.isHidden = true
-        updateUI(activityIndicator: activityIndicator, frameToHide: collectionViewFrame, frameToLoad: loadingFrame,errorLabel: errorLabel, reloadButton: reloadErrorBtn, isDone: isDone)
+    private func updateError(isError: Bool) {
+        guard let imgurCollectionView = imgurCollectionView, let loadingFrame = loadingFrame else {
+            return
+        }
+        if isError {
+            loadingFrame.isHidden = false
+            imgurCollectionView.isHidden = true
+        } else {
+            loadingFrame.isHidden = true
+            imgurCollectionView.isHidden = false
+        }
     }
     //MARK: Refresh Control
     @objc private func didPullToRefresh() {
-        imgurCollectionView?.refreshControl?.endRefreshing()
+        guard !ViewController.isDownloading else {
+            print("Download is occuring")
+            return
+        }
+        pageAt = 0
+        galleries.removeAll()
+        imgurCollectionView?.reloadData()
+        initialDownload()
     }
 }
 //MARK: CollectionView DataSource
@@ -267,37 +267,5 @@ extension UIViewController {
         let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
         return rect
     }
-    //MARK: UI Loading functions
-    func updateUI(activityIndicator: UIActivityIndicatorView?, frameToHide: UIView? , frameToLoad: UIView?,errorLabel: UILabel?, reloadButton: UIButton?, isDone: Bool){
-        
-        guard let activityIndicator = activityIndicator,
-              let frameToHide = frameToHide,
-              let frameToLoad = frameToLoad,
-              let errorLabel = errorLabel,
-              let reloadButton = reloadButton else { return }
-        
-        errorLabel.isHidden = true
-        reloadButton.isHidden = true
-
-        if isDone {
-            frameToLoad.isHidden = true
-            frameToHide.isHidden = false
-            activityIndicator.stopAnimating()
-        } else {
-            frameToLoad.isHidden = false
-            frameToHide.isHidden = true
-            activityIndicator.startAnimating()
-        }
-    }
-    func updateUIError(activityIndicator: UIActivityIndicatorView?,errorLabel: UILabel?, reloadButton: UIButton?) {
-        guard let activityIndicator = activityIndicator,
-              let errorLabel = errorLabel,
-              let reloadButton = reloadButton else { return }
-        
-        activityIndicator.stopAnimating()
-        errorLabel.isHidden = false
-        reloadButton.isHidden = false
-    }
 }
-//MARK: Testing
 

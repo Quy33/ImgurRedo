@@ -45,7 +45,7 @@ class DetailViewController: UIViewController {
     }
     
     private func loadDetails(){
-        callUpdateUI(isDone: false)
+//        callUpdateUI(isDone: false)
         Task {
             do {
                 let model = try await networkManager.requestDetail(isAlbum: galleryGot.isAlbum, id: galleryGot.id)
@@ -65,12 +65,12 @@ class DetailViewController: UIViewController {
                 }
                 DispatchQueue.main.async {
                     self.detailTableView?.reloadData()
-                    self.callUpdateUI(isDone: true)
+//                    self.callUpdateUI(isDone: true)
                 }
             } catch {
                 print("Error: \(error)")
                 DispatchQueue.main.async {
-                    self.updateUIError(activityIndicator: self.spinner, errorLabel: self.errorLabel, reloadButton: self.reloadErrorBtn)
+//                    self.updateUIError(activityIndicator: self.spinner, errorLabel: self.errorLabel, reloadButton: self.reloadErrorBtn)
                 }
             }
         }
@@ -84,9 +84,9 @@ class DetailViewController: UIViewController {
         tableView.register(nib, forCellReuseIdentifier: DetailTableViewCell.identifier)
     }
     //MARK: Call to update UI
-    private func callUpdateUI(isDone: Bool) {
-        updateUI(activityIndicator: spinner, frameToHide: tableViewFrame, frameToLoad: loadingFrame, errorLabel: errorLabel, reloadButton: reloadErrorBtn, isDone: isDone)
-    }
+//    private func callUpdateUI(isDone: Bool) {
+//        updateUI(activityIndicator: spinner, frameToHide: tableViewFrame, frameToLoad: loadingFrame, errorLabel: errorLabel, reloadButton: reloadErrorBtn, isDone: isDone)
+//    }
     //MARK: Video Player
     private func playVideo(url: URL){
         let player = AVPlayer(url: url)
