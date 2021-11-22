@@ -30,6 +30,8 @@ class DetailViewController: UIViewController {
         detailTableView?.dataSource = self
         detailTableView?.delegate = self
         detailTableView?.refreshControl = UIRefreshControl()
+        detailTableView?.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
+        
         registerCell(tableView: detailTableView)
         
         DetailModel.gallerySize = .hugeThumbnail
@@ -89,6 +91,13 @@ class DetailViewController: UIViewController {
             loadingFrame?.isHidden = true
             detailTableView?.isHidden = false
         }
+    }
+    @objc private func didPullToRefresh() {
+        albumItem = DetailAlbumModel()
+        imageItem = DetailModel()
+        isCached = false
+        detailTableView?.reloadData()
+        loadDetails()
     }
     //MARK: Video Player
     private func playVideo(url: URL){
