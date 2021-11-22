@@ -30,11 +30,15 @@ class ViewController: UIViewController {
         registerCell()
         imgurCollectionView?.dataSource = self
         imgurCollectionView?.delegate = self
+        imgurCollectionView?.refreshControl = UIRefreshControl()
+        imgurCollectionView?.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
         setLayout(collectionView: imgurCollectionView)
         GalleryModel.gallerySize = .hugeThumbnail
         
         activityIndicator?.hidesWhenStopped = true
         loadingFrame?.isHidden = true
+        
+        
         
         initialDownload()
     }
@@ -117,13 +121,13 @@ class ViewController: UIViewController {
             return
         }
         pageAt = 0
-        galleries = []
+        galleries.removeAll()
         imgurCollectionView?.reloadData()
         initialDownload()
     }
     @IBAction func reloadErrorPressed(_ sender: UIButton) {
         pageAt = 0
-        galleries = []
+        galleries.removeAll()
         imgurCollectionView?.reloadData()
         initialDownload()
     }
@@ -162,6 +166,10 @@ class ViewController: UIViewController {
     private func callUpdateUI(isDone: Bool) {
         errorLabel?.isHidden = true
         updateUI(activityIndicator: activityIndicator, frameToHide: collectionViewFrame, frameToLoad: loadingFrame,errorLabel: errorLabel, reloadButton: reloadErrorBtn, isDone: isDone)
+    }
+    //MARK: Refresh Control
+    @objc private func didPullToRefresh() {
+        imgurCollectionView?.refreshControl?.endRefreshing()
     }
 }
 //MARK: CollectionView DataSource
