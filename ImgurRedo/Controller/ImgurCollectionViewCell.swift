@@ -36,49 +36,6 @@ class ImgurCollectionViewCell: UICollectionViewCell {
     
     func configure(image: UIImage, title: String, count: Int?, views: Int, type: String, isLast: Bool, isLoading: Bool, isError: Bool) {
         
-//        if isLast {
-//            if isError {
-//                spinner?.stopAnimating()
-//                imageFrame?.isHidden = false
-//                titleFrame?.isHidden = true
-//                bottomFrame?.isHidden = true
-//                loadingView?.isHidden = true
-//                cellImage?.image = UIImage(systemName: "xmark")
-//                typeFrame?.isHidden = true
-//                return
-//            } else {
-//
-//                imageFrame?.isHidden = false
-//                titleFrame?.isHidden = false
-//                bottomFrame?.isHidden = false
-//                loadingView?.isHidden = true
-//
-//
-//            }
-//            if isLoading {
-//                spinner?.startAnimating()
-//                imageFrame?.isHidden = true
-//                titleFrame?.isHidden = true
-//                bottomFrame?.isHidden = true
-//                loadingView?.isHidden = false
-//                return
-//            }
-//            spinner?.stopAnimating()
-//            loadingView?.isHidden = true
-//            titleFrame?.isHidden = true
-//            imageFrame?.isHidden = false
-//            bottomFrame?.isHidden = true
-//            typeFrame?.isHidden = true
-//            cellImage?.image = UIImage(systemName: "plus")
-//            imageFrame?.frame.size.height = 300
-//            return
-//        } else {
-//            imageFrame?.isHidden = false
-//            titleFrame?.isHidden = false
-//            bottomFrame?.isHidden = false
-//            loadingView?.isHidden = true
-//        }
-        
         if !isLast {
             resetCellUI(boolean: false)
             
@@ -129,32 +86,26 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         } else {
             spinner?.stopAnimating()
             if isError {
-                configError()
+                configImage(imageName: "xmark")
             } else {
-                loadingView?.isHidden = true
-                titleFrame?.isHidden = true
-                bottomFrame?.isHidden = true
-                typeFrame?.isHidden = true
-                    
-                imageFrame?.isHidden = false
-                cellImage?.image = UIImage(systemName: "plus")
-                imageFrame?.frame.size.height = 300
+                configImage(imageName: "plus")
             }
         }
-    }
-    private func configError(){
-        titleFrame?.isHidden = true
-        bottomFrame?.isHidden = true
-        loadingView?.isHidden = true
-        imageFrame?.isHidden = false
-        
-        cellImage?.image = UIImage(systemName: "xmark")
-        typeFrame?.isHidden = true
     }
     private func resetCellUI(boolean: Bool){
         imageFrame?.isHidden = boolean
         titleFrame?.isHidden = boolean
         bottomFrame?.isHidden = boolean
         loadingView?.isHidden = !boolean
+    }
+    private func configImage(imageName: String) {
+        loadingView?.isHidden = true
+        titleFrame?.isHidden = true
+        bottomFrame?.isHidden = true
+        typeFrame?.isHidden = true
+            
+        imageFrame?.isHidden = false
+        cellImage?.image = UIImage(systemName: imageName)
+        imageFrame?.frame.size.height = 300
     }
 }
