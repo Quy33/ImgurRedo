@@ -99,13 +99,9 @@ class ViewController: UIViewController {
     }
     
 //MARK: Buttons
-    @IBAction func addPressed(_ sender: UIButton) {
-//        guard !ViewController.isDownloading else {
-//            print("Download is occuring")
-//            return
-//        }
-//        pageAt += 1
-//        downloadNextPage(page: pageAt)
+    @IBAction func goBottomPressed(_ sender: UIButton) {
+        let bottomOffSet = CGPoint(x: 0, y: imgurCollectionView!.contentSize.height - 600)
+        imgurCollectionView?.setContentOffset(bottomOffSet, animated: false)
     }
     @IBAction func reloadErrorPressed(_ sender: UIButton) {
         pageAt = 0
@@ -217,6 +213,7 @@ extension ViewController: UICollectionViewDataSource {
 //MARK: CollectionView Delegate
 extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        //Load more Images
         let lastCell = galleries.count
         if indexPath.row == lastCell {
             guard !ViewController.isDownloading else {
@@ -229,6 +226,7 @@ extension ViewController: UICollectionViewDelegate {
             downloadNextPage(page: pageAt, indexPath: lastIndex)
             return
         }
+        //Segue
         indexPathToMove = indexPath
         performSegue(withIdentifier: DetailViewController.identifier, sender: self)
     }
