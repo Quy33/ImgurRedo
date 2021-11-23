@@ -31,6 +31,7 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         // Initialization code
         spinner?.hidesWhenStopped = true
+        loadingView?.isHidden = true
     }
     
     func configure(image: UIImage, title: String, count: Int?, views: Int, type: String, isLast: Bool, isLoading: Bool, isError: Bool) {
@@ -77,72 +78,83 @@ class ImgurCollectionViewCell: UICollectionViewCell {
 //            bottomFrame?.isHidden = false
 //            loadingView?.isHidden = true
 //        }
-        resetCellUI(inverted: false)
         
-        cellImage?.image = image
-        titleLabel?.text = title
-        viewsLabel?.text = "\(views)"
-        
-        let countString = String(count ?? 1)
-        countLabel?.text = countString
-        
-        if count == nil || count == 1 {
-            countFrame?.isHidden = true
+        if !isLast {
+            resetCellUI(boolean: false)
+            
+            cellImage?.image = image
+            titleLabel?.text = title
+            viewsLabel?.text = "\(views)"
+            
+            let countString = String(count ?? 1)
+            countLabel?.text = countString
+            
+            if count == nil || count == 1 {
+                countFrame?.isHidden = true
+            } else {
+                countFrame?.isHidden = false
+            }
+            
+            let typeRect = typeFrame?.frame ?? CGRect(x: 0, y: 0, width: 0, height: 0)
+            typeFrame?.layer.cornerRadius = typeRect.height / 2
+            typeFrame?.layer.masksToBounds = true
+            
+            var isType = ""
+            var isHidden = false
+            
+            switch type {
+            case "image/gif":
+                isType = "GIF"
+            case "video/mp4":
+                isType = "MP4"
+            default :
+                isType = "IMG"
+                isHidden = true
+            }
+            typeLabel?.text = isType
+            typeLabel?.adjustsFontSizeToFitWidth = true
+            typeFrame?.isHidden = isHidden
+            typeFrame?.layer.borderWidth = 3
+            typeFrame?.layer.borderColor = UIColor.black.cgColor
         } else {
-            countFrame?.isHidden = false
+            configLastCell(isLoading: isLoading, isError: isError)
         }
-        
-        let typeRect = typeFrame?.frame ?? CGRect(x: 0, y: 0, width: 0, height: 0)
-        typeFrame?.layer.cornerRadius = typeRect.height / 2
-        typeFrame?.layer.masksToBounds = true
-        
-        var isType = ""
-        var isHidden = false
-        
-        switch type {
-        case "image/gif":
-            isType = "GIF"
-        case "video/mp4":
-            isType = "MP4"
-        default :
-            isType = "IMG"
-            isHidden = true
-        }
-        typeLabel?.text = isType
-        typeLabel?.adjustsFontSizeToFitWidth = true
-        typeFrame?.isHidden = isHidden
-        typeFrame?.layer.borderWidth = 3
-        typeFrame?.layer.borderColor = UIColor.black.cgColor
-        
-        checkLast(isLast: isLast, isLoading: isLoading)
-        checkError(isError: isError)
     }
 
-    private func checkLast(isLast: Bool,isLoading: Bool){
-        if isLast {
-            //Hide Everything except for the imageFrame & replace it with a plus
-        } else {
-            //Unhide everything & hide the imageFrame
-        }
-    }
-    private func checkLoading(isLoading: Bool){
+    private func configLastCell(isLoading: Bool, isError: Bool){
+        //Hide Everything except for the imageFrame & replace it with a plus
         if isLoading {
-            //Hide everything except for the loading frame & start animating
+            spinner?.startAnimating()
+            resetCellUI(boolean: true)
         } else {
-            //Unhide everything & then hide the loading frame & stop animating
+            spinner?.stopAnimating()
+            if isError {
+                configError()
+            } else {
+                loadingView?.isHidden = true
+                titleFrame?.isHidden = true
+                bottomFrame?.isHidden = true
+                typeFrame?.isHidden = true
+                    
+                imageFrame?.isHidden = false
+                cellImage?.image = UIImage(systemName: "plus")
+                imageFrame?.frame.size.height = 300
+            }
         }
     }
-    private func checkError(isError: Bool){
-        if isError {
-            //Hide Everything except for the imageFrame & replace it with an X
-        } else {
-            //Unhide everything & hide the imageFrame
-        }
+    private func configError(){
+        titleFrame?.isHidden = true
+        bottomFrame?.isHidden = true
+        loadingView?.isHidden = true
+        imageFrame?.isHidden = false
+        
+        cellImage?.image = UIImage(systemName: "xmark")
+        typeFrame?.isHidden = true
     }
-    private func resetCellUI(inverted: Bool){
-        imageFrame?.isHidden = inverted
-        titleFrame?.isHidden = inverted
-        bottomFrame?.isHidden = inverted
-        loadingView?.isHidden = !inverted
+    private func resetCellUI(boolean: Bool){
+        imageFrame?.isHidden = boolean
+        titleFrame?.isHidden = boolean
+        bottomFrame?.isHidden = boolean
+        loadingView?.isHidden = !boolean
     }
 }

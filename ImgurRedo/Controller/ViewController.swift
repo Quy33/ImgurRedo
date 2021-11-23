@@ -211,7 +211,7 @@ extension ViewController: UICollectionViewDataSource {
                            views: gallery.views,
                            type: gallery.type,
                            isLast: false,
-                           isLoading: ViewController.isDownloading,
+                           isLoading: false,
                            isError: false)
         }
         
