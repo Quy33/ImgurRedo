@@ -20,6 +20,7 @@ class ViewController: UIViewController {
     private var indexPathToMove = IndexPath(item: 0, section: 0)
     private var lowerFrameHeight: CGFloat = 0
     static var isDownloading = false
+    var addMoreError = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +48,6 @@ class ViewController: UIViewController {
         Task {
             do {
                 galleries = try await performDownload(parameter: para)
-                
                 DispatchQueue.main.async {
                     self.imgurCollectionView?.refreshControl?.endRefreshing()
                     self.reset(collectionView: self.imgurCollectionView)
@@ -55,8 +55,8 @@ class ViewController: UIViewController {
                 }
             } catch {
                 print("Error: \(error)")
-                ViewController.isDownloading = false
                 DispatchQueue.main.async {
+                    ViewController.isDownloading = false
                     self.imgurCollectionView?.refreshControl?.endRefreshing()
                     self.updateError(isError: true)
                 }
@@ -64,23 +64,25 @@ class ViewController: UIViewController {
         }
     }
     
-    private func downloadNextPage(page: Int) {
+    private func downloadNextPage(page: Int,indexPath: IndexPath) {
         let para = GalleryParameterModel(page: page)
         ViewController.isDownloading = true
-        
+        imgurCollectionView?.reloadItems(at: [indexPath])
         Task {
             do {
-                
                 let newGalleries = try await performDownload(parameter: para)
-                throw NetworkingError.invalidData
                 galleries.append(contentsOf: newGalleries)
                 DispatchQueue.main.async {
                     self.reload(collectionView: self.imgurCollectionView)
                     ViewController.isDownloading = false
                 }
             } catch {
-                print("Error: \(error)")
-                ViewController.isDownloading = false
+                DispatchQueue.main.async {
+                    print("Error: \(error)")
+                    ViewController.isDownloading = false
+                    self.addMoreError = true
+                    self.imgurCollectionView?.reloadItems(at: [indexPath])
+                }
             }
         }
     }
@@ -98,12 +100,12 @@ class ViewController: UIViewController {
     
 //MARK: Buttons
     @IBAction func addPressed(_ sender: UIButton) {
-        guard !ViewController.isDownloading else {
-            print("Download is occuring")
-            return
-        }
-        pageAt += 1
-        downloadNextPage(page: pageAt)
+//        guard !ViewController.isDownloading else {
+//            print("Download is occuring")
+//            return
+//        }
+//        pageAt += 1
+//        downloadNextPage(page: pageAt)
     }
     @IBAction func reloadErrorPressed(_ sender: UIButton) {
         pageAt = 0
@@ -174,7 +176,7 @@ class ViewController: UIViewController {
 extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard !galleries.isEmpty else {
-            return 1
+            return 0
         }
         return galleries.count + 1
     }
@@ -186,18 +188,31 @@ extension ViewController: UICollectionViewDataSource {
         cell.layer.masksToBounds = true
         
         guard !galleries.isEmpty else {
-            cell.configure(image: ToolBox.placeHolderImg, title: "Test Title", count: 0, views: 0, type: "image", isLast: true)
             return cell
         }
 
         if indexPath.row == galleries.count {
-            cell.configure(image: ToolBox.placeHolderImg, title: "Test Title", count: 0, views: 0, type: "image", isLast: true)
+            cell.configure(image: ToolBox.placeHolderImg,
+                           title: "Test Title",
+                           count: 0,
+                           views: 0,
+                           type: "image",
+                           isLast: true,
+                           isLoading: ViewController.isDownloading,
+                           isError: addMoreError)
             return cell
         } else {
             
             let gallery = galleries[indexPath.row]
             
-            cell.configure(image: gallery.image, title: gallery.title!, count: gallery.imagesCount, views: gallery.views, type: gallery.type, isLast: false)
+            cell.configure(image: gallery.image,
+                           title: gallery.title!,
+                           count: gallery.imagesCount,
+                           views: gallery.views,
+                           type: gallery.type,
+                           isLast: false,
+                           isLoading: ViewController.isDownloading,
+                           isError: false)
         }
         
         return cell
@@ -206,6 +221,18 @@ extension ViewController: UICollectionViewDataSource {
 //MARK: CollectionView Delegate
 extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let lastCell = galleries.count
+        if indexPath.row == lastCell {
+            guard !ViewController.isDownloading else {
+                print("Download is occuring")
+                return
+            }
+            if !addMoreError { pageAt += 1 }
+            addMoreError = false
+            let lastIndex = IndexPath(item: lastCell, section: 0)
+            downloadNextPage(page: pageAt, indexPath: lastIndex)
+            return
+        }
         indexPathToMove = indexPath
         performSegue(withIdentifier: DetailViewController.identifier, sender: self)
     }
@@ -225,17 +252,6 @@ extension ViewController: UICollectionViewDelegate {
             lowerFrameHeight = cell.bottomFrame!.frame.height
             reload(collectionView: imgurCollectionView)
         }
-        //Download more when getting to the last cell
-        guard !galleries.isEmpty else {
-            return
-        }
-        if indexPath.row == galleries.count {
-            guard !ViewController.isDownloading else {
-                return
-            }
-            pageAt += 1
-            downloadNextPage(page: pageAt)
-        }
     }
 }
 
@@ -243,7 +259,7 @@ extension ViewController: UICollectionViewDelegate {
 extension ViewController: PinterestLayoutDelegate {
     func collectionView(collectionView: UICollectionView, heightForItemAtIndexPath indexPath: IndexPath, width: CGFloat) -> CGFloat {
         guard !galleries.isEmpty else {
-            return 300
+            return 0
         }
         if indexPath.row == galleries.count {
             return 300

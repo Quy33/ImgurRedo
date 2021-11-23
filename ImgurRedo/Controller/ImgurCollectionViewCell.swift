@@ -33,20 +33,41 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         spinner?.hidesWhenStopped = true
     }
     
-    func configure(image: UIImage, title: String, count: Int?, views: Int, type: String, isLast: Bool) {
+    func configure(image: UIImage, title: String, count: Int?, views: Int, type: String, isLast: Bool, isLoading: Bool, isError: Bool) {
         
         if isLast {
-            imageFrame?.isHidden = true
+            if isError {
+                spinner?.stopAnimating()
+                imageFrame?.isHidden = false
+                titleFrame?.isHidden = true
+                bottomFrame?.isHidden = true
+                loadingView?.isHidden = true
+                cellImage?.image = UIImage(systemName: "xmark")
+                typeFrame?.isHidden = true
+                return
+            }
+            if isLoading {
+                spinner?.startAnimating()
+                imageFrame?.isHidden = true
+                titleFrame?.isHidden = true
+                bottomFrame?.isHidden = true
+                loadingView?.isHidden = false
+                return
+            }
+            spinner?.stopAnimating()
+            loadingView?.isHidden = true
             titleFrame?.isHidden = true
+            imageFrame?.isHidden = false
             bottomFrame?.isHidden = true
-            loadingView?.isHidden = false
-            spinner?.startAnimating()
+            typeFrame?.isHidden = true
+            cellImage?.image = UIImage(systemName: "plus")
+            imageFrame?.frame.size.height = 300
+            return
         } else {
             imageFrame?.isHidden = false
             titleFrame?.isHidden = false
             bottomFrame?.isHidden = false
             loadingView?.isHidden = true
-            spinner?.stopAnimating()
         }
         
         cellImage?.image = image
