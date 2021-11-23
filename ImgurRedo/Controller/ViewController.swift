@@ -196,15 +196,12 @@ extension ViewController: UICollectionViewDataSource {
                            title: "Test Title",
                            count: 0,
                            views: 0,
-                           type: "image",
+                           type: "image/png",
                            isLast: true,
                            isLoading: ViewController.isDownloading,
                            isError: addMoreError)
-            return cell
         } else {
-            
             let gallery = galleries[indexPath.row]
-            
             cell.configure(image: gallery.image,
                            title: gallery.title!,
                            count: gallery.imagesCount,
@@ -214,7 +211,6 @@ extension ViewController: UICollectionViewDataSource {
                            isLoading: false,
                            isError: false)
         }
-        
         return cell
     }
 }

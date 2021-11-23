@@ -33,7 +33,6 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         spinner?.hidesWhenStopped = true
         loadingView?.isHidden = true
     }
-    
     func configure(image: UIImage, title: String, count: Int?, views: Int, type: String, isLast: Bool, isLoading: Bool, isError: Bool) {
         
         if !isLast {
@@ -43,41 +42,13 @@ class ImgurCollectionViewCell: UICollectionViewCell {
             titleLabel?.text = title
             viewsLabel?.text = "\(views)"
             
-            let countString = String(count ?? 1)
-            countLabel?.text = countString
-            
-            if count == nil || count == 1 {
-                countFrame?.isHidden = true
-            } else {
-                countFrame?.isHidden = false
-            }
-            
-            let typeRect = typeFrame?.frame ?? CGRect(x: 0, y: 0, width: 0, height: 0)
-            typeFrame?.layer.cornerRadius = typeRect.height / 2
-            typeFrame?.layer.masksToBounds = true
-            
-            var isType = ""
-            var isHidden = false
-            
-            switch type {
-            case "image/gif":
-                isType = "GIF"
-            case "video/mp4":
-                isType = "MP4"
-            default :
-                isType = "IMG"
-                isHidden = true
-            }
-            typeLabel?.text = isType
-            typeLabel?.adjustsFontSizeToFitWidth = true
-            typeFrame?.isHidden = isHidden
-            typeFrame?.layer.borderWidth = 3
-            typeFrame?.layer.borderColor = UIColor.black.cgColor
+            countFrameConfig(count: count)
+            typeFrameConfig(type: type)
         } else {
             configLastCell(isLoading: isLoading, isError: isError)
         }
     }
-
+    //MARK: Configuring the cell behaviour when downloading & getting error
     private func configLastCell(isLoading: Bool, isError: Bool){
         //Hide Everything except for the imageFrame & replace it with a plus
         if isLoading {
@@ -108,4 +79,38 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         cellImage?.image = UIImage(systemName: imageName)
         imageFrame?.frame.size.height = 300
     }
+    //MARK: Config The elements inside the cell
+    private func typeFrameConfig(type: String) {
+        let typeRect = typeFrame?.frame ?? CGRect(x: 0, y: 0, width: 0, height: 0)
+        typeFrame?.layer.cornerRadius = typeRect.height / 2
+        typeFrame?.layer.masksToBounds = true
+        
+        var isType = ""
+        var isHidden = false
+        
+        switch type {
+        case "image/gif":
+            isType = "GIF"
+        case "video/mp4":
+            isType = "MP4"
+        default :
+            isType = "IMG"
+            isHidden = true
+        }
+        typeLabel?.text = isType
+        typeLabel?.adjustsFontSizeToFitWidth = true
+        typeFrame?.isHidden = isHidden
+        typeFrame?.layer.borderWidth = 3
+        typeFrame?.layer.borderColor = UIColor.black.cgColor
+    }
+    private func countFrameConfig(count: Int?){
+        countLabel?.text = String(count ?? 1)
+        
+        if count == nil || count == 1 {
+            countFrame?.isHidden = true
+        } else {
+            countFrame?.isHidden = false
+        }
+    }
 }
+
