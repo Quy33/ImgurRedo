@@ -42,21 +42,17 @@ class ViewController: UIViewController {
 //MARK: Networking Calls
     private func initialDownload() {
         let para = GalleryParameterModel()
-        
-        guard !ViewController.isDownloading else {
-            print("Download is occuring")
-            return
-        }
         ViewController.isDownloading = true
         imgurCollectionView?.refreshControl?.beginRefreshing()
         Task {
             do {
                 galleries = try await performDownload(parameter: para)
+                
                 DispatchQueue.main.async {
                     self.imgurCollectionView?.refreshControl?.endRefreshing()
                     self.reset(collectionView: self.imgurCollectionView)
+                    ViewController.isDownloading = false
                 }
-                ViewController.isDownloading = false
             } catch {
                 print("Error: \(error)")
                 ViewController.isDownloading = false
@@ -69,24 +65,19 @@ class ViewController: UIViewController {
     }
     
     private func downloadNextPage(page: Int) {
-        guard !ViewController.isDownloading else {
-            print("Download is occuring")
-            return
-        }
-        
         let para = GalleryParameterModel(page: page)
         ViewController.isDownloading = true
+        
         Task {
             do {
                 
                 let newGalleries = try await performDownload(parameter: para)
-                
+                throw NetworkingError.invalidData
                 galleries.append(contentsOf: newGalleries)
-                
                 DispatchQueue.main.async {
                     self.reload(collectionView: self.imgurCollectionView)
+                    ViewController.isDownloading = false
                 }
-                ViewController.isDownloading = false
             } catch {
                 print("Error: \(error)")
                 ViewController.isDownloading = false
@@ -107,6 +98,10 @@ class ViewController: UIViewController {
     
 //MARK: Buttons
     @IBAction func addPressed(_ sender: UIButton) {
+        guard !ViewController.isDownloading else {
+            print("Download is occuring")
+            return
+        }
         pageAt += 1
         downloadNextPage(page: pageAt)
     }
@@ -230,18 +225,18 @@ extension ViewController: UICollectionViewDelegate {
             lowerFrameHeight = cell.bottomFrame!.frame.height
             reload(collectionView: imgurCollectionView)
         }
+        //Download more when getting to the last cell
+        guard !galleries.isEmpty else {
+            return
+        }
+        if indexPath.row == galleries.count {
+            guard !ViewController.isDownloading else {
+                return
+            }
+            pageAt += 1
+            downloadNextPage(page: pageAt)
+        }
     }
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        guard !galleries.isEmpty else {
-//            return
-//        }
-//       let height = scrollView.frame.size.height
-//       let contentYoffset = scrollView.contentOffset.y
-//       let distanceFromBottom = scrollView.contentSize.height - contentYoffset
-//       if distanceFromBottom < height {
-//           imgurCollectionView?.refreshControl?.beginRefreshing()
-//       }
-//   }
 }
 
 //MARK: Pinterest Layout
