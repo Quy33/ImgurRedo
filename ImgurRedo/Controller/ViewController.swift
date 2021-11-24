@@ -34,6 +34,7 @@ class ViewController: UIViewController {
         
         setLayout(collectionView: imgurCollectionView)
         GalleryModel.thumbnailSize = .hugeThumbnail
+        GalleryModel.isThumbnail = false
         
         loadingFrame?.isHidden = true
         
@@ -163,7 +164,6 @@ class ViewController: UIViewController {
         }
         pageAt = 0
         galleries.removeAll()
-        //imgurCollectionView?.reloadData()
         initialDownload()
     }
 }

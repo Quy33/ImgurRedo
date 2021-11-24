@@ -59,7 +59,7 @@ class ImgurCollectionViewCell: UICollectionViewCell {
             if isError {
                 configImage(imageName: "xmark")
             } else {
-                configImage(imageName: "plus")
+                configImage(imageName: "plus.circle.fill")
             }
         }
     }

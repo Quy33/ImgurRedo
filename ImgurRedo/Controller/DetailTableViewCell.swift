@@ -35,6 +35,7 @@ class DetailTableViewCell: UITableViewCell {
     
     func config(_ configTuple: ConfigTuple) {
         cellImage.image = configTuple.image
+        
         configLabel(label: topLabel, frame: topFrame, text: configTuple.top)
         configLabel(label: titleLabel, frame: titleFrame, text: configTuple.title)
         configLabel(label: descriptionLabel, frame: descriptionFrame, text: configTuple.description)
