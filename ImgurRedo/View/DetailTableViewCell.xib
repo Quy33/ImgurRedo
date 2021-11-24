@@ -132,17 +132,7 @@
                                     </view>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="Zju-3b-5rE" firstAttribute="leading" secondItem="fP6-Ly-Nm5" secondAttribute="leading" id="3fQ-vQ-pdE"/>
-                                    <constraint firstAttribute="trailing" secondItem="PvA-U3-TvE" secondAttribute="trailing" id="DZJ-iO-sV2"/>
-                                    <constraint firstAttribute="trailing" secondItem="Zju-3b-5rE" secondAttribute="trailing" id="FNy-og-MY6"/>
-                                    <constraint firstAttribute="trailing" secondItem="Gk9-NE-YL0" secondAttribute="trailing" id="Jwo-Bm-rgF"/>
-                                    <constraint firstItem="DZ1-wB-dOV" firstAttribute="leading" secondItem="fP6-Ly-Nm5" secondAttribute="leading" id="Na0-Hj-Iee"/>
-                                    <constraint firstAttribute="trailing" secondItem="DZ1-wB-dOV" secondAttribute="trailing" id="X4a-BX-KqR"/>
-                                    <constraint firstItem="u9h-v7-qvm" firstAttribute="leading" secondItem="fP6-Ly-Nm5" secondAttribute="leading" id="gA9-GM-eDG"/>
-                                    <constraint firstItem="Gk9-NE-YL0" firstAttribute="leading" secondItem="fP6-Ly-Nm5" secondAttribute="leading" id="lbY-XV-XTx"/>
                                     <constraint firstItem="Zju-3b-5rE" firstAttribute="top" secondItem="fP6-Ly-Nm5" secondAttribute="top" id="ojy-J5-3HW"/>
-                                    <constraint firstAttribute="trailing" secondItem="u9h-v7-qvm" secondAttribute="trailing" id="qJh-yz-CCj"/>
-                                    <constraint firstItem="PvA-U3-TvE" firstAttribute="leading" secondItem="fP6-Ly-Nm5" secondAttribute="leading" id="rB9-yj-JqL"/>
                                     <constraint firstAttribute="bottom" secondItem="u9h-v7-qvm" secondAttribute="bottom" id="tO5-te-jJj"/>
                                 </constraints>
                             </stackView>
