@@ -164,6 +164,8 @@ class ViewController: UIViewController {
         }
         pageAt = 0
         galleries.removeAll()
+        setLayout(collectionView: imgurCollectionView)
+        imgurCollectionView?.reloadData()
         initialDownload()
     }
 }
