@@ -33,7 +33,7 @@ class ViewController: UIViewController {
         imgurCollectionView?.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
         
         setLayout(collectionView: imgurCollectionView)
-        GalleryModel.gallerySize = .hugeThumbnail
+        GalleryModel.thumbnailSize = .hugeThumbnail
         
         loadingFrame?.isHidden = true
         

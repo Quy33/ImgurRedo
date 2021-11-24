@@ -25,13 +25,15 @@ class DetailAlbumModel {
     let title: String?
     let description: String?
     var images: [DetailModel]
-    init(title: String?, description: String?, images: [DetailModel]) {
+    let link: String
+    init(title: String?, description: String?, images: [DetailModel], link: String) {
         self.title = title
         self.description = description
         self.images = images
+        self.link = link
     }
     convenience init() {
-        self.init(title: nil, description: nil, images: [])
+        self.init(title: nil, description: nil, images: [], link: "")
     }
     convenience init(_ model: DetailImageModel) {
 
@@ -42,6 +44,6 @@ class DetailAlbumModel {
             images.append(newImage)
         }
 
-        self.init(title: model.title, description: model.description, images: images)
+        self.init(title: model.title, description: model.description, images: images, link: model.link)
     }
 }

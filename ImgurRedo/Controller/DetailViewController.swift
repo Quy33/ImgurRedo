@@ -34,8 +34,8 @@ class DetailViewController: UIViewController {
         
         registerCell(tableView: detailTableView)
         
-        DetailModel.gallerySize = .hugeThumbnail
-        DetailModel.galleryIsThumnail = false
+        DetailModel.thumbnailSize = .hugeThumbnail
+        DetailModel.isThumbnail = false
         
         loadingFrame?.isHidden = true
         
@@ -55,11 +55,13 @@ class DetailViewController: UIViewController {
                     for (index,item) in albumItem.images.enumerated() {
                         item.image = images[index]
                     }
+                    
                     heights = .init(repeating: 0, count: albumItem.images.count)
                 } else {
                     imageItem = DetailModel(model.data)
                     imageItem.image = try await networkManager.singleDownload(url: imageItem.url)
-                    heights = [0]
+                    
+                    heights.append(0)
                 }
                 DispatchQueue.main.async {
                     self.detailTableView?.refreshControl?.endRefreshing()
@@ -97,6 +99,7 @@ class DetailViewController: UIViewController {
         imageItem = DetailModel()
         isCached = false
         detailTableView?.reloadData()
+        heights = []
         loadDetails()
     }
     //MARK: Video Player

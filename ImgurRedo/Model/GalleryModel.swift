@@ -19,23 +19,16 @@ class GalleryModel: ToolBox {
     var image: UIImage
     final let views: Int
     
-    static var gallerySize: ThumbnailSize = .mediumThumbnail
-    static var galleryIsThumnail = true
-    
-    var thumbnailSize: ThumbnailSize {
-        GalleryModel.gallerySize
-    }
-    var isThumbnail: Bool {
-        GalleryModel.galleryIsThumnail
-    }
+    static var thumbnailSize: ThumbnailSize = .mediumThumbnail
+    static var isThumbnail = true
     
     var url: URL {
         var urlString = ""
-        if isThumbnail {
+        if GalleryModel.isThumbnail {
             urlString = animated ? mp4! : link
-            urlString = concatStr(string: urlString, size: thumbnailSize)
+            urlString = concatStr(string: urlString, size: GalleryModel.thumbnailSize)
         } else {
-            urlString = animated ? concatStr(string: mp4!, size: thumbnailSize) : link
+            urlString = animated ? concatStr(string: mp4!, size: GalleryModel.thumbnailSize) : link
         }
         guard let link = URL(string: urlString) else {
             return ToolBox.blankURL
