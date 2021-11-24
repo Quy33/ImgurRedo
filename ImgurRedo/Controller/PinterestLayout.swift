@@ -61,12 +61,25 @@ class PinterestLayout: UICollectionViewLayout {
             //Width to use for height calculation at ViewController
             let horizontalPaddings = cellPadding * 2
             let frameWidth = columnWidth - horizontalPaddings
+            
+            let leftColumn = yOffSets[0]
+            let rightColumn = yOffSets[1]
+            let highestColumn = max(leftColumn, rightColumn)
+            
+            switch highestColumn {
+            case leftColumn:
+                column = 1
+            case rightColumn:
+                column = 0
+            default:
+                fatalError()
+            }
 
             //Normal calculation
-            let photoHeight = delegate?.collectionView(collectionView: collectionView, heightForItemAtIndexPath: indexPath, width: frameWidth) ?? 180
+            let heightGot = delegate?.collectionView(collectionView: collectionView, heightForItemAtIndexPath: indexPath, width: frameWidth) ?? 180
             
             let verticalPaddings = cellPadding * 2
-            let height = photoHeight + verticalPaddings
+            let height = heightGot + verticalPaddings
             
             let frame = CGRect(x: xOffSets[column], y: yOffSets[column], width: columnWidth, height: height)
             let insetFrame = frame.insetBy(dx: cellPadding, dy: cellPadding)

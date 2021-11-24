@@ -117,7 +117,6 @@ class ViewController: UIViewController {
         let nib = UINib(nibName: ImgurCollectionViewCell.identifier, bundle: nil)
         imgurCollectionView?.register(nib, forCellWithReuseIdentifier: ImgurCollectionViewCell.identifier)
     }
-    
     private func setLayout(collectionView: UICollectionView?) {
         guard let collectionView = collectionView,
         collectionView == imgurCollectionView else {
@@ -127,14 +126,6 @@ class ViewController: UIViewController {
         layout.delegate = self
         collectionView.collectionViewLayout = layout
     }
-    private func reset(collectionView: UICollectionView?) {
-        guard let collectionView = collectionView,
-        collectionView == imgurCollectionView else {
-            return
-        }
-        setLayout(collectionView: collectionView)
-        collectionView.reloadData()
-    }
     private func reload(collectionView: UICollectionView?) {
         guard let collectionView = collectionView,
         collectionView == imgurCollectionView else {
@@ -143,6 +134,14 @@ class ViewController: UIViewController {
         let contentOffset = collectionView.contentOffset
         reset(collectionView: collectionView)
         collectionView.setContentOffset(contentOffset, animated: false)
+    }
+    private func reset(collectionView: UICollectionView?) {
+        guard let collectionView = collectionView,
+        collectionView == imgurCollectionView else {
+            return
+        }
+        setLayout(collectionView: collectionView)
+        collectionView.reloadData()
     }
     //MARK: Refresh Control
     private func updateError(isError: Bool) {
