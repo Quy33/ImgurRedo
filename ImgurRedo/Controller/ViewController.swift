@@ -8,6 +8,7 @@
 import UIKit
 import AVKit
 
+
 class ViewController: UIViewController {
     
     @IBOutlet weak var imgurCollectionView: UICollectionView?
@@ -21,7 +22,7 @@ class ViewController: UIViewController {
     private var lowerFrameHeight: CGFloat = 0
     static var isDownloading = false
     var addMoreError = false
-    
+//MARK: Life Cycle function
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -33,8 +34,7 @@ class ViewController: UIViewController {
         imgurCollectionView?.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
         
         setLayout(collectionView: imgurCollectionView)
-        GalleryModel.thumbnailSize = .hugeThumbnail
-        GalleryModel.isThumbnail = false
+        GalleryModel.setQuality(isThumbnail: true, size: .mediumThumbnail)
         
         loadingFrame?.isHidden = true
         

@@ -19,8 +19,13 @@ class GalleryModel: ToolBox {
     var image: UIImage
     final let views: Int
     
-    static var thumbnailSize: ThumbnailSize = .mediumThumbnail
-    static var isThumbnail = true
+    private static var thumbnailSize: ThumbnailSize = .mediumThumbnail
+    private static var isThumbnail = true
+    
+    static func setQuality(isThumbnail: Bool, size: ThumbnailSize){
+        GalleryModel.thumbnailSize = size
+        GalleryModel.isThumbnail = isThumbnail
+    }
     
     var url: URL {
         var urlString = ""

@@ -11,7 +11,8 @@ import UIKit
 struct NetWorkManager {
     private let baseURL = "https://api.imgur.com/3"
     
-    private let clientID = "11dd115895de7c5"
+    private static var commentsLink = ""
+//    private let clientID = "11dd115895de7c5"
     
     private let header = (key: "Authorization", value: "Client-ID 11dd115895de7c5")
     
@@ -24,15 +25,24 @@ struct NetWorkManager {
             URLQueryItem(name: p.mature.key, value: "\(p.mature.value)"),
             URLQueryItem(name: p.album_previews.key, value: "\(p.album_previews.value)")
         ]
+        guard let url = urlComponents.url else {
+            throw NetworkingError.invalidData
+        }
         
-        var request = URLRequest(url: urlComponents.url!)
+        let data = try await downloadData(url)
+
+        return try parseGallery(data)
+    }
+    //MARK: DownLoad data function
+    private func downloadData(_ url: URL) async throws -> Data {
+        var request = URLRequest(url: url)
         request.setValue(header.value, forHTTPHeaderField: header.key)
         
         let (data,response) = try await URLSession.shared.data(for: request)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {
             throw NetworkingError.invalidData
         }
-        return try parseGallery(data)
+        return data
     }
     //MARK: JSON Parser
     private func parseGallery(_ data: Data) throws -> DataModel {
@@ -42,6 +52,10 @@ struct NetWorkManager {
     private func parseDetail(_ data: Data) throws -> DetailDataModel {
         let model = try JSONDecoder().decode(DetailDataModel.self, from: data)
         return model
+    }
+    private func parseComment(_ data: Data) throws {
+        let model = try JSONDecoder().decode(CommentsDataModel.self, from: data)
+        print(model)
     }
     //MARK: Download Image Functions
     func singleDownload(url: URL) async throws -> UIImage {
@@ -60,7 +74,8 @@ struct NetWorkManager {
         typealias imageTuple = (index: Int, image: UIImage)
         var results: [UIImage] = []
         
-        results = try await withThrowingTaskGroup(of: imageTuple.self) { group -> [UIImage] in
+        results = try await withThrowingTaskGroup(of: imageTuple.self) {
+            group -> [UIImage] in
             
             for (index,url) in urls.enumerated() {
                 group.addTask {
@@ -84,19 +99,22 @@ struct NetWorkManager {
     func requestDetail(isAlbum: Bool, id: String) async throws -> DetailDataModel {
         let detail = isAlbum ? "album" : "image"
         let urlString = "\(baseURL)/\(detail)/\(id)"
+        NetWorkManager.commentsLink = urlString + "/comments"
         
         guard let url = URL(string: urlString) else {
             throw NetworkingError.invalidData
         }
         
-        var request = URLRequest(url: url)
-        request.setValue(header.value, forHTTPHeaderField: header.key)
-        
-        let (data,response) = try await URLSession.shared.data(for: request)
-        guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+        let data = try await downloadData(url)
+        return try parseDetail(data)
+    }
+    func requestComments() async throws {
+        //Get comments...
+        guard let url = URL(string: NetWorkManager.commentsLink) else {
             throw NetworkingError.invalidData
         }
-        return try parseDetail(data)
+        let data = try await downloadData(url)
+        try parseComment(data)
     }
 }
 //MARK: NetWorking Error Enums

@@ -29,17 +29,17 @@
                                         <rect key="frame" x="0.0" y="705.5" width="414" height="102.5"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="o8k-0x-Ssz">
-                                                <rect key="frame" x="150" y="9.5" width="114" height="84"/>
+                                                <rect key="frame" x="50" y="9.5" width="314" height="84"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mz9-Jk-dpz" userLabel="Error Text">
-                                                        <rect key="frame" x="0.0" y="0.0" width="114" height="38.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="314" height="38.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="32"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="64Y-09-4rj">
-                                                        <rect key="frame" x="0.0" y="45.5" width="114" height="38.5"/>
+                                                        <rect key="frame" x="0.0" y="45.5" width="314" height="38.5"/>
                                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <state key="normal" title="Button"/>
@@ -53,9 +53,9 @@
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstAttribute="trailing" secondItem="o8k-0x-Ssz" secondAttribute="trailing" constant="150" id="QRl-yh-FlG"/>
+                                            <constraint firstAttribute="trailing" secondItem="o8k-0x-Ssz" secondAttribute="trailing" constant="50" id="QRl-yh-FlG"/>
                                             <constraint firstItem="o8k-0x-Ssz" firstAttribute="centerY" secondItem="3sy-tU-IDb" secondAttribute="centerY" id="nXl-Wt-8wY"/>
-                                            <constraint firstItem="o8k-0x-Ssz" firstAttribute="leading" secondItem="3sy-tU-IDb" secondAttribute="leading" constant="150" id="xzi-n3-qwV"/>
+                                            <constraint firstItem="o8k-0x-Ssz" firstAttribute="leading" secondItem="3sy-tU-IDb" secondAttribute="leading" constant="50" id="xzi-n3-qwV"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -119,16 +119,16 @@
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="91"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="p0O-ct-4qt">
-                                                <rect key="frame" x="150" y="3.5" width="114" height="84"/>
+                                                <rect key="frame" x="50" y="3.5" width="314" height="84"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y4S-Gl-Iia" userLabel="Error Text">
-                                                        <rect key="frame" x="0.0" y="0.0" width="114" height="38.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="314" height="38.5"/>
                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="32"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dii-yp-sCD">
-                                                        <rect key="frame" x="0.0" y="45.5" width="114" height="38.5"/>
+                                                        <rect key="frame" x="0.0" y="45.5" width="314" height="38.5"/>
                                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <state key="normal" title="Button"/>
@@ -142,9 +142,9 @@
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstItem="p0O-ct-4qt" firstAttribute="leading" secondItem="zFM-En-icM" secondAttribute="leading" constant="150" id="4pJ-Jt-lOP"/>
+                                            <constraint firstItem="p0O-ct-4qt" firstAttribute="leading" secondItem="zFM-En-icM" secondAttribute="leading" constant="50" id="4pJ-Jt-lOP"/>
                                             <constraint firstItem="p0O-ct-4qt" firstAttribute="centerY" secondItem="zFM-En-icM" secondAttribute="centerY" id="D2g-ya-XGm"/>
-                                            <constraint firstAttribute="trailing" secondItem="p0O-ct-4qt" secondAttribute="trailing" constant="150" id="M8e-8l-zl6"/>
+                                            <constraint firstAttribute="trailing" secondItem="p0O-ct-4qt" secondAttribute="trailing" constant="50" id="M8e-8l-zl6"/>
                                         </constraints>
                                     </view>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="AtM-MK-yRq">

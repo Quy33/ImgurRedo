@@ -34,11 +34,9 @@ class DetailViewController: UIViewController {
         
         registerCell(tableView: detailTableView)
         
-        DetailModel.thumbnailSize = .hugeThumbnail
-        DetailModel.isThumbnail = false
+        DetailModel.setQuality(isThumbnail: true, size: .mediumThumbnail)
         
         loadingFrame?.isHidden = true
-        
         loadDetails()
     }
 //MARK: Networking Call
@@ -47,6 +45,7 @@ class DetailViewController: UIViewController {
         Task {
             do {
                 let model = try await networkManager.requestDetail(isAlbum: galleryGot.isAlbum, id: galleryGot.id)
+//                try await networkManager.requestComments()
                 
                 if galleryGot.isAlbum {
                     albumItem = DetailAlbumModel(model.data)

@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+
 class ToolBox {
     
     static let placeHolderImg: UIImage = #imageLiteral(resourceName: "placeHolder")
@@ -45,4 +46,3 @@ class ToolBox {
         case hugeThumbnail = "h"
     }
 }
-
