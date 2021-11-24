@@ -163,7 +163,7 @@ class ViewController: UIViewController {
         }
         pageAt = 0
         galleries.removeAll()
-        imgurCollectionView?.reloadData()
+        //imgurCollectionView?.reloadData()
         initialDownload()
     }
 }
