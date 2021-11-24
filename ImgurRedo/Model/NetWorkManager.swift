@@ -26,8 +26,7 @@ struct NetWorkManager {
         ]
         
         var request = URLRequest(url: urlComponents.url!)
-        let headerValue = "Client-ID \(clientID)"
-        request.setValue(headerValue, forHTTPHeaderField: "Authorization")
+        request.setValue(header.value, forHTTPHeaderField: header.key)
         
         let (data,response) = try await URLSession.shared.data(for: request)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {

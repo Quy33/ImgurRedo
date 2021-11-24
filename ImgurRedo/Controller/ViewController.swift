@@ -98,21 +98,6 @@ class ViewController: UIViewController {
         }
         return newGalleries
     }
-    
-//MARK: Buttons
-    @IBAction func goBottomPressed(_ sender: UIButton) {
-        let bottomOffSet = CGPoint(x: 0, y: imgurCollectionView!.contentSize.height - 600)
-        imgurCollectionView?.setContentOffset(bottomOffSet, animated: false)
-    }
-    @IBAction func reloadErrorPressed(_ sender: UIButton) {
-        pageAt = 0
-        galleries.removeAll()
-        
-        updateError(isError: false)
-        
-        imgurCollectionView?.reloadData()
-        initialDownload()
-    }
     //MARK: Update CollectionView
     private func registerCell() {
         let nib = UINib(nibName: ImgurCollectionViewCell.identifier, bundle: nil)
@@ -165,6 +150,20 @@ class ViewController: UIViewController {
         pageAt = 0
         galleries.removeAll()
         setLayout(collectionView: imgurCollectionView)
+        imgurCollectionView?.reloadData()
+        initialDownload()
+    }
+    //MARK: Buttons
+    @IBAction func goBottomPressed(_ sender: UIButton) {
+        let bottomOffSet = CGPoint(x: 0, y: imgurCollectionView!.contentSize.height - 600)
+        imgurCollectionView?.setContentOffset(bottomOffSet, animated: false)
+    }
+    @IBAction func reloadErrorPressed(_ sender: UIButton) {
+        pageAt = 0
+        galleries.removeAll()
+        
+        updateError(isError: false)
+        
         imgurCollectionView?.reloadData()
         initialDownload()
     }

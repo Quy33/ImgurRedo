@@ -41,26 +41,24 @@ class DetailViewController: UIViewController {
         
         loadDetails()
     }
-    
+//MARK: Networking Call
     private func loadDetails(){
         detailTableView?.refreshControl?.beginRefreshing()
         Task {
             do {
                 let model = try await networkManager.requestDetail(isAlbum: galleryGot.isAlbum, id: galleryGot.id)
+                
                 if galleryGot.isAlbum {
                     albumItem = DetailAlbumModel(model.data)
                     let urls = albumItem.images.map{ $0.url }
                     let images = try await networkManager.batchesDownload(urls: urls)
-
                     for (index,item) in albumItem.images.enumerated() {
                         item.image = images[index]
                     }
-                    
                     heights = .init(repeating: 0, count: albumItem.images.count)
                 } else {
                     imageItem = DetailModel(model.data)
                     imageItem.image = try await networkManager.singleDownload(url: imageItem.url)
-                    
                     heights.append(0)
                 }
                 DispatchQueue.main.async {
@@ -76,7 +74,7 @@ class DetailViewController: UIViewController {
             }
         }
     }
-    //MARK: Cell registration
+//MARK: Cell registration
     private func registerCell(tableView: UITableView?) {
         guard let tableView = tableView else {
             return
@@ -84,7 +82,7 @@ class DetailViewController: UIViewController {
         let nib = UINib(nibName: DetailTableViewCell.identifier, bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: DetailTableViewCell.identifier)
     }
-    //MARK: Call to update UI
+//MARK: Call to update UI
     private func updateError(isError: Bool) {
         if isError {
             loadingFrame?.isHidden = false
@@ -95,6 +93,9 @@ class DetailViewController: UIViewController {
         }
     }
     @objc private func didPullToRefresh() {
+        reload()
+    }
+    private func reload() {
         albumItem = DetailAlbumModel()
         imageItem = DetailModel()
         isCached = false
@@ -102,7 +103,12 @@ class DetailViewController: UIViewController {
         heights = []
         loadDetails()
     }
-    //MARK: Video Player
+//MARK: Buttons
+    @IBAction func reloadErrorPressed(_ sender: UIButton?){
+        updateError(isError: false)
+        reload()
+    }
+//MARK: Video Player
     private func playVideo(url: URL){
         let player = AVPlayer(url: url)
         
@@ -113,7 +119,7 @@ class DetailViewController: UIViewController {
             vc.player?.play()
         }
     }
-    //MARK: Height Calculation
+//MARK: Height Calculation
     private func calculateElementHeights(cell: DetailTableViewCell) {
         let vPadding: CGFloat = 20
         let hPadding: CGFloat = 10
@@ -121,10 +127,11 @@ class DetailViewController: UIViewController {
         if galleryGot.isAlbum {
             let itemCount = albumItem.images.count
             var albumConfig: ConfigTuple = (top: albumItem.title,
-                                       title: nil,
-                                       image: ToolBox.placeHolderImg,
-                                       description: nil,
-                                            bottom: albumItem.description, isBottom: false, animated: false)
+                                        title: nil,
+                                        image: ToolBox.placeHolderImg,
+                                        description: nil,
+                                        bottom: albumItem.description,
+                                        isBottom: false, animated: false)
             
             if itemCount == 1 {
                 let item = albumItem.images[0]
@@ -195,11 +202,7 @@ class DetailViewController: UIViewController {
         let result = labelsHeights + image.height + separator
         return result
     }
-    //MARK: Buttons
-    @IBAction func reloadErrorPressed(_ sender: UIButton?){
-        updateError(isError: false)
-        loadDetails()
-    }
+
 }
 //MARK: TableView Data Source
 extension DetailViewController: UITableViewDataSource {

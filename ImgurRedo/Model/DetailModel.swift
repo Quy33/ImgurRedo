@@ -36,7 +36,6 @@ class DetailAlbumModel {
         self.init(title: nil, description: nil, images: [], link: "")
     }
     convenience init(_ model: DetailImageModel) {
-
         let albumImages = model.images!
         var images: [DetailModel] = []
         for image in albumImages {
