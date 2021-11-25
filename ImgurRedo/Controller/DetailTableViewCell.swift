@@ -7,7 +7,7 @@
 
 import UIKit
 
-typealias ConfigTuple = (top: String?, title: String?, image: UIImage, description: String?, bottom: String?, isBottom: Bool, animated: Bool)
+
 
 class DetailTableViewCell: UITableViewCell {
     

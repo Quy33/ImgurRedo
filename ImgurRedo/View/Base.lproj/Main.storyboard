@@ -16,27 +16,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="8bW-X0-cnh" userLabel="Gallery Stack View">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="8bW-X0-cnh" userLabel="Gallery Stack View">
                                 <rect key="frame" x="0.0" y="88" width="414" height="808"/>
                                 <subviews>
-                                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="249" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="bFY-rP-wtT">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="700.5"/>
-                                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <collectionViewLayout key="collectionViewLayout" id="UZp-dw-fBk"/>
-                                        <cells/>
-                                    </collectionView>
-                                    <view contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3sy-tU-IDb" userLabel="Loading Frame">
-                                        <rect key="frame" x="0.0" y="705.5" width="414" height="102.5"/>
+                                    <view contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3sy-tU-IDb" userLabel="Error Frame">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="200"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="URs-KU-wwy">
-                                                <rect key="frame" x="5" y="4.5" width="404" height="26.5"/>
+                                                <rect key="frame" x="5" y="53" width="404" height="26.5"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CV8-lu-DCv">
-                                                <rect key="frame" x="173" y="36" width="68.5" height="31"/>
+                                                <rect key="frame" x="173" y="84.5" width="68.5" height="31"/>
                                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <state key="normal" title="Button"/>
@@ -55,13 +48,20 @@
                                             <constraint firstItem="CV8-lu-DCv" firstAttribute="centerY" secondItem="3sy-tU-IDb" secondAttribute="centerY" id="oqY-ao-OTs"/>
                                         </constraints>
                                     </view>
+                                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="249" verticalHuggingPriority="249" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="bFY-rP-wtT">
+                                        <rect key="frame" x="0.0" y="205" width="414" height="603"/>
+                                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <collectionViewLayout key="collectionViewLayout" id="UZp-dw-fBk"/>
+                                        <cells/>
+                                    </collectionView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="bFY-rP-wtT" secondAttribute="trailing" id="bzq-m2-Usi"/>
-                                    <constraint firstAttribute="bottom" secondItem="3sy-tU-IDb" secondAttribute="bottom" id="fBg-cj-QPv"/>
-                                    <constraint firstItem="bFY-rP-wtT" firstAttribute="top" secondItem="8bW-X0-cnh" secondAttribute="top" id="hGd-nM-qUD"/>
-                                    <constraint firstItem="bFY-rP-wtT" firstAttribute="leading" secondItem="8bW-X0-cnh" secondAttribute="leading" id="hSy-rq-QOP"/>
+                                    <constraint firstAttribute="trailing" secondItem="bFY-rP-wtT" secondAttribute="trailing" id="COq-Mg-lAA"/>
+                                    <constraint firstAttribute="bottom" secondItem="bFY-rP-wtT" secondAttribute="bottom" id="DxJ-38-BKU"/>
+                                    <constraint firstItem="bFY-rP-wtT" firstAttribute="leading" secondItem="8bW-X0-cnh" secondAttribute="leading" id="Idt-G5-LQl"/>
+                                    <constraint firstItem="3sy-tU-IDb" firstAttribute="top" secondItem="8bW-X0-cnh" secondAttribute="top" id="MAf-cD-EVf"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -89,9 +89,9 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="errorFrame" destination="3sy-tU-IDb" id="rK7-rn-uzu"/>
                         <outlet property="errorLabel" destination="URs-KU-wwy" id="ORZ-18-Woj"/>
                         <outlet property="imgurCollectionView" destination="bFY-rP-wtT" id="Qhs-hf-7rN"/>
-                        <outlet property="loadingFrame" destination="3sy-tU-IDb" id="Kni-a1-wy9"/>
                         <segue destination="AdG-SP-yln" kind="show" identifier="DetailViewController" id="EYf-qG-kyB"/>
                     </connections>
                 </viewController>
@@ -111,10 +111,10 @@
                                 <rect key="frame" x="0.0" y="88" width="414" height="808"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="zFM-En-icM" userLabel="Loading Frame">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="176"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="194"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XBR-To-AQ6">
-                                                <rect key="frame" x="173" y="72.5" width="68.5" height="31"/>
+                                                <rect key="frame" x="173" y="81.5" width="68.5" height="31"/>
                                                 <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <state key="normal" title="Button"/>
@@ -124,7 +124,7 @@
                                                 </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CC2-LE-9Of">
-                                                <rect key="frame" x="5" y="41" width="404" height="26.5"/>
+                                                <rect key="frame" x="5" y="50" width="404" height="26.5"/>
                                                 <color key="tintColor" systemColor="linkColor"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -141,7 +141,7 @@
                                         </constraints>
                                     </view>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="AtM-MK-yRq">
-                                        <rect key="frame" x="0.0" y="176" width="414" height="632"/>
+                                        <rect key="frame" x="0.0" y="194" width="414" height="614"/>
                                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <color key="sectionIndexBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableView>

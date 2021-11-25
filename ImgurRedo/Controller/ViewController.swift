@@ -8,11 +8,10 @@
 import UIKit
 import AVKit
 
-typealias ErrorTuple = (isError: Bool, description: String?)
 class ViewController: UIViewController {
     
     @IBOutlet weak var imgurCollectionView: UICollectionView?
-    @IBOutlet weak var loadingFrame: UIView?
+    @IBOutlet weak var errorFrame: UIView?
     @IBOutlet weak var errorLabel: UILabel?
     
     private let networkManager = NetWorkManager()
@@ -22,7 +21,6 @@ class ViewController: UIViewController {
     private var lowerFrameHeight: CGFloat = 0
     static var isDownloading = false
     var errorTuple: ErrorTuple = (isError: false, description: nil)
-    //var addMoreError = false
 //MARK: Life Cycle function
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,9 +34,8 @@ class ViewController: UIViewController {
         
         setLayout(collectionView: imgurCollectionView)
         GalleryModel.setQuality(isThumbnail: true, size: .mediumThumbnail)
-        
-        loadingFrame?.isHidden = true
-        
+        errorFrame?.isHidden = true
+
         initialDownload()
     }
 
@@ -134,7 +131,7 @@ class ViewController: UIViewController {
     //MARK: Refresh Control
     private func updateError(errorTuple: ErrorTuple) {
         guard let imgurCollectionView = imgurCollectionView,
-              let loadingFrame = loadingFrame,
+              let loadingFrame = errorFrame,
               let errorLabel = errorLabel
         else {
             return
