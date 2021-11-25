@@ -31,7 +31,7 @@ struct NetWorkManager {
         
         let data = try await downloadData(url)
 
-        return try parseGallery(data)
+        return try parseJson(data)
     }
     //MARK: DownLoad data function
     private func downloadData(_ url: URL) async throws -> Data {
@@ -45,18 +45,10 @@ struct NetWorkManager {
         return data
     }
     //MARK: JSON Parser
-    private func parseGallery(_ data: Data) throws -> DataModel {
-        let model = try JSONDecoder().decode(DataModel.self, from: data)
+    private func parseJson<T: Decodable>(_ data: Data) throws -> T {
+        let model = try JSONDecoder().decode(T.self, from: data)
         return model
     }
-    private func parseDetail(_ data: Data) throws -> DetailDataModel {
-        let model = try JSONDecoder().decode(DetailDataModel.self, from: data)
-        return model
-    }
-//    private func parseComment(_ data: Data) throws -> CommentsDataModel {
-//        let model = try JSONDecoder().decode(CommentsDataModel.self, from: data)
-//        return model
-//    }
     //MARK: Download Image Functions
     func singleDownload(url: URL) async throws -> UIImage {
         let request = URLRequest(url: url)
@@ -111,16 +103,16 @@ struct NetWorkManager {
         }
         
         let data = try await downloadData(url)
-        return try parseDetail(data)
+        return try parseJson(data)
     }
-//    func requestComments() async throws -> CommentsDataModel {
-//        //Get comments...
-//        guard let url = URL(string: NetWorkManager.commentsLink) else {
-//            throw NetworkingError.invalidData
-//        }
-//        let data = try await downloadData(url)
-//        return try parseComment(data)
-//    }
+    func requestComments() async throws -> CommentsDataModel {
+        //Get comments...
+        guard let url = URL(string: NetWorkManager.commentsLink) else {
+            throw NetworkingError.invalidData
+        }
+        let data = try await downloadData(url)
+        return try parseJson(data)
+    }
 }
 //MARK: NetWorking Error Enums
 enum NetworkingError: Error {
