@@ -127,3 +127,13 @@ enum NetworkingError: Error {
     case invalidData
     case badImage
 }
+extension NetworkingError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .invalidData:
+            return "Failed to download data"
+        case .badImage:
+            return "Failed to download image"
+        }
+    }
+}

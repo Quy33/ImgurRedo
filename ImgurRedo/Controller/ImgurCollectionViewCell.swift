@@ -33,10 +33,13 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         spinner?.hidesWhenStopped = true
         loadingView?.isHidden = true
     }
-    func configure(image: UIImage, title: String, count: Int?, views: Int, type: String, isLast: Bool, isLoading: Bool, isError: Bool) {
+    func configure(image: UIImage, title: String, count: Int?, views: Int, type: String, isLast: Bool, isLoading: Bool, errorTuple: ErrorTuple) {
         
         if !isLast {
             resetCellUI(boolean: false)
+            titleFrame?.isHidden = false
+            titleFrame?.backgroundColor = .black
+            titleLabel?.textAlignment = .left
             
             cellImage?.image = image
             titleLabel?.text = title
@@ -45,21 +48,23 @@ class ImgurCollectionViewCell: UICollectionViewCell {
             countFrameConfig(count: count)
             typeFrameConfig(type: type)
         } else {
-            configLastCell(isLoading: isLoading, isError: isError)
+            configLastCell(isLoading: isLoading, errorTuple: errorTuple)
         }
     }
     //MARK: Configuring the cell behaviour when downloading & getting error
-    private func configLastCell(isLoading: Bool, isError: Bool){
+    private func configLastCell(isLoading: Bool, errorTuple: ErrorTuple){
         //Hide Everything except for the imageFrame & replace it with a plus
         if isLoading {
             spinner?.startAnimating()
             resetCellUI(boolean: true)
+            titleFrame?.isHidden = true
         } else {
             spinner?.stopAnimating()
-            if isError {
-                configImage(imageName: "xmark")
+            titleFrame?.isHidden = false
+            if errorTuple.isError {
+                configImage(imageName: "xmark", title: errorTuple.description)
             } else {
-                configImage(imageName: "plus.circle.fill")
+                configImage(imageName: "plus.circle.fill", title: "ADD MORE")
             }
         }
     }
@@ -69,15 +74,19 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         bottomFrame?.isHidden = boolean
         loadingView?.isHidden = !boolean
     }
-    private func configImage(imageName: String) {
+    private func configImage(imageName: String, title: String?) {
         loadingView?.isHidden = true
-        titleFrame?.isHidden = true
         bottomFrame?.isHidden = true
         typeFrame?.isHidden = true
-            
+         
+        //titleFrame?.isHidden = false
         imageFrame?.isHidden = false
         cellImage?.image = UIImage(systemName: imageName)
         imageFrame?.frame.size.height = 300
+        
+        titleFrame?.backgroundColor = .clear
+        titleLabel?.text = title
+        titleLabel?.textAlignment = .center
     }
     //MARK: Config The elements inside the cell
     private func typeFrameConfig(type: String) {

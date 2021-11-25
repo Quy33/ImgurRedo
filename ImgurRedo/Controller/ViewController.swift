@@ -8,7 +8,7 @@
 import UIKit
 import AVKit
 
-
+typealias ErrorTuple = (isError: Bool, description: String?)
 class ViewController: UIViewController {
     
     @IBOutlet weak var imgurCollectionView: UICollectionView?
@@ -21,7 +21,8 @@ class ViewController: UIViewController {
     private var indexPathToMove = IndexPath(item: 0, section: 0)
     private var lowerFrameHeight: CGFloat = 0
     static var isDownloading = false
-    var addMoreError = false
+    var errorTuple: ErrorTuple = (isError: false, description: nil)
+    //var addMoreError = false
 //MARK: Life Cycle function
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,11 +56,12 @@ class ViewController: UIViewController {
                     ViewController.isDownloading = false
                 }
             } catch {
-                print("Error: \(error)")
                 DispatchQueue.main.async {
+                    print("Error: \(error)")
+                    self.errorTuple = (isError: true, description: error.localizedDescription)
                     ViewController.isDownloading = false
                     self.imgurCollectionView?.refreshControl?.endRefreshing()
-                    self.updateError(isError: true)
+                    self.updateError(errorTuple: self.errorTuple)
                 }
             }
         }
@@ -81,7 +83,7 @@ class ViewController: UIViewController {
                 DispatchQueue.main.async {
                     print("Error: \(error)")
                     ViewController.isDownloading = false
-                    self.addMoreError = true
+                    self.errorTuple = (isError: true, description: error.localizedDescription)
                     self.imgurCollectionView?.reloadItems(at: [indexPath])
                 }
             }
@@ -130,11 +132,15 @@ class ViewController: UIViewController {
         collectionView.reloadData()
     }
     //MARK: Refresh Control
-    private func updateError(isError: Bool) {
-        guard let imgurCollectionView = imgurCollectionView, let loadingFrame = loadingFrame else {
+    private func updateError(errorTuple: ErrorTuple) {
+        guard let imgurCollectionView = imgurCollectionView,
+              let loadingFrame = loadingFrame,
+              let errorLabel = errorLabel
+        else {
             return
         }
-        if isError {
+        errorLabel.text = errorTuple.description
+        if errorTuple.isError {
             loadingFrame.isHidden = false
             imgurCollectionView.isHidden = true
         } else {
@@ -161,8 +167,9 @@ class ViewController: UIViewController {
     @IBAction func reloadErrorPressed(_ sender: UIButton) {
         pageAt = 0
         galleries.removeAll()
+        errorTuple = (isError: false, description: nil)
         
-        updateError(isError: false)
+        updateError(errorTuple: errorTuple)
         
         imgurCollectionView?.reloadData()
         initialDownload()
@@ -195,7 +202,7 @@ extension ViewController: UICollectionViewDataSource {
                            type: "image/png",
                            isLast: true,
                            isLoading: ViewController.isDownloading,
-                           isError: addMoreError)
+                           errorTuple: errorTuple)
         } else {
             let gallery = galleries[indexPath.row]
             cell.configure(image: gallery.image,
@@ -205,7 +212,7 @@ extension ViewController: UICollectionViewDataSource {
                            type: gallery.type,
                            isLast: false,
                            isLoading: false,
-                           isError: false)
+                           errorTuple: errorTuple)
         }
         return cell
     }
@@ -220,8 +227,8 @@ extension ViewController: UICollectionViewDelegate {
                 print("Download is occuring")
                 return
             }
-            if !addMoreError { pageAt += 1 }
-            addMoreError = false
+            if !errorTuple.isError { pageAt += 1 }
+            errorTuple = (isError: false, description: nil)
             let lastIndex = IndexPath(item: lastCell, section: 0)
             downloadNextPage(page: pageAt, indexPath: lastIndex)
             return
