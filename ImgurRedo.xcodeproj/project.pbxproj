@@ -28,6 +28,7 @@
 		53D138D42742639000E05A70 /* ImgurCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D138D22742639000E05A70 /* ImgurCollectionViewCell.swift */; };
 		53D138D52742639000E05A70 /* ImgurCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 53D138D32742639000E05A70 /* ImgurCollectionViewCell.xib */; };
 		53E298B4274E8310000AC971 /* CommentsDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E298B3274E8310000AC971 /* CommentsDataModel.swift */; };
+		53E298B6274E86D1000AC971 /* CommentsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E298B5274E86D1000AC971 /* CommentsModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +55,7 @@
 		53D138D22742639000E05A70 /* ImgurCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImgurCollectionViewCell.swift; sourceTree = "<group>"; };
 		53D138D32742639000E05A70 /* ImgurCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImgurCollectionViewCell.xib; sourceTree = "<group>"; };
 		53E298B3274E8310000AC971 /* CommentsDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsDataModel.swift; sourceTree = "<group>"; };
+		53E298B5274E86D1000AC971 /* CommentsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +118,7 @@
 				5394B648274635F3004D0A5B /* DetailDataModel.swift */,
 				5394B64A274638E8004D0A5B /* DetailModel.swift */,
 				53E298B3274E8310000AC971 /* CommentsDataModel.swift */,
+				53E298B5274E86D1000AC971 /* CommentsModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -231,6 +234,7 @@
 				53E298B4274E8310000AC971 /* CommentsDataModel.swift in Sources */,
 				53537E602743501B00849494 /* Networking file.swift in Sources */,
 				5394B64627461196004D0A5B /* DetailTableViewCell.swift in Sources */,
+				53E298B6274E86D1000AC971 /* CommentsModel.swift in Sources */,
 				5394B64327460E2A004D0A5B /* DetailViewController.swift in Sources */,
 				5394B64B274638E8004D0A5B /* DetailModel.swift in Sources */,
 				53537E672743996B00849494 /* GalleryParameterModel.swift in Sources */,

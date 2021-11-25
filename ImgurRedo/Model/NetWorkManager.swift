@@ -53,9 +53,9 @@ struct NetWorkManager {
         let model = try JSONDecoder().decode(DetailDataModel.self, from: data)
         return model
     }
-    private func parseComment(_ data: Data) throws {
+    private func parseComment(_ data: Data) throws -> CommentsDataModel {
         let model = try JSONDecoder().decode(CommentsDataModel.self, from: data)
-        print(model)
+        return model
     }
     //MARK: Download Image Functions
     func singleDownload(url: URL) async throws -> UIImage {
@@ -108,13 +108,13 @@ struct NetWorkManager {
         let data = try await downloadData(url)
         return try parseDetail(data)
     }
-    func requestComments() async throws {
+    func requestComments() async throws -> CommentsDataModel {
         //Get comments...
         guard let url = URL(string: NetWorkManager.commentsLink) else {
             throw NetworkingError.invalidData
         }
         let data = try await downloadData(url)
-        try parseComment(data)
+        return try parseComment(data)
     }
 }
 //MARK: NetWorking Error Enums

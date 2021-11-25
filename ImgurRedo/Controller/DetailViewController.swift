@@ -45,7 +45,6 @@ class DetailViewController: UIViewController {
         Task {
             do {
                 let model = try await networkManager.requestDetail(isAlbum: galleryGot.isAlbum, id: galleryGot.id)
-//                try await networkManager.requestComments()
                 
                 if galleryGot.isAlbum {
                     albumItem = DetailAlbumModel(model.data)

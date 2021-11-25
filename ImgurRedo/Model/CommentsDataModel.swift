@@ -12,5 +12,5 @@ struct CommentsDataModel: Decodable {
 }
 struct CommentsData: Decodable {
     let comment: String
-    let children: [CommentsDataModel]
+    let children: [CommentsData]
 }
