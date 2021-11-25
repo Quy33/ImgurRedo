@@ -21,6 +21,7 @@ class DetailViewController: UIViewController {
     private var albumItem = DetailAlbumModel()
     private var heights: [CGFloat] = []
     private var isCached = false
+    private var errorTuple: ErrorTuple = (isError: false, description: nil)
     
     var galleryGot = (isAlbum: true, id: "2eOWNGV")
     
@@ -63,10 +64,12 @@ class DetailViewController: UIViewController {
                     self.detailTableView?.reloadData()
                 }
             } catch {
-                print("Error: \(error)")
+                
                 DispatchQueue.main.async {
+                    print("Error: \(error)")
                     self.detailTableView?.refreshControl?.endRefreshing()
-                    self.updateError(isError: true)
+                    self.errorTuple = (isError: true, description: error.localizedDescription)
+                    self.updateError(errorTuple: self.errorTuple)
                 }
             }
         }
@@ -80,8 +83,9 @@ class DetailViewController: UIViewController {
         tableView.register(nib, forCellReuseIdentifier: DetailTableViewCell.identifier)
     }
 //MARK: Call to update UI
-    private func updateError(isError: Bool) {
-        if isError {
+    private func updateError(errorTuple: ErrorTuple) {
+        errorLabel?.text = errorTuple.description
+        if errorTuple.isError {
             loadingFrame?.isHidden = false
             detailTableView?.isHidden = true
         } else {
@@ -102,7 +106,8 @@ class DetailViewController: UIViewController {
     }
 //MARK: Buttons
     @IBAction func reloadErrorPressed(_ sender: UIButton?){
-        updateError(isError: false)
+        errorTuple = (isError: false, description: nil)
+        updateError(errorTuple: errorTuple)
         reload()
     }
 //MARK: Video Player
