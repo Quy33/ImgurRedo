@@ -78,7 +78,8 @@ struct NetWorkManager {
             group -> [UIImage] in
             
             for (index,url) in urls.enumerated() {
-                group.addTask {
+                group.addTaskUnlessCancelled {
+                    try Task.checkCancellation()
                     let image = try await singleDownload(url: url)
                     let tuple = (index: index, image: image)
                     return tuple
@@ -87,7 +88,11 @@ struct NetWorkManager {
             
             var results: [imageTuple] = []
             for try await result in group {
-                results.append(result)
+                if Task.isCancelled {
+                    group.cancelAll()
+                } else {
+                    results.append(result)
+                }
             }
             results = results.sorted{ $0.index < $1.index }
             let images: [UIImage] = results.map { $0.image }
