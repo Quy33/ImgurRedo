@@ -63,8 +63,8 @@ class DetailViewController: UIViewController {
                     self.detailTableView?.refreshControl?.endRefreshing()
                     self.detailTableView?.reloadData()
                 }
-            } catch {
                 
+            } catch {
                 DispatchQueue.main.async {
                     print("Error: \(error)")
                     self.detailTableView?.refreshControl?.endRefreshing()
@@ -120,6 +120,20 @@ class DetailViewController: UIViewController {
         self.present(vc, animated: true) {
             vc.player?.play()
         }
+    }
+//MARK: Get Comments
+    private func getComments(_ model: CommentsDataModel){
+        let first = model.data[0]
+        var temp = first
+        var childs = temp.children
+        
+        for child in childs {
+            if !child.children.isEmpty {
+                childs = child.children
+            }
+        }
+        
+        
     }
 //MARK: Height Calculation
     private func calculateElementHeights(cell: DetailTableViewCell) {
