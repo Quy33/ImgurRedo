@@ -105,14 +105,14 @@ struct NetWorkManager {
         let data = try await downloadData(url)
         return try parseJson(data)
     }
-//    func requestComments() async throws -> CommentsDataModel {
-//        //Get comments...
-//        guard let url = URL(string: NetWorkManager.commentsLink) else {
-//            throw NetworkingError.invalidData
-//        }
-//        let data = try await downloadData(url)
-//        return try parseJson(data)
-//    }
+    func requestComments() async throws -> CommentDataModel {
+        //Get comments...
+        guard let url = URL(string: NetWorkManager.commentsLink) else {
+            throw NetworkingError.invalidData
+        }
+        let data = try await downloadData(url)
+        return try parseJson(data)
+    }
 }
 //MARK: NetWorking Error Enums
 enum NetworkingError: Error {

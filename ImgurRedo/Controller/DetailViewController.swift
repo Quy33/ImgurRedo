@@ -22,7 +22,8 @@ class DetailViewController: UIViewController {
     private var heights: [CGFloat] = []
     private var isCached = false
     private var errorTuple: ErrorTuple = (isError: false, description: nil)
-    
+    static var counter = 0
+        
     var galleryGot = (isAlbum: true, id: "2eOWNGV")
     
     override func viewDidLoad() {
@@ -63,7 +64,15 @@ class DetailViewController: UIViewController {
                     self.detailTableView?.refreshControl?.endRefreshing()
                     self.detailTableView?.reloadData()
                 }
-                
+                //Comments
+                var array: [Comment] = []
+                let comments = try await networkManager.requestComments()
+                let first = comments.data[0]
+                goThroughTree(with: first, array: &array) { data, inArray in
+                    let newComment = Comment(value: data.comment, id: data.id, parentId: data.parent_id)
+                    inArray.append(newComment)
+                }
+                let result = sortParents(array)
             } catch {
                 DispatchQueue.main.async {
                     print("Error: \(error)")
@@ -74,6 +83,27 @@ class DetailViewController: UIViewController {
             }
         }
     }
+//MARK: Test Functions
+    func goThroughTree(with node: CommentData, array: inout [Comment],_ visit: (CommentData,inout [Comment])->Void ) {
+        node.children.forEach {
+            goThroughTree(with: $0, array: &array, visit)
+        }
+        visit(node, &array)
+    }
+    func sortParents(_ array: [Comment]) -> Comment {
+        var comments = array
+        while comments.count != 1 {
+            let firstComment = comments.first!
+            for comment in comments {
+                if firstComment.parentId == comment.id {
+                    comment.add(firstComment)
+                    comments.removeFirst()
+                }
+            }
+        }
+        return comments[0]
+    }
+
 //MARK: Cell registration
     private func registerCell(tableView: UITableView?) {
         guard let tableView = tableView else {
@@ -122,7 +152,7 @@ class DetailViewController: UIViewController {
         }
     }
 //MARK: Get Comments
-    private func getComments(_ model: CommentsDataModel){
+    private func getComments(_ model: CommentDataModel){
         let first = model.data[0]
         var temp = first
         var childs = temp.children

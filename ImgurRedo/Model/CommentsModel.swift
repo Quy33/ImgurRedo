@@ -8,12 +8,16 @@
 import Foundation
 
 //class Comment {
-//    let comment: String
-//    let childComments: [Comment]
-//    let level: Int
-//    let parent: Comment?
-//    init(comment:String, childComments: [Comment]){
+//    var comment: String
+//    var children: [Comment] = []
+//    weak var parent: Comment?
+//    
+//    init(comment:String){
 //        self.comment = comment
-//        self.childComments = childComments
+//    }
+//    
+//    func add(child: Comment){
+//        children.append(child)
+//        child.parent = self
 //    }
 //}
