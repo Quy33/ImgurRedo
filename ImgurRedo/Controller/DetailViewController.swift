@@ -14,6 +14,7 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var detailTableView: UITableView?
     @IBOutlet weak var loadingFrame: UIView?
     @IBOutlet weak var errorLabel: UILabel?
+    @IBOutlet weak var commentsBtn: UIButton!
     
     static let identifier = "DetailViewController"
     private let networkManager = NetWorkManager()
@@ -22,7 +23,7 @@ class DetailViewController: UIViewController {
     private var heights: [CGFloat] = []
     private var isCached = false
     private var errorTuple: ErrorTuple = (isError: false, description: nil)
-    static var counter = 0
+    private var comments: [Comment] = []
         
     var galleryGot = (isAlbum: true, id: "2eOWNGV")
     
@@ -43,7 +44,7 @@ class DetailViewController: UIViewController {
     }
 //MARK: Networking Call
     private func loadDetails(){
-        detailTableView?.refreshControl?.beginRefreshing()
+        loadUI(true)
         Task {
             do {
                 let metaData = try await networkManager.requestData(isAlbum: galleryGot.isAlbum, id: galleryGot.id)
@@ -64,13 +65,13 @@ class DetailViewController: UIViewController {
                     heights.append(0)
                 }
                 DispatchQueue.main.async {
-                    self.detailTableView?.refreshControl?.endRefreshing()
+                    self.loadUI(false)
                     self.detailTableView?.reloadData()
                 }
                 //Comments
                 
                 let commentsData = metaData.commentData
-                var comments: [Comment] = []
+                
                 
                 for commentData in commentsData.data {
                     var array: [Comment] = []
@@ -81,19 +82,17 @@ class DetailViewController: UIViewController {
                     let result = sortParents(array)
                     comments.append(result)
                 }
-                
             } catch {
-                
                 DispatchQueue.main.async {
                     print("Error: \(error)")
-                    self.detailTableView?.refreshControl?.endRefreshing()
+                    self.loadUI(false)
                     self.errorTuple = (isError: true, description: error.localizedDescription)
                     self.updateError(errorTuple: self.errorTuple)
                 }
             }
         }
     }
-//MARK: Test Functions
+//MARK: Comments Functions
     func goThroughTree(with node: CommentData, array: inout [Comment],_ visit: (CommentData,inout [Comment])->Void ) {
         node.children.forEach {
             goThroughTree(with: $0, array: &array, visit)
@@ -144,11 +143,29 @@ class DetailViewController: UIViewController {
         heights = []
         loadDetails()
     }
+    private func loadUI(_ bool: Bool){
+        if bool {
+            detailTableView?.refreshControl?.beginRefreshing()
+        } else {
+            detailTableView?.refreshControl?.endRefreshing()
+        }
+        commentsBtn.isHidden = bool
+    }
 //MARK: Buttons
     @IBAction func reloadErrorPressed(_ sender: UIButton?){
         errorTuple = (isError: false, description: nil)
         updateError(errorTuple: errorTuple)
         reload()
+    }
+    @IBAction func commentsBtnPressed(_ sender: UIButton) {
+        if !comments.isEmpty {
+            performSegue(withIdentifier: CommentViewController.identifier, sender: self)
+        }
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let destinationVC = segue.destination as? CommentViewController {
+            destinationVC.commentsGot = comments
+        }
     }
 //MARK: Video Player
     private func playVideo(url: URL){
@@ -160,20 +177,6 @@ class DetailViewController: UIViewController {
         self.present(vc, animated: true) {
             vc.player?.play()
         }
-    }
-//MARK: Get Comments
-    private func getComments(_ model: CommentDataModel){
-        let first = model.data[0]
-        var temp = first
-        var childs = temp.children
-        
-        for child in childs {
-            if !child.children.isEmpty {
-                childs = child.children
-            }
-        }
-        
-        
     }
 //MARK: Height Calculation
     private func calculateElementHeights(cell: DetailTableViewCell) {

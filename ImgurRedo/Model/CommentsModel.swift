@@ -18,6 +18,9 @@ class Comment {
         self.id = id
         self.parentId = parentId
     }
+    convenience init() {
+        self.init(value: "", id: 0, parentId: 0)
+    }
     func add(_ child: Comment){
         children.append(child)
         child.parent = self

@@ -28,6 +28,7 @@ class DetailTableViewCell: UITableViewCell {
     
     static let identifier = "DetailTableViewCell"
 
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
