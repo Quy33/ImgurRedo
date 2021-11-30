@@ -46,9 +46,12 @@ class DetailViewController: UIViewController {
         detailTableView?.refreshControl?.beginRefreshing()
         Task {
             do {
-                let model = try await networkManager.requestDetail(isAlbum: galleryGot.isAlbum, id: galleryGot.id)
+                let metaData = try await networkManager.requestData(isAlbum: galleryGot.isAlbum, id: galleryGot.id)
+                
+                let detailModel = metaData.detailData
+                
                 if galleryGot.isAlbum {
-                    albumItem = DetailAlbumModel(model.data)
+                    albumItem = DetailAlbumModel(detailModel.data)
                     let urls = albumItem.images.map{ $0.url }
                     let images = try await networkManager.batchesDownload(urls: urls)
                     for (index,item) in albumItem.images.enumerated() {
@@ -56,7 +59,7 @@ class DetailViewController: UIViewController {
                     }
                     heights = .init(repeating: 0, count: albumItem.images.count)
                 } else {
-                    imageItem = DetailModel(model.data)
+                    imageItem = DetailModel(detailModel.data)
                     imageItem.image = try await networkManager.singleDownload(url: imageItem.url)
                     heights.append(0)
                 }
@@ -66,7 +69,7 @@ class DetailViewController: UIViewController {
                 }
                 //Comments
                 
-                let commentsData = try await networkManager.requestComments()
+                let commentsData = metaData.commentData
                 var comments: [Comment] = []
                 
                 for commentData in commentsData.data {

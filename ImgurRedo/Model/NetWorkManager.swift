@@ -11,7 +11,6 @@ import UIKit
 struct NetWorkManager {
     private let baseURL = "https://api.imgur.com/3"
     
-    private static var commentsLink = ""
 //    private let clientID = "11dd115895de7c5"
     
     private let header = (key: "Authorization", value: "Client-ID 11dd115895de7c5")
@@ -93,25 +92,22 @@ struct NetWorkManager {
         return results
     }
 //MARK: Detail Screen Networking
-    func requestDetail(isAlbum: Bool, id: String) async throws -> DetailDataModel {
+
+    func requestData(isAlbum: Bool, id: String) async throws -> (detailData: DetailDataModel, commentData: CommentDataModel) {
+        
         let detail = isAlbum ? "album" : "image"
-        let urlString = "\(baseURL)/\(detail)/\(id)"
-        NetWorkManager.commentsLink = urlString + "/comments"
+        let detailUrlString = "\(baseURL)/\(detail)/\(id)"
+        let commentUrlString = detailUrlString + "/comments"
         
-        guard let url = URL(string: urlString) else {
-            throw NetworkingError.invalidData
-        }
+        guard let detailUrl = URL(string: detailUrlString),
+              let commentUrl = URL(string: commentUrlString) else {
+                  throw NetworkingError.invalidData
+              }
         
-        let data = try await downloadData(url)
-        return try parseJson(data)
-    }
-    func requestComments() async throws -> CommentDataModel {
-        //Get comments...
-        guard let url = URL(string: NetWorkManager.commentsLink) else {
-            throw NetworkingError.invalidData
-        }
-        let data = try await downloadData(url)
-        return try parseJson(data)
+        let detailData = try await downloadData(detailUrl)
+        let commentData = try await downloadData(commentUrl)
+        
+        return (detailData: try parseJson(detailData), commentData: try parseJson(commentData))
     }
 }
 //MARK: NetWorking Error Enums

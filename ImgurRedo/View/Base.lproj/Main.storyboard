@@ -166,7 +166,16 @@
                             <constraint firstItem="N1w-iC-jh3" firstAttribute="leading" secondItem="knm-CG-FpU" secondAttribute="leading" id="ntn-wh-HsM"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="xrQ-DT-l1a"/>
+                    <navigationItem key="navigationItem" id="xrQ-DT-l1a">
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="Cyi-dr-qXF">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="cOd-fD-QHj">
+                                <rect key="frame" x="-33" y="-15" width="92" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="comment"/>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="detailTableView" destination="AtM-MK-yRq" id="U4p-xt-rDi"/>
                         <outlet property="errorLabel" destination="CC2-LE-9Of" id="Mt3-zl-SIZ"/>
