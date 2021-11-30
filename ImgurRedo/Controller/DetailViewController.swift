@@ -65,15 +65,22 @@ class DetailViewController: UIViewController {
                     self.detailTableView?.reloadData()
                 }
                 //Comments
-                var array: [Comment] = []
-                let comments = try await networkManager.requestComments()
-                let first = comments.data[0]
-                goThroughTree(with: first, array: &array) { data, inArray in
-                    let newComment = Comment(value: data.comment, id: data.id, parentId: data.parent_id)
-                    inArray.append(newComment)
+                
+                let commentsData = try await networkManager.requestComments()
+                var comments: [Comment] = []
+                
+                for commentData in commentsData.data {
+                    var array: [Comment] = []
+                    goThroughTree(with: commentData, array: &array) { data, inArray in
+                        let newComment = Comment(value: data.comment, id: data.id, parentId: data.parent_id)
+                        inArray.append(newComment)
+                    }
+                    let result = sortParents(array)
+                    comments.append(result)
                 }
-                let result = sortParents(array)
+                
             } catch {
+                
                 DispatchQueue.main.async {
                     print("Error: \(error)")
                     self.detailTableView?.refreshControl?.endRefreshing()
