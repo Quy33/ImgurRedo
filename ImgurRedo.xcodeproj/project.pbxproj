@@ -28,6 +28,8 @@
 		53D138D42742639000E05A70 /* ImgurCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D138D22742639000E05A70 /* ImgurCollectionViewCell.swift */; };
 		53D138D52742639000E05A70 /* ImgurCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 53D138D32742639000E05A70 /* ImgurCollectionViewCell.xib */; };
 		53D6F34F2755D4280027C9FC /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D6F34E2755D4280027C9FC /* CommentViewController.swift */; };
+		53D6F35227561F640027C9FC /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D6F35027561F640027C9FC /* CommentCell.swift */; };
+		53D6F35327561F640027C9FC /* CommentCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 53D6F35127561F640027C9FC /* CommentCell.xib */; };
 		53E298B4274E8310000AC971 /* CommentDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E298B3274E8310000AC971 /* CommentDataModel.swift */; };
 		53E298B6274E86D1000AC971 /* CommentsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E298B5274E86D1000AC971 /* CommentsModel.swift */; };
 /* End PBXBuildFile section */
@@ -56,6 +58,8 @@
 		53D138D22742639000E05A70 /* ImgurCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImgurCollectionViewCell.swift; sourceTree = "<group>"; };
 		53D138D32742639000E05A70 /* ImgurCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImgurCollectionViewCell.xib; sourceTree = "<group>"; };
 		53D6F34E2755D4280027C9FC /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
+		53D6F35027561F640027C9FC /* CommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
+		53D6F35127561F640027C9FC /* CommentCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CommentCell.xib; sourceTree = "<group>"; };
 		53E298B3274E8310000AC971 /* CommentDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentDataModel.swift; sourceTree = "<group>"; };
 		53E298B5274E86D1000AC971 /* CommentsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -96,6 +100,7 @@
 				5394B64227460E2A004D0A5B /* DetailViewController.swift */,
 				5394B64427461196004D0A5B /* DetailTableViewCell.swift */,
 				53D6F34E2755D4280027C9FC /* CommentViewController.swift */,
+				53D6F35027561F640027C9FC /* CommentCell.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -106,6 +111,7 @@
 				53D138C427425E0400E05A70 /* Main.storyboard */,
 				53D138D32742639000E05A70 /* ImgurCollectionViewCell.xib */,
 				5394B64527461196004D0A5B /* DetailTableViewCell.xib */,
+				53D6F35127561F640027C9FC /* CommentCell.xib */,
 				53D138C927425E0800E05A70 /* LaunchScreen.storyboard */,
 			);
 			path = View;
@@ -219,6 +225,7 @@
 				53D138CB27425E0800E05A70 /* LaunchScreen.storyboard in Resources */,
 				5394B64727461196004D0A5B /* DetailTableViewCell.xib in Resources */,
 				53D138C827425E0800E05A70 /* Assets.xcassets in Resources */,
+				53D6F35327561F640027C9FC /* CommentCell.xib in Resources */,
 				53D138C627425E0400E05A70 /* Main.storyboard in Resources */,
 				53D138D52742639000E05A70 /* ImgurCollectionViewCell.xib in Resources */,
 			);
@@ -231,6 +238,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53D6F35227561F640027C9FC /* CommentCell.swift in Sources */,
 				53D138C327425E0400E05A70 /* ViewController.swift in Sources */,
 				53209BD227454E4E0098D13B /* ToolBox.swift in Sources */,
 				5394B649274635F3004D0A5B /* DetailDataModel.swift in Sources */,

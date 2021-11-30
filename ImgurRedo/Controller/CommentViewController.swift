@@ -21,8 +21,13 @@ class CommentViewController: UIViewController {
         dataSource = commentsGot
         commentTableView.dataSource = self
         commentTableView.delegate = self
+        //registerCell()
     }
     
+    func registerCell() {
+        let nib = UINib(nibName: CommentCell.identifier, bundle: nil)
+        commentTableView.register(nib, forCellReuseIdentifier: CommentCell.identifier)
+    }
 }
 //MARK: TableView Stuff
 extension CommentViewController: UITableViewDataSource {
@@ -47,9 +52,11 @@ extension CommentViewController: UITableViewDataSource {
 extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let comment = dataSource[indexPath.row]
-        if !comment.children.isEmpty {
-            dataSource = comment.children
-            tableView.reloadData()
+        guard !comment.children.isEmpty && !comment.isCollapsed else {
+            return
         }
+        dataSource.insert(contentsOf: comment.children, at: indexPath.row + 1)
+        dataSource[indexPath.row].isCollapsed = true
+        tableView.reloadData()
     }
 }

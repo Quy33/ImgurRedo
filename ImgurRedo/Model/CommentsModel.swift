@@ -13,6 +13,7 @@ class Comment {
     let id: Int
     let parentId: Int
     var children: [Comment] = []
+    var isCollapsed = false
     init(value: String, id: Int, parentId: Int) {
         self.value = value
         self.id = id
