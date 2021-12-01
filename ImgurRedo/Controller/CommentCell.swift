@@ -16,9 +16,10 @@ class CommentCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
     }
-    func config(text: String) {
-        commentLabel.text = text
-        commentLabel.leftInset = 15
+    func config(_ comment: Comment) {
+        let counter = comment.level <= 5 ? comment.level : 5
+        commentLabel.inset = UIEdgeInsets(top: 0, left: 20 * CGFloat(counter), bottom: 0, right: 0)
+        commentLabel.text = comment.value
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

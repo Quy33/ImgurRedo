@@ -51,12 +51,11 @@ typealias ErrorTuple = (isError: Bool, description: String?)
 typealias ConfigTuple = (top: String?, title: String?, image: UIImage, description: String?, bottom: String?, isBottom: Bool, animated: Bool)
 
 class PaddingLabel: UILabel {
-    var leftInset: CGFloat = 30
-    lazy var inset = UIEdgeInsets(top: 0, left: leftInset, bottom: 0, right: 0)
+    var inset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     
     override var intrinsicContentSize: CGSize {
         var size = super.intrinsicContentSize
-        size.width = size.width + leftInset
+        size.width = size.width + inset.left
         return size
     }
     

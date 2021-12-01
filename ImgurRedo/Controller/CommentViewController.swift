@@ -37,8 +37,24 @@ extension CommentViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: CommentCell.identifier, for: indexPath) as! CommentCell
         
         let comment = dataSource[indexPath.row]
-        cell.config(text: comment.value)
-        cell.accessoryType = comment.children.isEmpty ? .none : .disclosureIndicator
+        cell.config(comment)
+        
+        if !comment.children.isEmpty {
+            
+            if comment.isCollapsed {
+    //            cell.accessoryType = .none
+                cell.backgroundColor = .blue
+                cell.commentLabel.textColor = .white
+            } else {
+    //            cell.accessoryType = comment.children.isEmpty ? .none : .disclosureIndicator
+                cell.backgroundColor = .lightGray
+                cell.commentLabel.textColor = .black
+            }
+        } else {
+            cell.backgroundColor = .white
+            cell.commentLabel.textColor = .black
+        }
+
         
         return cell
     }
@@ -47,6 +63,7 @@ extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let comment = dataSource[indexPath.row]
         print(comment.level)
+        print(comment.value)
         guard !comment.children.isEmpty && !comment.isCollapsed else {
             return
         }
