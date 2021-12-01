@@ -72,7 +72,7 @@ class DetailViewController: UIViewController {
                 let commentsData = metaData.commentData
                 for commentData in commentsData.data {
                     var array: [Comment] = []
-                    appendNode(array: &array, commentData) { $0.append(Comment(data: $1)) }
+                    appendNode(container: &array, commentData) { $0.append(Comment(data: $1)) }
                     let result = makeTree(array)
                     comments.append(result)
                 }
@@ -87,23 +87,23 @@ class DetailViewController: UIViewController {
         }
     }
 //MARK: Comments Functions
-    func appendNode(array: inout [Comment], _ data: CommentData,_ visit: (inout [Comment], CommentData)->Void ) {
-        visit(&array, data)
+    func appendNode(container: inout [Comment], _ data: CommentData,_ visit: (inout [Comment], CommentData)->Void ) {
+        visit(&container, data)
         data.children.forEach {
-            appendNode(array: &array, $0, visit)
+            appendNode(container: &container, $0, visit)
         }
     }
-    func makeTree(_ array: [Comment]) -> Comment {
-        for (index,item) in array.enumerated() {
+    func makeTree(_ container: [Comment]) -> Comment {
+        for (index,item) in container.enumerated() {
             var nextCount = index + 1
-            while nextCount < array.count {
-                if item.id == array[nextCount].parentId {
-                    item.add(array[nextCount])
+            while nextCount < container.count {
+                if item.id == container[nextCount].parentId {
+                    item.add(container[nextCount])
                 }
                 nextCount += 1
             }
         }
-        return array.first!
+        return container.first!
     }
 //MARK: Cell registration
     private func registerCell(tableView: UITableView?) {

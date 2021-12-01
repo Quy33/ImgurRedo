@@ -62,13 +62,30 @@ extension CommentViewController: UITableViewDataSource {
 extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let comment = dataSource[indexPath.row]
-        print(comment.level)
-        print(comment.value)
-        guard !comment.children.isEmpty && !comment.isCollapsed else {
+        guard !comment.children.isEmpty else {
             return
         }
-        dataSource.insert(contentsOf: comment.children, at: indexPath.row + 1)
-        dataSource[indexPath.row].isCollapsed = true
+        
+        
+//        array.forEach{ print("level:\($0.level), value:\($0.value)") }
+//        print("---------")
+//        comment.forEachDepthFirst{ print("level:\($0.level), value:\($0.value)")}
+        if comment.isCollapsed {
+            comment.traverse(container: &dataSource, selected: comment) { item, selected, cont  in
+                for (index,comment) in cont.enumerated() {
+                    if comment.id == selected.id {
+                        continue
+                    } else if comment.id == item.id {
+                        comment.isCollapsed = false
+                        cont.remove(at: index)
+                    }
+                }
+            }
+            comment.isCollapsed = false
+        } else {
+            dataSource.insert(contentsOf: comment.children, at: indexPath.row + 1)
+            comment.isCollapsed = true
+        }
         tableView.reloadData()
     }
 }

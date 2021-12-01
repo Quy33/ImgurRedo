@@ -39,4 +39,10 @@ extension Comment {
             $0.forEachDepthFirst(visit)
         }
     }
+    func traverse(container: inout [Comment],selected: Comment,_ visit: (Comment,Comment,inout [Comment])->Void){
+        visit(self,selected, &container)
+        self.children.forEach{
+            $0.traverse(container: &container, selected: selected, visit)
+        }
+    }
 }
