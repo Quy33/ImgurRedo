@@ -18,10 +18,7 @@ class CommentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        
         dataSource = commentsGot
-        
         commentTableView.dataSource = self
         commentTableView.delegate = self
         registerCell()

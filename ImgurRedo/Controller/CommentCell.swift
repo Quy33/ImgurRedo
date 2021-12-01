@@ -18,7 +18,7 @@ class CommentCell: UITableViewCell {
     }
     func config(_ comment: Comment) {
         let counter = comment.level <= 5 ? comment.level : 5
-        commentLabel.inset = UIEdgeInsets(top: 0, left: 20 * CGFloat(counter), bottom: 0, right: 0)
+        commentLabel.inset = UIEdgeInsets(top: 10, left: 10 * CGFloat(counter), bottom: 10, right: 5)
         commentLabel.text = comment.value
     }
 
