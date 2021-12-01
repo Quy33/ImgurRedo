@@ -17,12 +17,18 @@ class CommentViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        commentsGot.forEach{ $0.isCollapsed = false }
+        
+        
+        
         dataSource = commentsGot
         
         commentTableView.dataSource = self
         commentTableView.delegate = self
         registerCell()
+    }
+    //Temp fix
+    override func viewWillDisappear(_ animated: Bool) {
+        dataSource.forEach{ $0.isCollapsed = false }
     }
     
     func registerCell() {
@@ -42,13 +48,10 @@ extension CommentViewController: UITableViewDataSource {
         cell.config(comment)
         
         if !comment.children.isEmpty {
-            
             if comment.isCollapsed {
-    //            cell.accessoryType = .none
                 cell.backgroundColor = .blue
                 cell.commentLabel.textColor = .white
             } else {
-    //            cell.accessoryType = comment.children.isEmpty ? .none : .disclosureIndicator
                 cell.backgroundColor = .lightGray
                 cell.commentLabel.textColor = .black
             }
@@ -56,7 +59,6 @@ extension CommentViewController: UITableViewDataSource {
             cell.backgroundColor = .white
             cell.commentLabel.textColor = .black
         }
-
         
         return cell
     }
