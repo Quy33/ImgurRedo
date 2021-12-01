@@ -14,6 +14,7 @@ class Comment {
     let parentId: Int
     var children: [Comment] = []
     var isCollapsed = false
+    var level = 0
     init(value: String, id: Int, parentId: Int) {
         self.value = value
         self.id = id
@@ -22,9 +23,13 @@ class Comment {
     convenience init() {
         self.init(value: "", id: 0, parentId: 0)
     }
+    convenience init(data: CommentData) {
+        self.init(value: data.comment, id: data.id, parentId: data.parent_id)
+    }
     func add(_ child: Comment){
         children.append(child)
         child.parent = self
+        child.level = self.level + 1
     }
 }
 extension Comment {

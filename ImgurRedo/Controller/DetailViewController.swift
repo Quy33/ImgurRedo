@@ -69,17 +69,11 @@ class DetailViewController: UIViewController {
                     self.detailTableView?.reloadData()
                 }
                 //Comments
-                
                 let commentsData = metaData.commentData
-                
-                
                 for commentData in commentsData.data {
                     var array: [Comment] = []
-                    goThroughTree(with: commentData, array: &array) { data, inArray in
-                        let newComment = Comment(value: data.comment, id: data.id, parentId: data.parent_id)
-                        inArray.append(newComment)
-                    }
-                    let result = sortParents(array)
+                    goThroughTree(array: &array, commentData) { $0.append(Comment(data: $1)) }
+                    let result = sort(array)
                     comments.append(result)
                 }
             } catch {
@@ -93,26 +87,24 @@ class DetailViewController: UIViewController {
         }
     }
 //MARK: Comments Functions
-    func goThroughTree(with node: CommentData, array: inout [Comment],_ visit: (CommentData,inout [Comment])->Void ) {
-        node.children.forEach {
-            goThroughTree(with: $0, array: &array, visit)
+    func goThroughTree(array: inout [Comment], _ data: CommentData,_ visit: (inout [Comment], CommentData)->Void ) {
+        visit(&array, data)
+        data.children.forEach {
+            goThroughTree(array: &array, $0, visit)
         }
-        visit(node, &array)
     }
-    func sortParents(_ array: [Comment]) -> Comment {
-        var comments = array
-        while comments.count != 1 {
-            let firstComment = comments.first!
-            for comment in comments {
-                if firstComment.parentId == comment.id {
-                    comment.add(firstComment)
-                    comments.removeFirst()
+    func sort(_ array: [Comment]) -> Comment {
+        for (index,item) in array.enumerated() {
+            var nextCount = index + 1
+            while nextCount < array.count {
+                if item.id == array[nextCount].parentId {
+                    item.add(array[nextCount])
                 }
+                nextCount += 1
             }
         }
-        return comments[0]
+        return array.first!
     }
-
 //MARK: Cell registration
     private func registerCell(tableView: UITableView?) {
         guard let tableView = tableView else {

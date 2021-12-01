@@ -12,7 +12,6 @@ class CommentViewController: UIViewController {
     static let identifier = "CommentViewController"
     var commentsGot: [Comment] = []
     private var dataSource: [Comment] = []
-    private var isAll = true
 
     @IBOutlet weak var commentTableView: UITableView!
     
@@ -21,7 +20,7 @@ class CommentViewController: UIViewController {
         dataSource = commentsGot
         commentTableView.dataSource = self
         commentTableView.delegate = self
-        //registerCell()
+        registerCell()
     }
     
     func registerCell() {
@@ -35,16 +34,11 @@ extension CommentViewController: UITableViewDataSource {
         return dataSource.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        guard !dataSource.isEmpty else {
-            return cell
-        }
-        let comment = dataSource[indexPath.row]
-        var config = cell.defaultContentConfiguration()
-        config.text = comment.value
+        let cell = tableView.dequeueReusableCell(withIdentifier: CommentCell.identifier, for: indexPath) as! CommentCell
         
+        let comment = dataSource[indexPath.row]
+        cell.config(text: comment.value)
         cell.accessoryType = comment.children.isEmpty ? .none : .disclosureIndicator
-        cell.contentConfiguration = config
         
         return cell
     }
@@ -52,6 +46,7 @@ extension CommentViewController: UITableViewDataSource {
 extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let comment = dataSource[indexPath.row]
+        print(comment.level)
         guard !comment.children.isEmpty && !comment.isCollapsed else {
             return
         }

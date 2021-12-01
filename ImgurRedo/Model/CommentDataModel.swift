@@ -16,6 +16,14 @@ class CommentData: Decodable {
     let comment: String
     var children: [CommentData]
 }
+extension CommentData {
+    func forEachDepthFirst(_ visit: (CommentData)->Void ) {
+        visit(self)
+        self.children.forEach {
+            $0.forEachDepthFirst(visit)
+        }
+    }
+}
 
 
 
