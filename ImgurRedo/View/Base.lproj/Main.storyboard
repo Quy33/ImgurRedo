@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="AdG-SP-yln">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="C4I-OR-aXO">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
@@ -168,7 +168,6 @@
                                         <buttonConfiguration key="configuration" style="plain" title="Comment"/>
                                         <connections>
                                             <action selector="commentsBtnPressed:" destination="AdG-SP-yln" eventType="touchUpInside" id="W1y-rt-olX"/>
-                                            <segue destination="Fdj-kM-Xie" kind="show" identifier="CommentViewController" id="yVO-32-jJL"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -199,6 +198,7 @@
                         <outlet property="detailTableView" destination="AtM-MK-yRq" id="U4p-xt-rDi"/>
                         <outlet property="errorLabel" destination="CC2-LE-9Of" id="Mt3-zl-SIZ"/>
                         <outlet property="loadingFrame" destination="zFM-En-icM" id="OKN-jl-dq0"/>
+                        <segue destination="Fdj-kM-Xie" kind="show" identifier="CommentViewController" id="3fM-nZ-aJI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JXa-q8-4PK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
