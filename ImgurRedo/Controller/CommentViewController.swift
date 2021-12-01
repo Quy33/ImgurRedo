@@ -17,7 +17,9 @@ class CommentViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        commentsGot.forEach{ $0.isCollapsed = false }
         dataSource = commentsGot
+        
         commentTableView.dataSource = self
         commentTableView.delegate = self
         registerCell()
@@ -66,10 +68,6 @@ extension CommentViewController: UITableViewDelegate {
             return
         }
         
-        
-//        array.forEach{ print("level:\($0.level), value:\($0.value)") }
-//        print("---------")
-//        comment.forEachDepthFirst{ print("level:\($0.level), value:\($0.value)")}
         if comment.isCollapsed {
             comment.traverse(container: &dataSource, selected: comment) { item, selected, cont  in
                 for (index,comment) in cont.enumerated() {
