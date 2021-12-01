@@ -72,8 +72,8 @@ class DetailViewController: UIViewController {
                 let commentsData = metaData.commentData
                 for commentData in commentsData.data {
                     var array: [Comment] = []
-                    goThroughTree(array: &array, commentData) { $0.append(Comment(data: $1)) }
-                    let result = sort(array)
+                    appendNode(array: &array, commentData) { $0.append(Comment(data: $1)) }
+                    let result = makeTree(array)
                     comments.append(result)
                 }
             } catch {
@@ -87,13 +87,13 @@ class DetailViewController: UIViewController {
         }
     }
 //MARK: Comments Functions
-    func goThroughTree(array: inout [Comment], _ data: CommentData,_ visit: (inout [Comment], CommentData)->Void ) {
+    func appendNode(array: inout [Comment], _ data: CommentData,_ visit: (inout [Comment], CommentData)->Void ) {
         visit(&array, data)
         data.children.forEach {
-            goThroughTree(array: &array, $0, visit)
+            appendNode(array: &array, $0, visit)
         }
     }
-    func sort(_ array: [Comment]) -> Comment {
+    func makeTree(_ array: [Comment]) -> Comment {
         for (index,item) in array.enumerated() {
             var nextCount = index + 1
             while nextCount < array.count {
