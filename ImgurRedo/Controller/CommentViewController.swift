@@ -19,9 +19,11 @@ class CommentViewController: UIViewController {
         super.viewDidLoad()
         
         dataSource = commentsGot
+        
+        registerCell()
         commentTableView.dataSource = self
         commentTableView.delegate = self
-        registerCell()
+        commentTableView.rowHeight = 200
     }
     //Temp fix
     override func viewWillDisappear(_ animated: Bool) {
@@ -29,33 +31,32 @@ class CommentViewController: UIViewController {
     }
     
     func registerCell() {
-        let nib = UINib(nibName: CommentCell.identifier, bundle: nil)
-        commentTableView.register(nib, forCellReuseIdentifier: CommentCell.identifier)
+        commentTableView.register(CommentCell.self, forCellReuseIdentifier: CommentCell.identifier)
+    }
+    func detectLinks(text: String) {
+        let type: NSTextCheckingResult.CheckingType = .link
+        do {
+            let detector = try NSDataDetector(types: type.rawValue)
+            let matches = detector.matches(in: text, options: .reportCompletion, range: NSMakeRange(0, text.count))
+            let urls = matches.compactMap{ $0.url }
+            print(urls)
+        } catch {
+            print(error)
+        }
     }
 }
 //MARK: TableView Stuff
 extension CommentViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard !dataSource.isEmpty else {
+            return 1
+        }
         return dataSource.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CommentCell.identifier, for: indexPath) as! CommentCell
-        
         let comment = dataSource[indexPath.row]
-        cell.config(comment)
-        
-        if !comment.children.isEmpty {
-            if comment.isCollapsed {
-                cell.backgroundColor = .blue
-                cell.commentLabel.textColor = .white
-            } else {
-                cell.backgroundColor = .lightGray
-                cell.commentLabel.textColor = .black
-            }
-        } else {
-            cell.backgroundColor = .white
-            cell.commentLabel.textColor = .black
-        }
+        let cell = CommentCell.init(style: .default, reuseIdentifier: CommentCell.identifier, count: comment.level)
+        cell.config(text: comment.value)
         
         return cell
     }
@@ -63,6 +64,7 @@ extension CommentViewController: UITableViewDataSource {
 extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let comment = dataSource[indexPath.row]
+        detectLinks(text: comment.value)
         guard !comment.children.isEmpty else {
             return
         }
@@ -80,7 +82,8 @@ extension CommentViewController: UITableViewDelegate {
             }
             comment.isCollapsed = false
         } else {
-            dataSource.insert(contentsOf: comment.children, at: indexPath.row + 1)
+            let next = IndexPath(row: indexPath.row + 1, section: 0)
+            dataSource.insert(contentsOf: comment.children, at: next.row)
             comment.isCollapsed = true
         }
         tableView.reloadData()
