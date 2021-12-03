@@ -58,6 +58,14 @@ extension CommentViewController: UITableViewDataSource {
         let cell = CommentCell.init(style: .default, reuseIdentifier: CommentCell.identifier, count: comment.level)
         cell.config(text: comment.value)
         
+        if comment.children.isEmpty {
+            cell.accessoryType = .none
+        } else if comment.isCollapsed {
+            cell.accessoryType = .none
+        } else {
+            cell.accessoryType = .disclosureIndicator
+        }
+        
         return cell
     }
 }
