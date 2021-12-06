@@ -15,6 +15,7 @@ class CommentData: Decodable {
     let parent_id: Int
     let comment: String
     var children: [CommentData]
+    let author: String
 }
 
 

@@ -23,7 +23,7 @@ class CommentViewController: UIViewController {
         registerCell()
         commentTableView.dataSource = self
         commentTableView.delegate = self
-        commentTableView.rowHeight = 200
+//        commentTableView.rowHeight = 200
     }
     //Temp fix
     override func viewWillDisappear(_ animated: Bool) {
@@ -55,16 +55,7 @@ extension CommentViewController: UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let comment = dataSource[indexPath.row]
-        let cell = CommentCell.init(style: .default, reuseIdentifier: CommentCell.identifier, count: comment.level)
-        cell.config(text: comment.value)
-        
-        if comment.children.isEmpty {
-            cell.accessoryType = .none
-        } else if comment.isCollapsed {
-            cell.accessoryType = .none
-        } else {
-            cell.accessoryType = .disclosureIndicator
-        }
+        let cell = CommentCell.init(style: .default, reuseIdentifier: CommentCell.identifier, comment: comment)
         
         return cell
     }
@@ -72,7 +63,6 @@ extension CommentViewController: UITableViewDataSource {
 extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let comment = dataSource[indexPath.row]
-        detectLinks(text: comment.value)
         guard !comment.children.isEmpty else {
             return
         }

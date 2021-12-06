@@ -11,49 +11,117 @@ class CommentCell: UITableViewCell {
 
     static let identifier = "CommentCell"
     
-    private var separatorCount = 0
-    private var hasChild = false
-    
-    private var label: UILabel = {
-        let label = UILabel()
+    private var outerStackView = UIStackView()
+        
+    private var commentLabel: PaddingLabel = {
+        let label = PaddingLabel()
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .yellow
         label.text = "Hello World"
+        label.inset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
         return label
     }()
     
-    private var stackView: UIStackView = {
-        let stackView = UIStackView()
-        
-        stackView.spacing = 10
-        stackView.distribution = .fill
-        stackView.alignment = .center
-        stackView.axis = .horizontal
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.backgroundColor = .green
-        
-        return stackView
-    }()
+    private var commentStackView = UIStackView()
     
     private var separators: [UIView] = []
     
+//MARK: Cell header
+    private var authorLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    private var headerStackView = UIStackView()
+    private var childLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+//MARK: Cell setup
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?, comment: Comment) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setup(separatorAmount: comment.level, isEmpty: comment.children.isEmpty)
+        config(comment: comment.value, author: comment.author, isCollapsed: comment.isCollapsed, childrenCount: comment.children.count)
+    }
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
 
     }
-    
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?, count: Int) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        separatorCount = count
-        setup()
-    }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+
+        // Configure the view for the selected state
+    }
+    //MARK: Comment Setup
+    private func setup(separatorAmount count: Int, isEmpty: Bool) {
+        commentStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .green, spacing: 10)
+        outerStackView = makeStackView(axis: .vertical, distribution: .fill, color: .blue, spacing: 10)
+        headerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .green, spacing: 10)
+        
+        separators = makeSeparator(amount: count)
+        addSubViews(isEmpty: isEmpty)
+        setConstraints(isEmpty: isEmpty)
+    }
+    private func addSubViews(isEmpty: Bool) {
+        contentView.addSubview(outerStackView)
+        outerStackView.addArrangedSubview(headerStackView)
+        
+        headerStackView.addArrangedSubview(authorLabel)
+        if !isEmpty {
+            headerStackView.addArrangedSubview(childLabel)
+        }
+        
+        outerStackView.addArrangedSubview(commentStackView)
+        for separator in separators {
+            commentStackView.addArrangedSubview(separator)
+        }
+        commentStackView.addArrangedSubview(commentLabel)
+    }
+    private func setConstraints(isEmpty: Bool) {
+        var constraints: [NSLayoutConstraint] = []
+        
+        //Comment Stack View
+        constraints.append(outerStackView.topAnchor.constraint(
+            equalTo: contentView.topAnchor)
+        )
+        constraints.append(outerStackView.bottomAnchor.constraint(
+            equalTo: contentView.bottomAnchor)
+        )
+        constraints.append(outerStackView.leadingAnchor.constraint(
+            equalTo: contentView.leadingAnchor, constant: 10)
+        )
+        constraints.append(outerStackView.trailingAnchor.constraint(
+            equalTo: contentView.trailingAnchor, constant: -10)
+        )
+        
+        constraints.append(headerStackView.widthAnchor.constraint(equalTo: outerStackView.widthAnchor))
+        
+        constraints.append(commentStackView.widthAnchor.constraint(equalTo: outerStackView.widthAnchor))
+        
+        //Comment Header
+        if !isEmpty {
+            constraints.append(childLabel.heightAnchor.constraint(equalTo: authorLabel.heightAnchor))
+        }
+        //Comment Separator
+        for separator in separators {
+            constraints.append(separator.heightAnchor.constraint(equalTo: commentLabel.heightAnchor))
+            constraints.append(separator.widthAnchor.constraint(equalToConstant: 5))
+        }
+        
+        NSLayoutConstraint.activate(constraints)
+    }
+    //MARK: Small functions
+    func config(comment: String, author: String, isCollapsed: Bool ,childrenCount count: Int){
+        commentLabel.text = comment
+        authorLabel.text = author
+        childLabel.text = isCollapsed ? "X" : "\(count)"
+    }
     private func makeSeparator(amount: Int) -> [UIView] {
         var results: [UIView] = []
         for _ in 0 ..< amount {
@@ -64,57 +132,16 @@ class CommentCell: UITableViewCell {
         }
         return results
     }
-    
-    private func addSubViews() {
-        contentView.addSubview(stackView)
-        for separator in separators {
-            stackView.addArrangedSubview(separator)
-        }
-        stackView.addArrangedSubview(label)
-    }
-    private func setConstraints() {
-        var constraints: [NSLayoutConstraint] = []
+    private func makeStackView(axis: NSLayoutConstraint.Axis, distribution: UIStackView.Distribution, color: UIColor, spacing: CGFloat) -> UIStackView {
+        let stackView = UIStackView()
+        stackView.axis = axis
+        stackView.spacing = spacing
+        stackView.distribution = distribution
+        stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.backgroundColor = color
         
-        //Stack View
-        constraints.append(stackView.topAnchor.constraint(
-            equalTo: contentView.topAnchor)
-        )
-        constraints.append(stackView.bottomAnchor.constraint(
-            equalTo: contentView.bottomAnchor)
-        )
-        constraints.append(stackView.leadingAnchor.constraint(
-            equalTo: contentView.leadingAnchor, constant: 10)
-        )
-        constraints.append(stackView.trailingAnchor.constraint(
-            equalTo: contentView.trailingAnchor, constant: -10)
-        )
-        
-        //Separator
-        for separator in separators {
-            constraints.append(separator.heightAnchor.constraint(equalTo: stackView.heightAnchor))
-            constraints.append(separator.widthAnchor.constraint(equalToConstant: 5))
-        }
-        
-        //Label
-        constraints.append(label.heightAnchor.constraint(equalTo: stackView.heightAnchor))
-        
-        NSLayoutConstraint.activate(constraints)
+        return stackView
     }
-    
-    private func setup() {
-        separators = makeSeparator(amount: separatorCount)
-        addSubViews()
-        setConstraints()
-    }
-    func config(text: String){
-        label.text = text
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
 }
 
