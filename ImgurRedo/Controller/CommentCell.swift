@@ -10,35 +10,16 @@ import UIKit
 class CommentCell: UITableViewCell {
 
     static let identifier = "CommentCell"
-    
-    private var outerStackView = UIStackView()
-        
-    private var commentLabel: PaddingLabel = {
-        let label = PaddingLabel()
-        label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.backgroundColor = .yellow
-        label.text = "Hello World"
-        label.inset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
-        return label
-    }()
-    
-    private var commentStackView = UIStackView()
-    
     private var separators: [UIView] = []
     
-//MARK: Cell header
-    private var authorLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+//MARK: Cell UIs
+    private var outerStackView = UIStackView()
+    private var commentStackView = UIStackView()
     private var headerStackView = UIStackView()
-    private var childLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    
+    private var commentLabel = PaddingLabel()
+    private var authorLabel = PaddingLabel()
+    private var childLabel = PaddingLabel()
 //MARK: Cell setup
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?, comment: Comment) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -60,9 +41,16 @@ class CommentCell: UITableViewCell {
     }
     //MARK: Comment Setup
     private func setup(separatorAmount count: Int, isEmpty: Bool) {
-        commentStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .green, spacing: 10)
-        outerStackView = makeStackView(axis: .vertical, distribution: .fill, color: .blue, spacing: 10)
-        headerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .green, spacing: 10)
+        outerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .gray, spacing: 10)
+        commentStackView = makeStackView(axis: .vertical, distribution: .fill, color: .lightGray, spacing: 0)
+        headerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 10)
+        
+        let normalInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        let commentInset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
+        
+        commentLabel = makeLabel(numberOfLines: 0, color: .clear, inset: commentInset, textAlignment: .left)
+        authorLabel = makeLabel(numberOfLines: 1, color: .clear, inset: normalInset, textAlignment: .left)
+        childLabel = makeLabel(numberOfLines: 1, color: .clear, inset: normalInset, textAlignment: .center)
         
         separators = makeSeparator(amount: count)
         addSubViews(isEmpty: isEmpty)
@@ -70,18 +58,16 @@ class CommentCell: UITableViewCell {
     }
     private func addSubViews(isEmpty: Bool) {
         contentView.addSubview(outerStackView)
-        outerStackView.addArrangedSubview(headerStackView)
+                
+        separators.forEach{ outerStackView.addArrangedSubview($0) }
+        outerStackView.addArrangedSubview(commentStackView)
+        
+        commentStackView.addArrangedSubview(headerStackView)
+        commentStackView.addArrangedSubview(commentLabel)
         
         headerStackView.addArrangedSubview(authorLabel)
-        if !isEmpty {
-            headerStackView.addArrangedSubview(childLabel)
-        }
+        headerStackView.addArrangedSubview(childLabel)
         
-        outerStackView.addArrangedSubview(commentStackView)
-        for separator in separators {
-            commentStackView.addArrangedSubview(separator)
-        }
-        commentStackView.addArrangedSubview(commentLabel)
     }
     private func setConstraints(isEmpty: Bool) {
         var constraints: [NSLayoutConstraint] = []
@@ -100,19 +86,19 @@ class CommentCell: UITableViewCell {
             equalTo: contentView.trailingAnchor, constant: -10)
         )
         
-        constraints.append(headerStackView.widthAnchor.constraint(equalTo: outerStackView.widthAnchor))
-        
-        constraints.append(commentStackView.widthAnchor.constraint(equalTo: outerStackView.widthAnchor))
-        
-        //Comment Header
-        if !isEmpty {
-            constraints.append(childLabel.heightAnchor.constraint(equalTo: authorLabel.heightAnchor))
+        separators.forEach {
+            constraints.append($0.widthAnchor.constraint(equalToConstant: 5))
+            constraints.append($0.heightAnchor.constraint(equalTo: outerStackView.heightAnchor))
         }
-        //Comment Separator
-        for separator in separators {
-            constraints.append(separator.heightAnchor.constraint(equalTo: commentLabel.heightAnchor))
-            constraints.append(separator.widthAnchor.constraint(equalToConstant: 5))
-        }
+        
+        constraints.append(commentStackView.heightAnchor.constraint(equalTo: outerStackView.heightAnchor))
+        
+        constraints.append(headerStackView.widthAnchor.constraint(equalTo: commentStackView.widthAnchor))
+        
+        constraints.append(commentLabel.widthAnchor.constraint(equalTo:  commentStackView.widthAnchor))
+        
+        constraints.append(authorLabel.leadingAnchor.constraint(equalTo: headerStackView.leadingAnchor))
+        constraints.append(childLabel.widthAnchor.constraint(equalToConstant: 50))
         
         NSLayoutConstraint.activate(constraints)
     }
@@ -121,6 +107,7 @@ class CommentCell: UITableViewCell {
         commentLabel.text = comment
         authorLabel.text = author
         childLabel.text = isCollapsed ? "X" : "\(count)"
+        childLabel.isHidden = count == 0 ? true : false
     }
     private func makeSeparator(amount: Int) -> [UIView] {
         var results: [UIView] = []
@@ -142,6 +129,16 @@ class CommentCell: UITableViewCell {
         stackView.backgroundColor = color
         
         return stackView
+    }
+    private func makeLabel(numberOfLines lines: Int, color: UIColor, inset: UIEdgeInsets,textAlignment alignment: NSTextAlignment) -> PaddingLabel {
+        let label = PaddingLabel()
+        label.numberOfLines = lines
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = color
+        label.text = "Hello World"
+        label.inset = inset
+        label.textAlignment = alignment
+        return label
     }
 }
 
