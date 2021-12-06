@@ -54,6 +54,11 @@ class CommentCell: UITableViewCell {
     }
     //MARK: Comment Setup
     private func setup(separatorAmount count: Int, isEmpty: Bool) {
+        setProperties(count: count)
+        addSubViews(isEmpty: isEmpty)
+        setConstraints(isEmpty: isEmpty)
+    }
+    private func setProperties(count: Int) {
         outerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 5)
         commentStackView = makeStackView(axis: .vertical, distribution: .fill, color: .clear, spacing: 0)
         headerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 5)
@@ -70,8 +75,6 @@ class CommentCell: UITableViewCell {
         childLabel = makeLabel(numberOfLines: 1, bgColor: .gray, inset: childLabelInset, textAlignment: .center, textColor: .white, font: normalFont)
         
         separators = makeSeparator(amount: count)
-        addSubViews(isEmpty: isEmpty)
-        setConstraints(isEmpty: isEmpty)
     }
     private func addSubViews(isEmpty: Bool) {
         contentView.addSubview(outerStackView)
@@ -90,7 +93,7 @@ class CommentCell: UITableViewCell {
     private func setConstraints(isEmpty: Bool) {
         var constraints: [NSLayoutConstraint] = []
         
-        //Comment Stack View
+        //Outer Stack View
         constraints.append(outerStackView.topAnchor.constraint(
             equalTo: contentView.topAnchor)
         )
@@ -109,11 +112,20 @@ class CommentCell: UITableViewCell {
             constraints.append($0.heightAnchor.constraint(equalTo: outerStackView.heightAnchor))
         }
         
+        //Comment Stack View
         constraints.append(commentStackView.heightAnchor.constraint(equalTo: outerStackView.heightAnchor))
         
-        constraints.append(headerStackView.widthAnchor.constraint(equalTo: commentStackView.widthAnchor))
-        
         constraints.append(commentLabel.widthAnchor.constraint(equalTo:  commentStackView.widthAnchor))
+        
+        //Bottom of Comment Stack View
+        constraints.append(bottomSeparator.widthAnchor.constraint(equalTo: commentStackView.widthAnchor)
+        )
+        constraints.append(bottomSeparator.heightAnchor.constraint(equalToConstant: 1)
+        )
+        
+        //Header Stack View
+        constraints.append(headerStackView.widthAnchor.constraint(equalTo: commentStackView.widthAnchor)
+        )
         
         constraints.append(authorLabel.leadingAnchor.constraint(equalTo: headerStackView.leadingAnchor)
         )
@@ -134,11 +146,6 @@ class CommentCell: UITableViewCell {
         constraints.append(childLabel.trailingAnchor.constraint(equalTo: childCountView.trailingAnchor, constant: -5)
         )
         constraints.append(childLabel.heightAnchor.constraint(equalTo: childCountView.heightAnchor)
-        )
-        
-        constraints.append(bottomSeparator.widthAnchor.constraint(equalTo: commentStackView.widthAnchor)
-        )
-        constraints.append(bottomSeparator.heightAnchor.constraint(equalToConstant: 1)
         )
         
         NSLayoutConstraint.activate(constraints)
