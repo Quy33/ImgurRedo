@@ -11,6 +11,9 @@ class CommentCell: UITableViewCell {
 
     static let identifier = "CommentCell"
     private var separators: [UIView] = []
+    private var networkManager = NetWorkManager()
+    var hasImageLink = false
+    var finishedDownload = false
     
 //MARK: Cell UIs
     private var outerStackView = UIStackView()
@@ -32,12 +35,18 @@ class CommentCell: UITableViewCell {
         separator.backgroundColor = .black
         return separator
     }()
+    private var commentImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
 //MARK: Cell setup
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?, comment: Comment) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .lightGray
         setup(separatorAmount: comment.level, isEmpty: comment.children.isEmpty)
-        config(comment: comment.value, author: comment.author, isCollapsed: comment.isCollapsed, childrenCount: comment.children.count)
+        config(comment: comment.value, author: comment.author, isCollapsed: comment.isCollapsed, childrenCount: comment.children.count, image: comment.image)
     }
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -83,6 +92,7 @@ class CommentCell: UITableViewCell {
         outerStackView.addArrangedSubview(commentStackView)
         
         commentStackView.addArrangedSubview(headerStackView)
+        commentStackView.addArrangedSubview(commentImage)
         commentStackView.addArrangedSubview(commentLabel)
         commentStackView.addArrangedSubview(bottomSeparator)
         
@@ -114,6 +124,9 @@ class CommentCell: UITableViewCell {
         
         //Comment Stack View
         constraints.append(commentStackView.heightAnchor.constraint(equalTo: outerStackView.heightAnchor))
+        
+        constraints.append(commentImage.widthAnchor.constraint(equalTo: commentStackView.widthAnchor))
+        constraints.append(commentImage.heightAnchor.constraint(equalToConstant: 100))
         
         constraints.append(commentLabel.widthAnchor.constraint(equalTo:  commentStackView.widthAnchor))
         
@@ -151,8 +164,10 @@ class CommentCell: UITableViewCell {
         NSLayoutConstraint.activate(constraints)
     }
     //MARK: Small functions
-    func config(comment: String, author: String, isCollapsed: Bool ,childrenCount count: Int){
+    private func config(comment: String, author: String, isCollapsed: Bool , childrenCount count: Int, image: UIImage? ){
+        
         commentLabel.text = comment
+        
         authorLabel.text = author
         childLabel.text = isCollapsed ? "X" : "\(count)"
         childCountView.isHidden = count == 0 ? true : false
@@ -160,6 +175,11 @@ class CommentCell: UITableViewCell {
         childLabel.layer.cornerRadius = 5
         childLabel.layer.masksToBounds = true
         
+        if comment.isEmpty {
+            commentImage.removeFromSuperview()
+        } else {
+            commentImage.image = image != nil ? image : ToolBox.placeHolderImg
+        }
     }
     private func makeSeparator(amount: Int) -> [UIView] {
         var results: [UIView] = []
@@ -194,5 +214,28 @@ class CommentCell: UITableViewCell {
         label.font = font
         return label
     }
+//    private func detectImageLink(_ string: inout String) -> String? {
+//        let links = networkManager.detectLinks(text: string)
+//        var urlString = ""
+//        links.forEach{
+//            if $0.contains(NetWorkManager.baseImgLink) {
+//                urlString = $0
+//            }
+//        }
+//        guard !urlString.isEmpty else {
+//            return nil
+//        }
+//        string = string.replacingOccurrences(of: urlString, with: "")
+//        urlString = ToolBox.concatStr(string: urlString, size: .mediumThumbnail)
+//        return urlString
+//    }
+//    private func sort(urlString text: String){
+//        guard let start = text.lastIndex(of: ".") else {
+//            return
+//        }
+//        let end = text.endIndex
+//        let result = text[start..<end]
+//        print(result)
+//    }
 }
 

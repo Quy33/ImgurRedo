@@ -11,7 +11,7 @@ import UIKit
 struct NetWorkManager {
     private let baseURL = "https://api.imgur.com/3"
     
-//    private let clientID = "11dd115895de7c5"
+    static let baseImgLink = "https://i.imgur.com/"
     
     private let header = (key: "Authorization", value: "Client-ID 11dd115895de7c5")
     
@@ -47,6 +47,20 @@ struct NetWorkManager {
     private func parseJson<T: Decodable>(_ data: Data) throws -> T {
         let model = try JSONDecoder().decode(T.self, from: data)
         return model
+    }
+    //MARK: Link Detector
+    func detectLinks(text: String) -> [String] {
+        let type: NSTextCheckingResult.CheckingType = .link
+        var urls: [String] = []
+        do {
+            let detector = try NSDataDetector(types: type.rawValue)
+            let matches = detector.matches(in: text, options: .reportCompletion, range: NSMakeRange(0, text.count))
+            urls = matches.compactMap{ $0.url?.absoluteString }
+            return urls
+        } catch {
+            print(error)
+        }
+        return urls
     }
     //MARK: Download Image Functions
     func singleDownload(url: URL) async throws -> UIImage {

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 class Comment {
     weak var parent: Comment?
@@ -16,6 +17,7 @@ class Comment {
     var author: String
     var isCollapsed = false
     var level = 0
+    var image: UIImage?
     init(value: String, id: Int, parentId: Int, author: String) {
         self.value = value
         self.id = id

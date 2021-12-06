@@ -33,16 +33,8 @@ class CommentViewController: UIViewController {
     func registerCell() {
         commentTableView.register(CommentCell.self, forCellReuseIdentifier: CommentCell.identifier)
     }
-    func detectLinks(text: String) {
-        let type: NSTextCheckingResult.CheckingType = .link
-        do {
-            let detector = try NSDataDetector(types: type.rawValue)
-            let matches = detector.matches(in: text, options: .reportCompletion, range: NSMakeRange(0, text.count))
-            let urls = matches.compactMap{ $0.url }
-            print(urls)
-        } catch {
-            print(error)
-        }
+    func downloadImage(link: String) {
+        
     }
 }
 //MARK: TableView Stuff

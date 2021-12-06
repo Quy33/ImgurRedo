@@ -13,7 +13,7 @@ class ToolBox {
     static let placeHolderImg: UIImage = #imageLiteral(resourceName: "placeHolder")
     static let blankURL = URL(string: "http://www.blankwebsite.com/")!
     
-    func concatStr(string: String ,size: ThumbnailSize) -> String {
+    static func concatStr(string: String ,size: ThumbnailSize) -> String {
         var result = string
         guard let index = result.lastIndex(of: ".") else {
             return ""
@@ -35,15 +35,6 @@ class ToolBox {
             type = item.type!
             mp4 = item.mp4
         }
-    }
-    
-    enum ThumbnailSize: Character {
-        case smallSquare = "s"
-        case bigSquare = "b"
-        case smallThumbnail = "t"
-        case mediumThumbnail = "m"
-        case largeThumbnail = "l"
-        case hugeThumbnail = "h"
     }
 }
 //MARK: Tuples
@@ -70,4 +61,18 @@ class PaddingLabel: UILabel {
         let ctr = super.textRect(forBounds: insetBounds, limitedToNumberOfLines: numberOfLines)
         return ctr
     }
+}
+enum MediaType: String {
+    case png = "png"
+    case jpeg = "jpeg"
+    case mp4 = "mp4"
+    case gif = "gif"
+}
+enum ThumbnailSize: Character {
+    case smallSquare = "s"
+    case bigSquare = "b"
+    case smallThumbnail = "t"
+    case mediumThumbnail = "m"
+    case largeThumbnail = "l"
+    case hugeThumbnail = "h"
 }

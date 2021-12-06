@@ -7,7 +7,7 @@
 
 import UIKit
 
-class GalleryModel: ToolBox {
+class GalleryModel {
     final let id: String
     let title: String?
     final let isAlbum: Bool
@@ -31,9 +31,9 @@ class GalleryModel: ToolBox {
         var urlString = ""
         if GalleryModel.isThumbnail {
             urlString = animated ? mp4! : link
-            urlString = concatStr(string: urlString, size: GalleryModel.thumbnailSize)
+            urlString = ToolBox.concatStr(string: urlString, size: GalleryModel.thumbnailSize)
         } else {
-            urlString = animated ? concatStr(string: mp4!, size: GalleryModel.thumbnailSize) : link
+            urlString = animated ? ToolBox.concatStr(string: mp4!, size: GalleryModel.thumbnailSize) : link
         }
         guard let link = URL(string: urlString) else {
             return ToolBox.blankURL
@@ -54,7 +54,7 @@ class GalleryModel: ToolBox {
         self.views = views
     }
 
-    convenience override init() {
+    convenience init() {
         let placeHolder = ToolBox.placeHolderImg
         self.init(id: "", title: nil, isAlbum: false, link: "", animated: false, type: "", imagesCount: nil, mp4: nil, image: placeHolder, views: 0)
     }
