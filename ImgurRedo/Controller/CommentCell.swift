@@ -20,9 +20,22 @@ class CommentCell: UITableViewCell {
     private var commentLabel = PaddingLabel()
     private var authorLabel = PaddingLabel()
     private var childLabel = PaddingLabel()
+    private var childCountView: UIView = {
+        let uiView = UIView()
+        uiView.translatesAutoresizingMaskIntoConstraints = false
+        uiView.backgroundColor = .clear
+        return uiView
+    }()
+    private let bottomSeparator: UIView = {
+        let separator = UIView()
+        separator.translatesAutoresizingMaskIntoConstraints = false
+        separator.backgroundColor = .black
+        return separator
+    }()
 //MARK: Cell setup
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?, comment: Comment) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        contentView.backgroundColor = .lightGray
         setup(separatorAmount: comment.level, isEmpty: comment.children.isEmpty)
         config(comment: comment.value, author: comment.author, isCollapsed: comment.isCollapsed, childrenCount: comment.children.count)
     }
@@ -41,16 +54,20 @@ class CommentCell: UITableViewCell {
     }
     //MARK: Comment Setup
     private func setup(separatorAmount count: Int, isEmpty: Bool) {
-        outerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .gray, spacing: 10)
-        commentStackView = makeStackView(axis: .vertical, distribution: .fill, color: .lightGray, spacing: 0)
-        headerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 10)
+        outerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 5)
+        commentStackView = makeStackView(axis: .vertical, distribution: .fill, color: .clear, spacing: 0)
+        headerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 5)
         
-        let normalInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        let commentInset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
+        let normalInset = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5)
+        let childLabelInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        let commentInset = UIEdgeInsets(top: 20, left: 10, bottom: 20, right: 10)
         
-        commentLabel = makeLabel(numberOfLines: 0, color: .clear, inset: commentInset, textAlignment: .left)
-        authorLabel = makeLabel(numberOfLines: 1, color: .clear, inset: normalInset, textAlignment: .left)
-        childLabel = makeLabel(numberOfLines: 1, color: .clear, inset: normalInset, textAlignment: .center)
+        let titleFont: UIFont = .systemFont(ofSize: 22, weight: .bold)
+        let normalFont: UIFont = .systemFont(ofSize: 17)
+        
+        commentLabel = makeLabel(numberOfLines: 0, bgColor: .clear, inset: commentInset, textAlignment: .left, textColor: .black, font: normalFont)
+        authorLabel = makeLabel(numberOfLines: 0, bgColor: .clear, inset: normalInset, textAlignment: .left, textColor: .black, font: titleFont)
+        childLabel = makeLabel(numberOfLines: 1, bgColor: .gray, inset: childLabelInset, textAlignment: .center, textColor: .white, font: normalFont)
         
         separators = makeSeparator(amount: count)
         addSubViews(isEmpty: isEmpty)
@@ -64,10 +81,11 @@ class CommentCell: UITableViewCell {
         
         commentStackView.addArrangedSubview(headerStackView)
         commentStackView.addArrangedSubview(commentLabel)
+        commentStackView.addArrangedSubview(bottomSeparator)
         
         headerStackView.addArrangedSubview(authorLabel)
-        headerStackView.addArrangedSubview(childLabel)
-        
+        headerStackView.addArrangedSubview(childCountView)
+        childCountView.addSubview(childLabel)
     }
     private func setConstraints(isEmpty: Bool) {
         var constraints: [NSLayoutConstraint] = []
@@ -80,14 +98,14 @@ class CommentCell: UITableViewCell {
             equalTo: contentView.bottomAnchor)
         )
         constraints.append(outerStackView.leadingAnchor.constraint(
-            equalTo: contentView.leadingAnchor, constant: 10)
+            equalTo: contentView.leadingAnchor, constant: 0)
         )
         constraints.append(outerStackView.trailingAnchor.constraint(
-            equalTo: contentView.trailingAnchor, constant: -10)
+            equalTo: contentView.trailingAnchor, constant: 0)
         )
         
         separators.forEach {
-            constraints.append($0.widthAnchor.constraint(equalToConstant: 5))
+            constraints.append($0.widthAnchor.constraint(equalToConstant: 10))
             constraints.append($0.heightAnchor.constraint(equalTo: outerStackView.heightAnchor))
         }
         
@@ -97,8 +115,31 @@ class CommentCell: UITableViewCell {
         
         constraints.append(commentLabel.widthAnchor.constraint(equalTo:  commentStackView.widthAnchor))
         
-        constraints.append(authorLabel.leadingAnchor.constraint(equalTo: headerStackView.leadingAnchor))
-        constraints.append(childLabel.widthAnchor.constraint(equalToConstant: 50))
+        constraints.append(authorLabel.leadingAnchor.constraint(equalTo: headerStackView.leadingAnchor)
+        )
+        constraints.append(authorLabel.topAnchor.constraint(equalTo: headerStackView.topAnchor)
+        )
+        constraints.append(authorLabel.bottomAnchor.constraint(equalTo: headerStackView.bottomAnchor)
+        )
+        
+        constraints.append(childCountView.trailingAnchor.constraint(equalTo: headerStackView.trailingAnchor))
+        constraints.append(childCountView.widthAnchor.constraint(equalToConstant: 50))
+        
+        constraints.append(childLabel.topAnchor.constraint(equalTo: childCountView.topAnchor)
+        )
+        constraints.append(childLabel.bottomAnchor.constraint(equalTo: childCountView.bottomAnchor)
+        )
+        constraints.append(childLabel.leadingAnchor.constraint(equalTo: childCountView.leadingAnchor)
+        )
+        constraints.append(childLabel.trailingAnchor.constraint(equalTo: childCountView.trailingAnchor, constant: -5)
+        )
+        constraints.append(childLabel.heightAnchor.constraint(equalTo: childCountView.heightAnchor)
+        )
+        
+        constraints.append(bottomSeparator.widthAnchor.constraint(equalTo: commentStackView.widthAnchor)
+        )
+        constraints.append(bottomSeparator.heightAnchor.constraint(equalToConstant: 1)
+        )
         
         NSLayoutConstraint.activate(constraints)
     }
@@ -107,14 +148,18 @@ class CommentCell: UITableViewCell {
         commentLabel.text = comment
         authorLabel.text = author
         childLabel.text = isCollapsed ? "X" : "\(count)"
-        childLabel.isHidden = count == 0 ? true : false
+        childCountView.isHidden = count == 0 ? true : false
+        
+        childLabel.layer.cornerRadius = 5
+        childLabel.layer.masksToBounds = true
+        
     }
     private func makeSeparator(amount: Int) -> [UIView] {
         var results: [UIView] = []
         for _ in 0 ..< amount {
             let separator = UIView()
             separator.translatesAutoresizingMaskIntoConstraints = false
-            separator.backgroundColor = .red
+            separator.backgroundColor = .gray
             results.append(separator)
         }
         return results
@@ -130,14 +175,16 @@ class CommentCell: UITableViewCell {
         
         return stackView
     }
-    private func makeLabel(numberOfLines lines: Int, color: UIColor, inset: UIEdgeInsets,textAlignment alignment: NSTextAlignment) -> PaddingLabel {
+    private func makeLabel(numberOfLines lines: Int, bgColor: UIColor, inset: UIEdgeInsets,textAlignment alignment: NSTextAlignment, textColor: UIColor, font: UIFont) -> PaddingLabel {
         let label = PaddingLabel()
         label.numberOfLines = lines
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.backgroundColor = color
+        label.backgroundColor = bgColor
         label.text = "Hello World"
         label.inset = inset
         label.textAlignment = alignment
+        label.textColor = textColor
+        label.font = font
         return label
     }
 }
