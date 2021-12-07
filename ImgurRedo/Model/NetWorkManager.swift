@@ -11,7 +11,7 @@ import UIKit
 struct NetWorkManager {
     private let baseURL = "https://api.imgur.com/3"
     
-    static let baseImgLink = "https://i.imgur.com/"
+    static let baseImgLink = "https://i.imgur.com"
     
     private let header = (key: "Authorization", value: "Client-ID 11dd115895de7c5")
     

@@ -18,6 +18,8 @@ class Comment {
     var isCollapsed = false
     var level = 0
     var image: UIImage?
+    var imageLink: String?
+    var hasImageLink: Bool = false
     init(value: String, id: Int, parentId: Int, author: String) {
         self.value = value
         self.id = id

@@ -12,8 +12,6 @@ class CommentCell: UITableViewCell {
     static let identifier = "CommentCell"
     private var separators: [UIView] = []
     private var networkManager = NetWorkManager()
-    var hasImageLink = false
-    var finishedDownload = false
     
 //MARK: Cell UIs
     private var outerStackView = UIStackView()
@@ -32,20 +30,21 @@ class CommentCell: UITableViewCell {
     private let bottomSeparator: UIView = {
         let separator = UIView()
         separator.translatesAutoresizingMaskIntoConstraints = false
-        separator.backgroundColor = .black
+        separator.backgroundColor = .darkGray
         return separator
     }()
     private var commentImage: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.tintColor = .white
         return imageView
     }()
 //MARK: Cell setup
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?, comment: Comment) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.backgroundColor = .lightGray
-        setup(separatorAmount: comment.level, isEmpty: comment.children.isEmpty)
+        contentView.backgroundColor = .clear
+        setup(separatorAmount: comment.level, isEmpty: comment.children.isEmpty, hasImageLink: comment.hasImageLink)
         config(comment: comment.value, author: comment.author, isCollapsed: comment.isCollapsed, childrenCount: comment.children.count, image: comment.image)
     }
     override func awakeFromNib() {
@@ -62,15 +61,15 @@ class CommentCell: UITableViewCell {
         // Configure the view for the selected state
     }
     //MARK: Comment Setup
-    private func setup(separatorAmount count: Int, isEmpty: Bool) {
+    private func setup(separatorAmount count: Int, isEmpty: Bool, hasImageLink: Bool) {
         setProperties(count: count)
-        addSubViews(isEmpty: isEmpty)
-        setConstraints(isEmpty: isEmpty)
+        addSubViews(isEmpty: isEmpty, hasImage: hasImageLink)
+        setConstraints(isEmpty: isEmpty, hasImage: hasImageLink)
     }
     private func setProperties(count: Int) {
-        outerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 5)
+        outerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .lightGray, spacing: 0)
         commentStackView = makeStackView(axis: .vertical, distribution: .fill, color: .clear, spacing: 0)
-        headerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 5)
+        headerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 10)
         
         let normalInset = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5)
         let childLabelInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -81,18 +80,22 @@ class CommentCell: UITableViewCell {
         
         commentLabel = makeLabel(numberOfLines: 0, bgColor: .clear, inset: commentInset, textAlignment: .left, textColor: .black, font: normalFont)
         authorLabel = makeLabel(numberOfLines: 0, bgColor: .clear, inset: normalInset, textAlignment: .left, textColor: .black, font: titleFont)
-        childLabel = makeLabel(numberOfLines: 1, bgColor: .gray, inset: childLabelInset, textAlignment: .center, textColor: .white, font: normalFont)
+        childLabel = makeLabel(numberOfLines: 1, bgColor: .link, inset: childLabelInset, textAlignment: .center, textColor: .white, font: normalFont)
         
-        separators = makeSeparator(amount: count)
+        separators = makeSeparator(amount: count, color: .darkGray)
     }
-    private func addSubViews(isEmpty: Bool) {
+    private func addSubViews(isEmpty: Bool, hasImage: Bool) {
         contentView.addSubview(outerStackView)
                 
         separators.forEach{ outerStackView.addArrangedSubview($0) }
         outerStackView.addArrangedSubview(commentStackView)
         
         commentStackView.addArrangedSubview(headerStackView)
-        commentStackView.addArrangedSubview(commentImage)
+        
+        if hasImage {
+            commentStackView.addArrangedSubview(commentImage)
+        }
+        
         commentStackView.addArrangedSubview(commentLabel)
         commentStackView.addArrangedSubview(bottomSeparator)
         
@@ -100,7 +103,7 @@ class CommentCell: UITableViewCell {
         headerStackView.addArrangedSubview(childCountView)
         childCountView.addSubview(childLabel)
     }
-    private func setConstraints(isEmpty: Bool) {
+    private func setConstraints(isEmpty: Bool, hasImage: Bool) {
         var constraints: [NSLayoutConstraint] = []
         
         //Outer Stack View
@@ -118,15 +121,17 @@ class CommentCell: UITableViewCell {
         )
         
         separators.forEach {
-            constraints.append($0.widthAnchor.constraint(equalToConstant: 10))
+            constraints.append($0.widthAnchor.constraint(equalToConstant: 5))
             constraints.append($0.heightAnchor.constraint(equalTo: outerStackView.heightAnchor))
         }
         
         //Comment Stack View
         constraints.append(commentStackView.heightAnchor.constraint(equalTo: outerStackView.heightAnchor))
         
-        constraints.append(commentImage.widthAnchor.constraint(equalTo: commentStackView.widthAnchor))
-        constraints.append(commentImage.heightAnchor.constraint(equalToConstant: 100))
+        if hasImage {
+            constraints.append(commentImage.widthAnchor.constraint(equalTo: commentStackView.widthAnchor))
+            constraints.append(commentImage.heightAnchor.constraint(equalToConstant: 100))
+        }
         
         constraints.append(commentLabel.widthAnchor.constraint(equalTo:  commentStackView.widthAnchor))
         
@@ -156,7 +161,7 @@ class CommentCell: UITableViewCell {
         )
         constraints.append(childLabel.leadingAnchor.constraint(equalTo: childCountView.leadingAnchor)
         )
-        constraints.append(childLabel.trailingAnchor.constraint(equalTo: childCountView.trailingAnchor, constant: -5)
+        constraints.append(childLabel.trailingAnchor.constraint(equalTo: childCountView.trailingAnchor, constant: -10)
         )
         constraints.append(childLabel.heightAnchor.constraint(equalTo: childCountView.heightAnchor)
         )
@@ -167,6 +172,7 @@ class CommentCell: UITableViewCell {
     private func config(comment: String, author: String, isCollapsed: Bool , childrenCount count: Int, image: UIImage? ){
         
         commentLabel.text = comment
+//        commentLabel.isHidden = comment.isEmpty ? true : false
         
         authorLabel.text = author
         childLabel.text = isCollapsed ? "X" : "\(count)"
@@ -175,18 +181,14 @@ class CommentCell: UITableViewCell {
         childLabel.layer.cornerRadius = 5
         childLabel.layer.masksToBounds = true
         
-        if comment.isEmpty {
-            commentImage.removeFromSuperview()
-        } else {
-            commentImage.image = image != nil ? image : ToolBox.placeHolderImg
-        }
+        commentImage.image = image != nil ? image : ToolBox.placeHolderImg
     }
-    private func makeSeparator(amount: Int) -> [UIView] {
+    private func makeSeparator(amount: Int, color: UIColor) -> [UIView] {
         var results: [UIView] = []
         for _ in 0 ..< amount {
             let separator = UIView()
             separator.translatesAutoresizingMaskIntoConstraints = false
-            separator.backgroundColor = .gray
+            separator.backgroundColor = color
             results.append(separator)
         }
         return results
