@@ -6,12 +6,15 @@
 //
 
 import UIKit
+import AVKit
 
 class CommentCell: UITableViewCell {
 
     static let identifier = "CommentCell"
     private var separators: [UIView] = []
     private var networkManager = NetWorkManager()
+    private let outerStackViewSpacing: CGFloat = 0
+    private let separatorWidth: CGFloat = 5
     
 //MARK: Cell UIs
     private var outerStackView = UIStackView()
@@ -37,15 +40,14 @@ class CommentCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.tintColor = .white
         return imageView
     }()
 //MARK: Cell setup
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?, comment: Comment) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .clear
-        setup(separatorAmount: comment.level, isEmpty: comment.children.isEmpty, hasImageLink: comment.hasImageLink)
-        config(comment: comment.value, author: comment.author, isCollapsed: comment.isCollapsed, childrenCount: comment.children.count, image: comment.image)
+        setup(comment)
+        config(comment)
     }
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -61,25 +63,25 @@ class CommentCell: UITableViewCell {
         // Configure the view for the selected state
     }
     //MARK: Comment Setup
-    private func setup(separatorAmount count: Int, isEmpty: Bool, hasImageLink: Bool) {
-        setProperties(count: count)
-        addSubViews(isEmpty: isEmpty, hasImage: hasImageLink)
-        setConstraints(isEmpty: isEmpty, hasImage: hasImageLink)
+    private func setup(_ comment: Comment) {
+        setProperties(count: comment.level)
+        addSubViews(isEmpty: comment.children.isEmpty, hasImage: comment.hasImageLink)
+        setConstraints(isEmpty: comment.children.isEmpty)
     }
     private func setProperties(count: Int) {
-        outerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .lightGray, spacing: 0)
-        commentStackView = makeStackView(axis: .vertical, distribution: .fill, color: .clear, spacing: 0)
-        headerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 10)
+        outerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .lightGray, spacing: outerStackViewSpacing, alignment: .center)
+        commentStackView = makeStackView(axis: .vertical, distribution: .fill, color: .clear, spacing: 10, alignment: .center)
+        headerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 20, alignment: .center)
         
-        let normalInset = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5)
+        let normalInset = UIEdgeInsets(top: 10, left: 10, bottom: 0, right: 0)
         let childLabelInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        let commentInset = UIEdgeInsets(top: 20, left: 10, bottom: 20, right: 10)
+        let commentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         
-        let titleFont: UIFont = .systemFont(ofSize: 22, weight: .bold)
         let normalFont: UIFont = .systemFont(ofSize: 17)
+        let authorFont: UIFont = .systemFont(ofSize: 15, weight: .light)
         
         commentLabel = makeLabel(numberOfLines: 0, bgColor: .clear, inset: commentInset, textAlignment: .left, textColor: .black, font: normalFont)
-        authorLabel = makeLabel(numberOfLines: 0, bgColor: .clear, inset: normalInset, textAlignment: .left, textColor: .black, font: titleFont)
+        authorLabel = makeLabel(numberOfLines: 0, bgColor: .clear, inset: normalInset, textAlignment: .left, textColor: .black, font: authorFont)
         childLabel = makeLabel(numberOfLines: 1, bgColor: .link, inset: childLabelInset, textAlignment: .center, textColor: .white, font: normalFont)
         
         separators = makeSeparator(amount: count, color: .darkGray)
@@ -103,7 +105,7 @@ class CommentCell: UITableViewCell {
         headerStackView.addArrangedSubview(childCountView)
         childCountView.addSubview(childLabel)
     }
-    private func setConstraints(isEmpty: Bool, hasImage: Bool) {
+    private func setConstraints(isEmpty: Bool) {
         var constraints: [NSLayoutConstraint] = []
         
         //Outer Stack View
@@ -121,17 +123,12 @@ class CommentCell: UITableViewCell {
         )
         
         separators.forEach {
-            constraints.append($0.widthAnchor.constraint(equalToConstant: 5))
+            constraints.append($0.widthAnchor.constraint(equalToConstant: separatorWidth))
             constraints.append($0.heightAnchor.constraint(equalTo: outerStackView.heightAnchor))
         }
         
         //Comment Stack View
         constraints.append(commentStackView.heightAnchor.constraint(equalTo: outerStackView.heightAnchor))
-        
-        if hasImage {
-            constraints.append(commentImage.widthAnchor.constraint(equalTo: commentStackView.widthAnchor))
-            constraints.append(commentImage.heightAnchor.constraint(equalToConstant: 100))
-        }
         
         constraints.append(commentLabel.widthAnchor.constraint(equalTo:  commentStackView.widthAnchor))
         
@@ -155,7 +152,7 @@ class CommentCell: UITableViewCell {
         constraints.append(childCountView.trailingAnchor.constraint(equalTo: headerStackView.trailingAnchor))
         constraints.append(childCountView.widthAnchor.constraint(equalToConstant: 50))
         
-        constraints.append(childLabel.topAnchor.constraint(equalTo: childCountView.topAnchor)
+        constraints.append(childLabel.topAnchor.constraint(equalTo: childCountView.topAnchor, constant: 10)
         )
         constraints.append(childLabel.bottomAnchor.constraint(equalTo: childCountView.bottomAnchor)
         )
@@ -163,25 +160,43 @@ class CommentCell: UITableViewCell {
         )
         constraints.append(childLabel.trailingAnchor.constraint(equalTo: childCountView.trailingAnchor, constant: -10)
         )
-        constraints.append(childLabel.heightAnchor.constraint(equalTo: childCountView.heightAnchor)
-        )
         
         NSLayoutConstraint.activate(constraints)
     }
     //MARK: Small functions
-    private func config(comment: String, author: String, isCollapsed: Bool , childrenCount count: Int, image: UIImage? ){
+    private func config(_ comment: Comment){
         
-        commentLabel.text = comment
-//        commentLabel.isHidden = comment.isEmpty ? true : false
+        commentLabel.text = comment.value
+        commentLabel.isHidden = comment.value.isEmpty ? true : false
         
-        authorLabel.text = author
-        childLabel.text = isCollapsed ? "X" : "\(count)"
-        childCountView.isHidden = count == 0 ? true : false
+        authorLabel.text = comment.author
+        childLabel.text = comment.isCollapsed ? "X" : "\(comment.children.count)"
+        childCountView.isHidden = comment.children.isEmpty ? true : false
         
         childLabel.layer.cornerRadius = 5
         childLabel.layer.masksToBounds = true
         
-        commentImage.image = image != nil ? image : ToolBox.placeHolderImg
+        commentImage.image = comment.image ?? ToolBox.placeHolderImg
+        
+        if let image = commentImage.image {
+            let screen = UIScreen.main.bounds
+            let separatorAmount = CGFloat(separators.count)
+            let padding = 10
+            let frameWidth = screen.width - (separatorWidth * separatorAmount) - CGFloat(padding * 2)
+            let imageRect = calculateImageRatio(image, frameWidth: frameWidth)
+            var constraints = [NSLayoutConstraint]()
+            
+            constraints.append(commentImage.widthAnchor.constraint(equalToConstant: imageRect.width))
+            constraints.append(commentImage.heightAnchor.constraint(equalToConstant: imageRect.height))
+            
+            if frameWidth > imageRect.width {
+                print("smaller")
+            }
+            
+            NSLayoutConstraint.activate(constraints)
+            commentImage.layer.borderWidth = 2
+            commentImage.layer.borderColor = UIColor.black.cgColor
+        }
     }
     private func makeSeparator(amount: Int, color: UIColor) -> [UIView] {
         var results: [UIView] = []
@@ -193,12 +208,12 @@ class CommentCell: UITableViewCell {
         }
         return results
     }
-    private func makeStackView(axis: NSLayoutConstraint.Axis, distribution: UIStackView.Distribution, color: UIColor, spacing: CGFloat) -> UIStackView {
+    private func makeStackView(axis: NSLayoutConstraint.Axis, distribution: UIStackView.Distribution, color: UIColor, spacing: CGFloat, alignment: UIStackView.Alignment) -> UIStackView {
         let stackView = UIStackView()
         stackView.axis = axis
         stackView.spacing = spacing
         stackView.distribution = distribution
-        stackView.alignment = .center
+        stackView.alignment = alignment
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.backgroundColor = color
         
@@ -216,28 +231,10 @@ class CommentCell: UITableViewCell {
         label.font = font
         return label
     }
-//    private func detectImageLink(_ string: inout String) -> String? {
-//        let links = networkManager.detectLinks(text: string)
-//        var urlString = ""
-//        links.forEach{
-//            if $0.contains(NetWorkManager.baseImgLink) {
-//                urlString = $0
-//            }
-//        }
-//        guard !urlString.isEmpty else {
-//            return nil
-//        }
-//        string = string.replacingOccurrences(of: urlString, with: "")
-//        urlString = ToolBox.concatStr(string: urlString, size: .mediumThumbnail)
-//        return urlString
-//    }
-//    private func sort(urlString text: String){
-//        guard let start = text.lastIndex(of: ".") else {
-//            return
-//        }
-//        let end = text.endIndex
-//        let result = text[start..<end]
-//        print(result)
-//    }
+    private func calculateImageRatio(_ image: UIImage, frameWidth width: CGFloat) -> CGRect {
+        let boundingRect = CGRect(x: 0, y: 0, width: width, height: CGFloat(MAXFLOAT))
+        let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
+        return rect
+    }
 }
 

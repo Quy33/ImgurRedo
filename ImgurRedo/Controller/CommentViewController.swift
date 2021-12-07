@@ -57,7 +57,7 @@ class CommentViewController: UIViewController {
                 urlString = NetWorkManager.baseImgLink + subString
                 
                 dataSource[index].value = comment.value.replacingOccurrences(of: urlString, with: "")
-                comment.imageLink = ToolBox.concatStr(string: urlString, size: .mediumThumbnail)
+                comment.imageLink = ToolBox.concatStr(string: urlString, size: .hugeThumbnail)
                 comment.hasImageLink = true
             }
         }
@@ -93,9 +93,7 @@ extension CommentViewController: UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let comment = dataSource[indexPath.row]
-        
         let cell = CommentCell.init(style: .default, reuseIdentifier: CommentCell.identifier, comment: comment)
-        
         return cell
     }
 }
