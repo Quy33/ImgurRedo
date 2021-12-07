@@ -49,6 +49,7 @@ class CommentViewController: UIViewController {
     private func getImageLink() {
         for (index,comment) in dataSource.enumerated() {
             if var urlString = detectImageLink(with: comment.value) {
+                print(urlString)
                 guard let lastElements = urlString.lastIndex(of: "/") else {
                     return
                 }
@@ -72,7 +73,7 @@ class CommentViewController: UIViewController {
                         }
                         comment.image = try await networkManager.singleDownload(url: url)
                         DispatchQueue.main.async {
-                            self.commentTableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                            self.commentTableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
                         }
                     } catch {
                         print(error)

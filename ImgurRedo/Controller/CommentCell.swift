@@ -14,7 +14,7 @@ class CommentCell: UITableViewCell {
     private var separators: [UIView] = []
     private var networkManager = NetWorkManager()
     private let outerStackViewSpacing: CGFloat = 0
-    private let separatorWidth: CGFloat = 5
+    private let separatorWidth: CGFloat = 15
     
 //MARK: Cell UIs
     private var outerStackView = UIStackView()
@@ -24,18 +24,9 @@ class CommentCell: UITableViewCell {
     private var commentLabel = PaddingLabel()
     private var authorLabel = PaddingLabel()
     private var childLabel = PaddingLabel()
-    private var childCountView: UIView = {
-        let uiView = UIView()
-        uiView.translatesAutoresizingMaskIntoConstraints = false
-        uiView.backgroundColor = .clear
-        return uiView
-    }()
-    private let bottomSeparator: UIView = {
-        let separator = UIView()
-        separator.translatesAutoresizingMaskIntoConstraints = false
-        separator.backgroundColor = .darkGray
-        return separator
-    }()
+    private var childCountView = UIView()
+    private var bottomSeparator = UIView()
+    
     private var commentImage: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -46,7 +37,7 @@ class CommentCell: UITableViewCell {
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?, comment: Comment) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .clear
-        setup(comment)
+        setup(separatorAmount: comment.level, hasImage: comment.hasImageLink)
         config(comment)
     }
     override func awakeFromNib() {
@@ -63,15 +54,34 @@ class CommentCell: UITableViewCell {
         // Configure the view for the selected state
     }
     //MARK: Comment Setup
-    private func setup(_ comment: Comment) {
-        setProperties(count: comment.level)
-        addSubViews(isEmpty: comment.children.isEmpty, hasImage: comment.hasImageLink)
-        setConstraints(isEmpty: comment.children.isEmpty)
+    private func setup(separatorAmount count: Int, hasImage: Bool) {
+        setProperties(count: count)
+        addSubViews(hasImage: hasImage)
+        setConstraints()
     }
     private func setProperties(count: Int) {
-        outerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .lightGray, spacing: outerStackViewSpacing, alignment: .center)
-        commentStackView = makeStackView(axis: .vertical, distribution: .fill, color: .clear, spacing: 10, alignment: .center)
-        headerStackView = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 20, alignment: .center)
+        outerStackView = makeStackView(axis: .horizontal,
+                                       distribution: .fill,
+                                       color: .lightGray,
+                                       spacing: outerStackViewSpacing,
+                                       alignment: .center)
+        commentStackView = makeStackView(axis: .vertical,
+                                         distribution: .fill,
+                                         color: .clear,
+                                         spacing: 10,
+                                         alignment: .center)
+        headerStackView = makeStackView(axis: .horizontal,
+                                        distribution: .fill,
+                                        color: .clear,
+                                        spacing: 20,
+                                        alignment: .center)
+        
+        if let container = makeUIView(amount: 1, color: .clear).first {
+            childCountView = container
+        }
+        if let container = makeUIView(amount: 1, color: .darkGray).first {
+            bottomSeparator = container
+        }
         
         let normalInset = UIEdgeInsets(top: 10, left: 10, bottom: 0, right: 0)
         let childLabelInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -80,13 +90,28 @@ class CommentCell: UITableViewCell {
         let normalFont: UIFont = .systemFont(ofSize: 17)
         let authorFont: UIFont = .systemFont(ofSize: 15, weight: .light)
         
-        commentLabel = makeLabel(numberOfLines: 0, bgColor: .clear, inset: commentInset, textAlignment: .left, textColor: .black, font: normalFont)
-        authorLabel = makeLabel(numberOfLines: 0, bgColor: .clear, inset: normalInset, textAlignment: .left, textColor: .black, font: authorFont)
-        childLabel = makeLabel(numberOfLines: 1, bgColor: .link, inset: childLabelInset, textAlignment: .center, textColor: .white, font: normalFont)
+        commentLabel = makeLabel(numberOfLines: 0,
+                                 bgColor: .clear,
+                                 inset: commentInset,
+                                 textAlignment: .left,
+                                 textColor: .black,
+                                 font: normalFont)
+        authorLabel = makeLabel(numberOfLines: 0,
+                                bgColor: .clear,
+                                inset: normalInset,
+                                textAlignment: .left,
+                                textColor: .black,
+                                font: authorFont)
+        childLabel = makeLabel(numberOfLines: 1,
+                               bgColor: .link,
+                               inset: childLabelInset,
+                               textAlignment: .center,
+                               textColor: .white,
+                               font: normalFont)
         
-        separators = makeSeparator(amount: count, color: .darkGray)
+        separators = makeUIView(amount: count, color: .darkGray)
     }
-    private func addSubViews(isEmpty: Bool, hasImage: Bool) {
+    private func addSubViews(hasImage: Bool) {
         contentView.addSubview(outerStackView)
                 
         separators.forEach{ outerStackView.addArrangedSubview($0) }
@@ -105,7 +130,7 @@ class CommentCell: UITableViewCell {
         headerStackView.addArrangedSubview(childCountView)
         childCountView.addSubview(childLabel)
     }
-    private func setConstraints(isEmpty: Bool) {
+    private func setConstraints() {
         var constraints: [NSLayoutConstraint] = []
         
         //Outer Stack View
@@ -165,40 +190,29 @@ class CommentCell: UITableViewCell {
     }
     //MARK: Small functions
     private func config(_ comment: Comment){
+        if comment.value.isEmpty {
+            commentLabel.removeFromSuperview()
+        }
+        if comment.children.isEmpty {
+            childCountView.removeFromSuperview()
+        }
         
         commentLabel.text = comment.value
-        commentLabel.isHidden = comment.value.isEmpty ? true : false
-        
         authorLabel.text = comment.author
-        childLabel.text = comment.isCollapsed ? "X" : "\(comment.children.count)"
-        childCountView.isHidden = comment.children.isEmpty ? true : false
         
+        childLabel.text = comment.isCollapsed ? "X" : "\(comment.children.count)"
         childLabel.layer.cornerRadius = 5
         childLabel.layer.masksToBounds = true
         
+        commentImage.layer.borderWidth = 2
+        commentImage.layer.borderColor = UIColor.black.cgColor
         commentImage.image = comment.image ?? ToolBox.placeHolderImg
-        
-        if let image = commentImage.image {
-            let screen = UIScreen.main.bounds
-            let separatorAmount = CGFloat(separators.count)
-            let padding = 10
-            let frameWidth = screen.width - (separatorWidth * separatorAmount) - CGFloat(padding * 2)
-            let imageRect = calculateImageRatio(image, frameWidth: frameWidth)
-            var constraints = [NSLayoutConstraint]()
-            
-            constraints.append(commentImage.widthAnchor.constraint(equalToConstant: imageRect.width))
-            constraints.append(commentImage.heightAnchor.constraint(equalToConstant: imageRect.height))
-            
-            if frameWidth > imageRect.width {
-                print("smaller")
-            }
-            
-            NSLayoutConstraint.activate(constraints)
-            commentImage.layer.borderWidth = 2
-            commentImage.layer.borderColor = UIColor.black.cgColor
+
+        if let image = comment.image {
+            calculateThenSetImage(image)
         }
     }
-    private func makeSeparator(amount: Int, color: UIColor) -> [UIView] {
+    private func makeUIView(amount: Int, color: UIColor) -> [UIView] {
         var results: [UIView] = []
         for _ in 0 ..< amount {
             let separator = UIView()
@@ -235,6 +249,22 @@ class CommentCell: UITableViewCell {
         let boundingRect = CGRect(x: 0, y: 0, width: width, height: CGFloat(MAXFLOAT))
         let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
         return rect
+    }
+    private func calculateThenSetImage(_ image: UIImage) {
+        let screen = UIScreen.main.bounds
+        let separatorAmount = CGFloat(separators.count)
+        let padding = 10
+        let frameWidth = screen.width - (separatorWidth * separatorAmount) - CGFloat(padding * 2)
+        let imageRect = calculateImageRatio(image, frameWidth: frameWidth)
+        
+        var constraints = [NSLayoutConstraint]()
+        
+        constraints.append(commentImage.widthAnchor.constraint(equalToConstant: imageRect.width)
+        )
+        constraints.append(commentImage.heightAnchor.constraint(equalToConstant: imageRect.height)
+        )
+        
+        NSLayoutConstraint.activate(constraints)
     }
 }
 
