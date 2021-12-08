@@ -42,14 +42,24 @@ class CommentViewController: UIViewController {
             let links = networkManager.detectLinks(text: comment.value)
             for link in links {
                 if link.contains(NetWorkManager.baseImgLink) {
-
-                    comment.value = comment.value.replacingOccurrences(of: link, with: "")
-                    let concatStr = ToolBox.concatStr(string: link, size: .hugeThumbnail)
-                    guard let url = URL(string: concatStr) else {
-                        continue
+                    if let contentType = searchExtension(link) {
+                        var urlString = ""
+                        switch contentType {
+                        case .png, .jpeg, .jpg:
+                            urlString = link
+                        case .mp4, .gif:
+                            urlString = ToolBox.concatStr(string: link, size: .hugeThumbnail)
+                        }
+                        
+                        guard let url = URL(string: urlString) else {
+                            continue
+                        }
+                        
+                        comment.value = comment.value.replacingOccurrences(of: link, with: "")
+                        comment.contentType = contentType
+                        comment.imageLink = url
+                        comment.hasImageLink = true
                     }
-                    comment.imageLink = url
-                    comment.hasImageLink = true
                 }
             }
         }
@@ -59,6 +69,15 @@ class CommentViewController: UIViewController {
         DispatchQueue.main.async {
             self.commentTableView.reloadRows(at: [indexPath], with: .none)
         }
+    }
+    func searchExtension(_ text: String) -> ExtensionType? {
+        var ext: ExtensionType?
+        for type in ExtensionType.allCases {
+            if text.contains(type.rawValue) {
+                ext = type
+            }
+        }
+        return ext
     }
     
     private func downloadCellImage() {

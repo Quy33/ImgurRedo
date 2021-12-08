@@ -118,21 +118,21 @@ struct NetWorkManager {
         }
         return results
     }
-    func requestContentType(_ link: String) async throws -> String? {
-        guard let url = URL(string: link), link.contains("https") else {
-            throw NetworkingError.invalidData
-        }
-        var request = URLRequest(url: url)
-        request.httpMethod = "HEAD"
-        let (_,response) = try await URLSession.shared.data(for: request)
-        guard let urlResponse = response as? HTTPURLResponse else {
-            throw NetworkingError.invalidData
-        }
-        guard let contentType = urlResponse.value(forHTTPHeaderField: "Content-Type") else {
-            throw NetworkingError.invalidData
-        }
-        return contentType
-    }
+//    func requestContentType(_ link: String) async throws -> String? {
+//        guard let url = URL(string: link), link.contains("https") else {
+//            throw NetworkingError.invalidData
+//        }
+//        var request = URLRequest(url: url)
+//        request.httpMethod = "HEAD"
+//        let (_,response) = try await URLSession.shared.data(for: request)
+//        guard let urlResponse = response as? HTTPURLResponse else {
+//            throw NetworkingError.invalidData
+//        }
+//        guard let contentType = urlResponse.value(forHTTPHeaderField: "Content-Type") else {
+//            throw NetworkingError.invalidData
+//        }
+//        return contentType
+//    }
 //MARK: Detail Screen Networking
 
     func requestData(isAlbum: Bool, id: String) async throws -> (detailData: DetailDataModel, commentData: CommentDataModel) {

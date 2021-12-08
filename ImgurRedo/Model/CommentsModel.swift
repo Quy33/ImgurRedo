@@ -20,6 +20,8 @@ class Comment {
     var image: UIImage?
     var imageLink: URL?
     var hasImageLink: Bool = false
+    var contentType: ExtensionType?
+    
     init(value: String, id: Int, parentId: Int, author: String) {
         self.value = value
         self.id = id

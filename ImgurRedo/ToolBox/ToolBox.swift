@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import CoreMedia
 
 class ToolBox {
     
@@ -62,11 +63,12 @@ class PaddingLabel: UILabel {
         return ctr
     }
 }
-enum MediaType: String {
-    case png = "image/png"
-    case jpeg = "image/jpeg"
-    case mp4 = "video/mp4"
-    case gif = "image/gif"
+enum ExtensionType: String, CaseIterable {
+    case png = "png"
+    case jpeg = "jpeg"
+    case jpg = "jpg"
+    case mp4 = "mp4"
+    case gif = "gif"
 }
 enum ThumbnailSize: Character {
     case smallSquare = "s"
