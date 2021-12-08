@@ -63,10 +63,10 @@ class PaddingLabel: UILabel {
     }
 }
 enum MediaType: String {
-    case png = "png"
-    case jpeg = "jpeg"
-    case mp4 = "mp4"
-    case gif = "gif"
+    case png = "image/png"
+    case jpeg = "image/jpeg"
+    case mp4 = "video/mp4"
+    case gif = "image/gif"
 }
 enum ThumbnailSize: Character {
     case smallSquare = "s"

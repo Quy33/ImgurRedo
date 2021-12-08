@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreMedia
 
 class CommentViewController: UIViewController {
 
@@ -37,10 +38,11 @@ class CommentViewController: UIViewController {
     }
     
     private func detectImageLink() {
-        for (index,comment) in dataSource.enumerated() {
+        for comment in dataSource {
             let links = networkManager.detectLinks(text: comment.value)
             for link in links {
                 if link.contains(NetWorkManager.baseImgLink) {
+
                     comment.value = comment.value.replacingOccurrences(of: link, with: "")
                     let concatStr = ToolBox.concatStr(string: link, size: .hugeThumbnail)
                     guard let url = URL(string: concatStr) else {
@@ -52,6 +54,13 @@ class CommentViewController: UIViewController {
             }
         }
     }
+    private func updateCell(for row: Int) {
+        let indexPath = IndexPath(row: row, section: 0)
+        DispatchQueue.main.async {
+            self.commentTableView.reloadRows(at: [indexPath], with: .none)
+        }
+    }
+    
     private func downloadCellImage() {
         Task {
             for (index,comment) in self.dataSource.enumerated() {
@@ -61,9 +70,7 @@ class CommentViewController: UIViewController {
                 if let link = comment.imageLink {
                     do {
                         comment.image = try await networkManager.singleDownload(url: link)
-                        DispatchQueue.main.async {
-                            self.commentTableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
-                        }
+                        updateCell(for: index)
                     } catch {
                         print(error)
                         continue

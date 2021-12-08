@@ -56,8 +56,8 @@ struct NetWorkManager {
             let detector = try NSDataDetector(types: type.rawValue)
             var matches = detector.matches(in: text, options: .reportCompletion, range: NSMakeRange(0, text.count))
             urls = matches.compactMap{ $0.url?.absoluteString }
-            let results = urls.compactMap{ trimLink($0) }
-            return results
+            urls = urls.map{ trimLink($0) }
+            return urls
         } catch {
             print(error)
         }
@@ -118,13 +118,20 @@ struct NetWorkManager {
         }
         return results
     }
-    func downloadImageData(url: URL) async throws -> Data {
-        let request = URLRequest(url: url)
-        let (data,response) = try await URLSession.shared.data(for: request)
-        guard (response as? HTTPURLResponse)?.statusCode == 200 else {
-            throw NetworkingError.badImage
+    func requestContentType(_ link: String) async throws -> String? {
+        guard let url = URL(string: link), link.contains("https") else {
+            throw NetworkingError.invalidData
         }
-        return data
+        var request = URLRequest(url: url)
+        request.httpMethod = "HEAD"
+        let (_,response) = try await URLSession.shared.data(for: request)
+        guard let urlResponse = response as? HTTPURLResponse else {
+            throw NetworkingError.invalidData
+        }
+        guard let contentType = urlResponse.value(forHTTPHeaderField: "Content-Type") else {
+            throw NetworkingError.invalidData
+        }
+        return contentType
     }
 //MARK: Detail Screen Networking
 
