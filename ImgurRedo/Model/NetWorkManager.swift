@@ -54,14 +54,27 @@ struct NetWorkManager {
         var urls: [String] = []
         do {
             let detector = try NSDataDetector(types: type.rawValue)
-            let matches = detector.matches(in: text, options: .reportCompletion, range: NSMakeRange(0, text.count))
+            var matches = detector.matches(in: text, options: .reportCompletion, range: NSMakeRange(0, text.count))
             urls = matches.compactMap{ $0.url?.absoluteString }
-            return urls
+            let results = urls.compactMap{ trimLink($0) }
+            return results
         } catch {
             print(error)
         }
         return urls
     }
+    private func trimLink(_ text: String) -> String {
+        var result = ""
+        guard let range = text.range(of: "http") else {
+            return result
+        }
+        let subString = text[range.lowerBound..<text.endIndex]
+        
+        result = String(subString)
+        
+        return result
+    }
+    
     //MARK: Download Image Functions
     func singleDownload(url: URL) async throws -> UIImage {
         let request = URLRequest(url: url)
@@ -104,6 +117,14 @@ struct NetWorkManager {
             return images
         }
         return results
+    }
+    func downloadImageData(url: URL) async throws -> Data {
+        let request = URLRequest(url: url)
+        let (data,response) = try await URLSession.shared.data(for: request)
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+            throw NetworkingError.badImage
+        }
+        return data
     }
 //MARK: Detail Screen Networking
 

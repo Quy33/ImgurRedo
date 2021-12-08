@@ -24,9 +24,8 @@ class CommentViewController: UIViewController {
         registerCell()
         commentTableView.dataSource = self
         commentTableView.delegate = self
-        getImageLink()
+        detectImageLink()
         downloadCellImage()
-//        commentTableView.rowHeight = 200
     }
     //Temp fix
     override func viewWillDisappear(_ animated: Bool) {
@@ -36,42 +35,32 @@ class CommentViewController: UIViewController {
     private func registerCell() {
         commentTableView.register(CommentCell.self, forCellReuseIdentifier: CommentCell.identifier)
     }
-    private func detectImageLink(with text: String) -> String? {
-        var result: String?
-        let links = networkManager.detectLinks(text: text)
-        links.forEach{
-            if $0.contains(NetWorkManager.baseImgLink) {
-                result = $0
-            }
-        }
-        return result
-    }
-    private func getImageLink() {
+    
+    private func detectImageLink() {
         for (index,comment) in dataSource.enumerated() {
-            if var urlString = detectImageLink(with: comment.value) {
-                print(urlString)
-                guard let lastElements = urlString.lastIndex(of: "/") else {
-                    return
+            let links = networkManager.detectLinks(text: comment.value)
+            for link in links {
+                if link.contains(NetWorkManager.baseImgLink) {
+                    comment.value = comment.value.replacingOccurrences(of: link, with: "")
+                    let concatStr = ToolBox.concatStr(string: link, size: .hugeThumbnail)
+                    guard let url = URL(string: concatStr) else {
+                        continue
+                    }
+                    comment.imageLink = url
+                    comment.hasImageLink = true
                 }
-                let endPoint = urlString.endIndex
-                let subString = urlString[lastElements..<endPoint]
-                urlString = NetWorkManager.baseImgLink + subString
-                
-                dataSource[index].value = comment.value.replacingOccurrences(of: urlString, with: "")
-                comment.imageLink = ToolBox.concatStr(string: urlString, size: .hugeThumbnail)
-                comment.hasImageLink = true
             }
         }
     }
     private func downloadCellImage() {
         Task {
             for (index,comment) in self.dataSource.enumerated() {
-                if comment.hasImageLink {
+                guard comment.hasImageLink else {
+                    continue
+                }
+                if let link = comment.imageLink {
                     do {
-                        guard let url = URL(string: comment.imageLink!) else {
-                            throw NetworkingError.invalidData
-                        }
-                        comment.image = try await networkManager.singleDownload(url: url)
+                        comment.image = try await networkManager.singleDownload(url: link)
                         DispatchQueue.main.async {
                             self.commentTableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
                         }
@@ -121,7 +110,7 @@ extension CommentViewController: UITableViewDelegate {
             dataSource.insert(contentsOf: comment.children, at: next.row)
             comment.isCollapsed = true
         }
-        getImageLink()
+        detectImageLink()
         tableView.reloadData()
         downloadCellImage()
     }

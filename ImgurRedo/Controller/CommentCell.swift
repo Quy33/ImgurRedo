@@ -204,8 +204,6 @@ class CommentCell: UITableViewCell {
         childLabel.layer.cornerRadius = 5
         childLabel.layer.masksToBounds = true
         
-        commentImage.layer.borderWidth = 2
-        commentImage.layer.borderColor = UIColor.black.cgColor
         commentImage.image = comment.image ?? ToolBox.placeHolderImg
 
         if let image = comment.image {
