@@ -16,6 +16,7 @@ class CommentData: Decodable {
     let comment: String
     var children: [CommentData]
     let author: String
+    let datetime: Int
 }
 
 

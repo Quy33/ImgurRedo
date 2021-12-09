@@ -23,6 +23,7 @@ class CommentCell: UITableViewCell {
     
     private var authorLabel = PaddingLabel()
     private var childLabel = PaddingLabel()
+    private var dateLabel = PaddingLabel()
     private var childCountView = UIView()
     private var bottomSeparator = UIView()
     
@@ -84,16 +85,17 @@ class CommentCell: UITableViewCell {
             bottomSeparator = container
         }
         
-        let normalInset = UIEdgeInsets(top: 10, left: 10, bottom: 0, right: 0)
+        let authorInset = UIEdgeInsets(top: 10, left: 10, bottom: 0, right: 0)
         let childLabelInset: UIEdgeInsets = .zero
         let commentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        let dateInset = UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
         
         let normalFont: UIFont = .systemFont(ofSize: 17)
         let authorFont: UIFont = .systemFont(ofSize: 15, weight: .light)
         
         authorLabel = makeLabel(numberOfLines: 0,
                                 bgColor: .clear,
-                                inset: normalInset,
+                                inset: authorInset,
                                 textAlignment: .left,
                                 textColor: .black,
                                 font: authorFont)
@@ -103,6 +105,12 @@ class CommentCell: UITableViewCell {
                                textAlignment: .center,
                                textColor: .white,
                                font: normalFont)
+        dateLabel = makeLabel(numberOfLines: 1,
+                              bgColor: .clear,
+                              inset: dateInset,
+                              textAlignment: .right,
+                              textColor: .black,
+                              font: authorFont)
         
         separators = makeUIView(amount: count, color: .darkGray)
         
@@ -130,6 +138,7 @@ class CommentCell: UITableViewCell {
         commentStackView.addArrangedSubview(bottomSeparator)
         
         headerStackView.addArrangedSubview(authorLabel)
+        headerStackView.addArrangedSubview(dateLabel)
         headerStackView.addArrangedSubview(childCountView)
         childCountView.addSubview(childLabel)
     }
@@ -177,6 +186,11 @@ class CommentCell: UITableViewCell {
         constraints.append(authorLabel.bottomAnchor.constraint(equalTo: headerStackView.bottomAnchor)
         )
         
+        constraints.append(dateLabel.topAnchor.constraint(equalTo: headerStackView.topAnchor)
+        )
+        constraints.append(dateLabel.bottomAnchor.constraint(equalTo: headerStackView.bottomAnchor)
+        )
+        
         constraints.append(childCountView.trailingAnchor.constraint(equalTo: headerStackView.trailingAnchor))
         constraints.append(childCountView.widthAnchor.constraint(equalToConstant: 50))
         
@@ -202,6 +216,11 @@ class CommentCell: UITableViewCell {
         
         commentTextView.text = comment.value
         authorLabel.text = comment.author
+        dateLabel.text = comment.dateString
+        
+        if comment.children.isEmpty {
+            dateLabel.inset.right = 10
+        }
         
         childLabel.text = comment.isCollapsed ? "X" : "\(comment.children.count)"
         childLabel.layer.cornerRadius = 5

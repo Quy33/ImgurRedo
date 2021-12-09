@@ -25,7 +25,10 @@ class DetailViewController: UIViewController {
     private var errorTuple: ErrorTuple = (isError: false, description: nil)
     private var comments: [Comment] = []
         
-    var galleryGot = (isAlbum: true, id: "2eOWNGV")
+//    var galleryGot = (isAlbum: true, id: "2eOWNGV")
+    var galleryGot = (isAlbum: true, id: "bVdwhbk")
+//    var galleryGot = (isAlbum: true, id: "ftt1IUE")
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
