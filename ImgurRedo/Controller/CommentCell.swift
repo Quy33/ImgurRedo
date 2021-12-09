@@ -21,7 +21,6 @@ class CommentCell: UITableViewCell {
     private var commentStackView = UIStackView()
     private var headerStackView = UIStackView()
     
-    private var commentLabel = PaddingLabel()
     private var authorLabel = PaddingLabel()
     private var childLabel = PaddingLabel()
     private var childCountView = UIView()
@@ -33,6 +32,8 @@ class CommentCell: UITableViewCell {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
+    
+    private var commentTextView = UITextView()
 //MARK: Cell setup
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?, comment: Comment) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -68,7 +69,7 @@ class CommentCell: UITableViewCell {
         commentStackView = makeStackView(axis: .vertical,
                                          distribution: .fill,
                                          color: .clear,
-                                         spacing: 10,
+                                         spacing: 30,
                                          alignment: .center)
         headerStackView = makeStackView(axis: .horizontal,
                                         distribution: .fill,
@@ -84,18 +85,12 @@ class CommentCell: UITableViewCell {
         }
         
         let normalInset = UIEdgeInsets(top: 10, left: 10, bottom: 0, right: 0)
-        let childLabelInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        let childLabelInset: UIEdgeInsets = .zero
         let commentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         
         let normalFont: UIFont = .systemFont(ofSize: 17)
         let authorFont: UIFont = .systemFont(ofSize: 15, weight: .light)
         
-        commentLabel = makeLabel(numberOfLines: 0,
-                                 bgColor: .clear,
-                                 inset: commentInset,
-                                 textAlignment: .left,
-                                 textColor: .black,
-                                 font: normalFont)
         authorLabel = makeLabel(numberOfLines: 0,
                                 bgColor: .clear,
                                 inset: normalInset,
@@ -110,6 +105,14 @@ class CommentCell: UITableViewCell {
                                font: normalFont)
         
         separators = makeUIView(amount: count, color: .darkGray)
+        
+        let attributes: [NSAttributedString.Key:Any] = [
+            .foregroundColor: UIColor.purple,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        
+        commentTextView = makeTextView(font: normalFont, bgColor: .clear, scrollable: false, textInset: commentInset, linkAttr: attributes)
+        
     }
     private func addSubViews(hasImage: Bool) {
         contentView.addSubview(outerStackView)
@@ -123,7 +126,7 @@ class CommentCell: UITableViewCell {
             commentStackView.addArrangedSubview(commentImage)
         }
         
-        commentStackView.addArrangedSubview(commentLabel)
+        commentStackView.addArrangedSubview(commentTextView)
         commentStackView.addArrangedSubview(bottomSeparator)
         
         headerStackView.addArrangedSubview(authorLabel)
@@ -155,7 +158,7 @@ class CommentCell: UITableViewCell {
         //Comment Stack View
         constraints.append(commentStackView.heightAnchor.constraint(equalTo: outerStackView.heightAnchor))
         
-        constraints.append(commentLabel.widthAnchor.constraint(equalTo:  commentStackView.widthAnchor))
+        constraints.append(commentTextView.widthAnchor.constraint(equalTo:  commentStackView.widthAnchor))
         
         //Bottom of Comment Stack View
         constraints.append(bottomSeparator.widthAnchor.constraint(equalTo: commentStackView.widthAnchor)
@@ -191,13 +194,13 @@ class CommentCell: UITableViewCell {
     //MARK: Small functions
     private func config(_ comment: Comment){
         if comment.value.isEmpty {
-            commentLabel.removeFromSuperview()
+            commentTextView.removeFromSuperview()
         }
         if comment.children.isEmpty {
             childCountView.removeFromSuperview()
         }
         
-        commentLabel.text = comment.value
+        commentTextView.text = comment.value
         authorLabel.text = comment.author
         
         childLabel.text = comment.isCollapsed ? "X" : "\(comment.children.count)"
@@ -263,6 +266,23 @@ class CommentCell: UITableViewCell {
         )
         
         NSLayoutConstraint.activate(constraints)
+    }
+    private func makeTextView(font: UIFont, bgColor: UIColor, scrollable: Bool, textInset: UIEdgeInsets,linkAttr attributes: [NSAttributedString.Key : Any]?) -> UITextView {
+        let textView = UITextView()
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        
+        textView.font = font
+        textView.backgroundColor = bgColor
+        textView.isScrollEnabled = scrollable
+        textView.isEditable = false
+        textView.dataDetectorTypes = .link
+        textView.textContainerInset = textInset
+        
+        if let attributes = attributes {
+            textView.linkTextAttributes = attributes
+        }
+        
+        return textView
     }
 }
 
