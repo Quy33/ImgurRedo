@@ -63,6 +63,7 @@ class PaddingLabel: UILabel {
         return ctr
     }
 }
+//MARK: Enums
 enum ExtensionType: String, CaseIterable {
     case png = "png"
     case jpeg = "jpeg"

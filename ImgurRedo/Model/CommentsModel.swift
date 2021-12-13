@@ -23,7 +23,7 @@ class Comment {
     var contentType: ExtensionType?
     var date: Date = Date()
     var dateString: String {
-        let localDate = relativeTime(date: date, style: .short)
+        let localDate = relativeTime(date: date, style: .abbreviated)
         return localDate
     }
     

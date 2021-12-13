@@ -36,13 +36,14 @@ class CommentViewController: UIViewController {
     private func registerCell() {
         commentTableView.register(CommentCell.self, forCellReuseIdentifier: CommentCell.identifier)
     }
+//MARK: Functions to detect & download comments image link
     
     private func detectImageLink() {
         for comment in dataSource {
             let links = networkManager.detectLinks(text: comment.value)
             for link in links {
                 if link.contains(NetWorkManager.baseImgLink) {
-                    if let contentType = searchExtension(link) {
+                    if let contentType = link.searchExtension() {
                         var urlString = ""
                         switch contentType {
                         case .png, .jpeg, .jpg:
@@ -69,15 +70,6 @@ class CommentViewController: UIViewController {
         DispatchQueue.main.async {
             self.commentTableView.reloadRows(at: [indexPath], with: .none)
         }
-    }
-    func searchExtension(_ text: String) -> ExtensionType? {
-        var ext: ExtensionType?
-        for type in ExtensionType.allCases {
-            if text.contains(type.rawValue) {
-                ext = type
-            }
-        }
-        return ext
     }
     
     private func downloadCellImage() {
@@ -139,5 +131,16 @@ extension CommentViewController: UITableViewDelegate {
         detectImageLink()
         tableView.reloadData()
         downloadCellImage()
+    }
+}
+extension String {
+    func searchExtension() -> ExtensionType? {
+        var ext: ExtensionType?
+        for type in ExtensionType.allCases {
+            if self.contains(type.rawValue) {
+                ext = type
+            }
+        }
+        return ext
     }
 }
