@@ -272,17 +272,13 @@ class CommentCell: UITableViewCell {
         label.lineBreakMode = lineBreak
         return label
     }
-    private func calculateImageRatio(_ image: UIImage, frameWidth width: CGFloat) -> CGRect {
-        let boundingRect = CGRect(x: 0, y: 0, width: width, height: CGFloat(MAXFLOAT))
-        let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
-        return rect
-    }
+
     private func calculateThenSetImage(_ image: UIImage) {
         let screen = UIScreen.main.bounds
         let separatorAmount = CGFloat(separators.count)
         let padding = 10
-        let frameWidth = screen.width - (separatorWidth * separatorAmount) - CGFloat(padding * 2)
-        let imageRect = calculateImageRatio(image, frameWidth: frameWidth)
+        let insetWidth = screen.width - (separatorWidth * separatorAmount) - CGFloat(padding * 2)
+        let imageRect = ToolBox.calculateImageRatio(image, frameWidth: insetWidth)
         
         var constraints = [NSLayoutConstraint]()
         

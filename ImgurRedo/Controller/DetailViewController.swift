@@ -244,16 +244,16 @@ class DetailViewController: UIViewController {
         for (index,label) in labelItems.enumerated() {
             if index == 0 {
                 let topFont: UIFont = .systemFont(ofSize: 22, weight: .medium)
-                let rect = calculateLabelFrame(text: label, width: width, font: topFont, hPadding: hPadding, vPadding: vPadding)
+                let rect = ToolBox.calculateLabelFrame(text: label, width: width, font: topFont, hPadding: hPadding, vPadding: vPadding)
                 labelsHeights += rect.height
             } else {
                 let otherFont: UIFont = .systemFont(ofSize: 20, weight: .light)
-                let rect = calculateLabelFrame(text: label, width: width, font: otherFont, hPadding: hPadding, vPadding: vPadding)
+                let rect = ToolBox.calculateLabelFrame(text: label, width: width, font: otherFont, hPadding: hPadding, vPadding: vPadding)
                 labelsHeights += rect.height
             }
         }
         
-        let image = calculateImageRatio(config.image, frameWidth: width)
+        let image = ToolBox.calculateImageRatio(config.image, frameWidth: width)
         
         var separator = cell.separatorFrame?.frame.height ?? 0
         separator = config.isBottom ? 0 : separator

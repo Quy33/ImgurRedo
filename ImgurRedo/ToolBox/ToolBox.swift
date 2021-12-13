@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import CoreMedia
+import AVKit
 
 class ToolBox {
     
@@ -36,6 +37,32 @@ class ToolBox {
             type = item.type!
             mp4 = item.mp4
         }
+    }
+    
+    static func calculateLabelFrame(text: String?, width: CGFloat,font: UIFont, hPadding: CGFloat, vPadding: CGFloat) -> CGRect {
+        guard let string = text else {
+            return CGRect.zero
+        }
+        let horizontalPadding = hPadding * 2
+        let insetWidth = width - horizontalPadding
+        
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: insetWidth, height: CGFloat.greatestFiniteMagnitude))
+        
+        label.numberOfLines = 0
+        label.lineBreakMode = NSLineBreakMode.byWordWrapping
+        label.font = font
+        label.text = string
+        label.sizeToFit()
+
+        let frameWithPadding = label.frame.insetBy(dx: 0, dy: -vPadding)
+        
+        return frameWithPadding
+    }
+    
+    static func calculateImageRatio(_ image: UIImage, frameWidth width: CGFloat) -> CGRect {
+        let boundingRect = CGRect(x: 0, y: 0, width: width, height: CGFloat(MAXFLOAT))
+        let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
+        return rect
     }
 }
 //MARK: Tuples

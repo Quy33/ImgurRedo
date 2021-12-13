@@ -58,7 +58,7 @@ class ViewController: UIViewController {
                     self.errorTuple = (isError: true, description: error.localizedDescription)
                     ViewController.isDownloading = false
                     self.imgurCollectionView?.refreshControl?.endRefreshing()
-                    self.updateError(errorTuple: self.errorTuple)
+                    self.updateError(errorTuple: self.errorTuple, collectionView: self.imgurCollectionView, errorFrame: self.errorFrame, errorLabel: self.errorLabel)
                 }
             }
         }
@@ -103,8 +103,7 @@ class ViewController: UIViewController {
         imgurCollectionView?.register(nib, forCellWithReuseIdentifier: ImgurCollectionViewCell.identifier)
     }
     private func setLayout(collectionView: UICollectionView?) {
-        guard let collectionView = collectionView,
-        collectionView == imgurCollectionView else {
+        guard let collectionView = collectionView else {
             return
         }
         let layout = PinterestLayout()
@@ -112,8 +111,7 @@ class ViewController: UIViewController {
         collectionView.collectionViewLayout = layout
     }
     private func reload(collectionView: UICollectionView?) {
-        guard let collectionView = collectionView,
-        collectionView == imgurCollectionView else {
+        guard let collectionView = collectionView else {
             return
         }
         let contentOffset = collectionView.contentOffset
@@ -121,28 +119,27 @@ class ViewController: UIViewController {
         collectionView.setContentOffset(contentOffset, animated: false)
     }
     private func reset(collectionView: UICollectionView?) {
-        guard let collectionView = collectionView,
-        collectionView == imgurCollectionView else {
+        guard let collectionView = collectionView else {
             return
         }
         setLayout(collectionView: collectionView)
         collectionView.reloadData()
     }
     //MARK: Refresh Control
-    private func updateError(errorTuple: ErrorTuple) {
-        guard let imgurCollectionView = imgurCollectionView,
-              let loadingFrame = errorFrame,
+    private func updateError(errorTuple: ErrorTuple, collectionView: UICollectionView?, errorFrame: UIView?, errorLabel: UILabel?) {
+        guard let collectionView = collectionView,
+              let errorFrame = errorFrame,
               let errorLabel = errorLabel
         else {
             return
         }
         errorLabel.text = errorTuple.description
         if errorTuple.isError {
-            loadingFrame.isHidden = false
-            imgurCollectionView.isHidden = true
+            errorFrame.isHidden = false
+            collectionView.isHidden = true
         } else {
-            loadingFrame.isHidden = true
-            imgurCollectionView.isHidden = false
+            errorFrame.isHidden = true
+            collectionView.isHidden = false
         }
     }
     @objc private func didPullToRefresh() {
@@ -158,15 +155,19 @@ class ViewController: UIViewController {
     }
     //MARK: Buttons
     @IBAction func goBottomPressed(_ sender: UIButton) {
-        let bottomOffSet = CGPoint(x: 0, y: imgurCollectionView!.contentSize.height - 600)
-        imgurCollectionView?.setContentOffset(bottomOffSet, animated: false)
+        if let collectionView = imgurCollectionView {
+            let contentSize = collectionView.collectionViewLayout.collectionViewContentSize
+            let height = contentSize.height - collectionView.bounds.height + collectionView.contentInset.bottom
+            let bottomOffSet = CGPoint(x: 0, y: height)
+            imgurCollectionView?.setContentOffset(bottomOffSet, animated: false)
+        }
     }
     @IBAction func reloadErrorPressed(_ sender: UIButton) {
         pageAt = 0
         galleries.removeAll()
         errorTuple = (isError: false, description: nil)
         
-        updateError(errorTuple: errorTuple)
+        updateError(errorTuple: errorTuple, collectionView: imgurCollectionView, errorFrame: errorFrame, errorLabel: errorLabel)
         
         imgurCollectionView?.reloadData()
         initialDownload()
@@ -264,42 +265,15 @@ extension ViewController: PinterestLayoutDelegate {
         }
         let gallery = galleries[indexPath.row]
 
-        let imageFrame = calculateImageRatio(gallery.image, frameWidth: width)
+        let imageFrame = ToolBox.calculateImageRatio(gallery.image, frameWidth: width)
                 
         let titleHPadding: CGFloat = 10
         let titleVPadding: CGFloat = 20
         let font: UIFont = .systemFont(ofSize: 17)
-        let titleFrame = calculateLabelFrame(text: gallery.title, width: width, font: font, hPadding: titleHPadding, vPadding: titleVPadding)
+        let titleFrame = ToolBox.calculateLabelFrame(text: gallery.title, width: width, font: font, hPadding: titleHPadding, vPadding: titleVPadding)
 
         return imageFrame.height + lowerFrameHeight + titleFrame.height
     }
 }
-//MARK: Extension to calculate Height
-extension UIViewController {
-    func calculateLabelFrame(text: String?, width: CGFloat,font: UIFont, hPadding: CGFloat, vPadding: CGFloat) -> CGRect {
-        guard let string = text else {
-            return CGRect(x: 0, y: 0, width: 0, height: 0)
-        }
-        let horizontalPadding = hPadding * 2
-        let insetWidth = width - horizontalPadding
-        
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: insetWidth, height: CGFloat.greatestFiniteMagnitude))
-        
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        label.font = font
-        label.text = string
-        label.sizeToFit()
 
-        let frameWithPadding = label.frame.insetBy(dx: 0, dy: -vPadding)
-        
-        return frameWithPadding
-    }
-    
-    func calculateImageRatio(_ image: UIImage, frameWidth width: CGFloat) -> CGRect {
-        let boundingRect = CGRect(x: 0, y: 0, width: width, height: CGFloat(MAXFLOAT))
-        let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
-        return rect
-    }
-}
 
