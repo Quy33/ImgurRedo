@@ -21,67 +21,36 @@ class Comment {
     var imageLink: URL?
     var hasImageLink: Bool = false
     var contentType: ExtensionType?
-    var rawDate: Int
+    var date: Date = Date()
     var dateString: String {
-        let date = NSDate(timeIntervalSince1970: Double(rawDate)) as Date
-        let localDate = dateSorter(date)
+        let localDate = relativeTime(date: date, style: .short)
         return localDate
     }
     
-    init(value: String, id: Int, parentId: Int, author: String, date: Int) {
+    init(value: String, id: Int, parentId: Int, author: String) {
         self.value = value
         self.id = id
         self.parentId = parentId
         self.author = author
-        self.rawDate = date
     }
     convenience init() {
-        self.init(value: "", id: 0, parentId: 0, author: "", date: 0)
+        self.init(value: "", id: 0, parentId: 0, author: "")
     }
     convenience init(data: CommentData) {
-        self.init(value: data.comment, id: data.id, parentId: data.parent_id, author: data.author, date: data.datetime)
+        self.init(value: data.comment, id: data.id, parentId: data.parent_id, author: data.author)
+        date = Date(timeIntervalSince1970: Double(data.datetime))
     }
     func add(_ child: Comment){
         children.append(child)
         child.parent = self
         child.level = self.level + 1
     }
-    func dateSorter(_ date: Date) -> String {
-        var dateString = "???"
-        
-        let formatter = DateFormatter()
-        formatter.timeZone = .current
-        let monthFormat = "MMMM d"
-        let yearFormat = "MMMM d y"
-        
-        let now: Date = Date()
-        let calendar = Calendar.current
-        
-        let same: ComparisonResult = .orderedSame
-        
-        let hourResult = calendar.compare(date, to: now, toGranularity: .hour)
-        let dayResult = calendar.compare(date, to: now, toGranularity: .day)
-        let weekResult = calendar.compare(date, to: now, toGranularity: .weekday)
-        let monthResult = calendar.compare(date, to: now, toGranularity: .month)
-        let yearResult = calendar.compare(date, to: now, toGranularity: .year)
-        
-        if yearResult != same {
-            formatter.dateFormat = yearFormat
-            dateString = formatter.string(from: date)
-        } else if monthResult != same {
-            formatter.dateFormat = monthFormat
-            dateString = formatter.string(from: date)
-        } else if dayResult == same {
-            if let result = calendar.dateComponents([.hour], from: now, to: date).hour {
-                dateString = "\(abs(result)) hour"
-            }
-        } else {
-            if let result = calendar.dateComponents([.day], from: now, to: date).day {
-                dateString = "\(abs(result)) day"
-            }
-        }
-        
-        return dateString
+    func relativeTime(date: Date, style: RelativeDateTimeFormatter.UnitsStyle) -> String {
+        let today: Date = Date()
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = style
+        let relativeDate = formatter.localizedString(for: date, relativeTo: today)
+        return relativeDate
     }
 }
 extension Comment {

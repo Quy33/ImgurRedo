@@ -9,6 +9,7 @@ import UIKit
 import AVKit
 import AVFoundation
 
+/// <#Description#>
 class DetailViewController: UIViewController {
     
     @IBOutlet weak var detailTableView: UITableView?
@@ -28,10 +29,14 @@ class DetailViewController: UIViewController {
 //    var galleryGot = (isAlbum: true, id: "2eOWNGV")
     var galleryGot = (isAlbum: true, id: "bVdwhbk")
 //    var galleryGot = (isAlbum: true, id: "ftt1IUE")
+//    var galleryGot = (isAlbum: true, id: "yXA62jZ")
+//    var galleryGot = (isAlbum: true, id: "4XRlTcp")
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print(galleryGot.id)
         
         detailTableView?.dataSource = self
         detailTableView?.delegate = self

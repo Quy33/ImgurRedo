@@ -78,6 +78,5 @@ enum ThumbnailSize: Character {
     case largeThumbnail = "l"
     case hugeThumbnail = "h"
 }
-struct DateManager {
-    
-}
+
+

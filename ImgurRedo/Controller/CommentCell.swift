@@ -75,7 +75,7 @@ class CommentCell: UITableViewCell {
         headerStackView = makeStackView(axis: .horizontal,
                                         distribution: .fill,
                                         color: .clear,
-                                        spacing: 20,
+                                        spacing: 10,
                                         alignment: .center)
         
         if let container = makeUIView(amount: 1, color: .clear).first {
@@ -98,19 +98,22 @@ class CommentCell: UITableViewCell {
                                 inset: authorInset,
                                 textAlignment: .left,
                                 textColor: .black,
-                                font: authorFont)
+                                font: authorFont,
+                                lineBreak: .byCharWrapping)
         childLabel = makeLabel(numberOfLines: 1,
                                bgColor: .link,
                                inset: childLabelInset,
                                textAlignment: .center,
                                textColor: .white,
-                               font: normalFont)
+                               font: normalFont,
+                               lineBreak: .byWordWrapping)
         dateLabel = makeLabel(numberOfLines: 1,
                               bgColor: .clear,
                               inset: dateInset,
                               textAlignment: .right,
                               textColor: .black,
-                              font: authorFont)
+                              font: authorFont,
+                              lineBreak: .byWordWrapping)
         
         separators = makeUIView(amount: count, color: .darkGray)
         
@@ -190,6 +193,7 @@ class CommentCell: UITableViewCell {
         )
         constraints.append(dateLabel.bottomAnchor.constraint(equalTo: headerStackView.bottomAnchor)
         )
+        constraints.append(dateLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: 50))
         
         constraints.append(childCountView.trailingAnchor.constraint(equalTo: headerStackView.trailingAnchor))
         constraints.append(childCountView.widthAnchor.constraint(equalToConstant: 50))
@@ -231,6 +235,8 @@ class CommentCell: UITableViewCell {
         if let image = comment.image {
             calculateThenSetImage(image)
         }
+        authorLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
     }
     private func makeUIView(amount: Int, color: UIColor) -> [UIView] {
         var results: [UIView] = []
@@ -253,7 +259,7 @@ class CommentCell: UITableViewCell {
         
         return stackView
     }
-    private func makeLabel(numberOfLines lines: Int, bgColor: UIColor, inset: UIEdgeInsets,textAlignment alignment: NSTextAlignment, textColor: UIColor, font: UIFont) -> PaddingLabel {
+    private func makeLabel(numberOfLines lines: Int, bgColor: UIColor, inset: UIEdgeInsets,textAlignment alignment: NSTextAlignment, textColor: UIColor, font: UIFont, lineBreak: NSLineBreakMode) -> PaddingLabel {
         let label = PaddingLabel()
         label.numberOfLines = lines
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -263,6 +269,7 @@ class CommentCell: UITableViewCell {
         label.textAlignment = alignment
         label.textColor = textColor
         label.font = font
+        label.lineBreakMode = lineBreak
         return label
     }
     private func calculateImageRatio(_ image: UIImage, frameWidth width: CGFloat) -> CGRect {
