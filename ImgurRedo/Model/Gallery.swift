@@ -14,6 +14,7 @@ class Gallery {
     let link: String
     let animated: Bool
     let mp4: String?
+    let gifv: String?
     let type: String
     final let imagesCount: Int?
     var image: UIImage
@@ -41,7 +42,7 @@ class Gallery {
         return link
     }
     
-    init(id: String, title: String?, isAlbum: Bool, link: String, animated: Bool, type: String, imagesCount: Int?, mp4: String?, image: UIImage, views: Int) {
+    init(id: String, title: String?, isAlbum: Bool, link: String, animated: Bool, type: String, imagesCount: Int?, mp4: String?, image: UIImage, views: Int, gifv: String?) {
         self.id = id
         self.title = title
         self.isAlbum = isAlbum
@@ -52,30 +53,45 @@ class Gallery {
         self.mp4 = mp4
         self.image = image
         self.views = views
+        self.gifv = gifv
     }
 
     convenience init() {
         let placeHolder = ToolBox.placeHolderImg
-        self.init(id: "", title: nil, isAlbum: false, link: "", animated: false, type: "", imagesCount: nil, mp4: nil, image: placeHolder, views: 0)
+        self.init(id: "", title: nil, isAlbum: false, link: "", animated: false, type: "", imagesCount: nil, mp4: nil, image: placeHolder, views: 0, gifv: nil)
     }
     
     convenience init(_ item: RawGalleryData) {
-        var newLink = ""
-        var newAnimated = false
-        var newType = ""
-        var newImagesCount: Int?
-        var newMp4: String?
-        var newViews: Int
+        var link = ""
+        var animated = false
+        var type = ""
+        var imagesCount: Int?
+        var mp4: String?
+        var gifv: String?
+        var views = 0
         
-        ToolBox.sortLinks(item: item, link: &newLink, animated: &newAnimated, type: &newType, mp4: &newMp4)
+        if item.is_album {
+            if let firstImg = item.images?[0] {
+                link = firstImg.link
+                animated = firstImg.animated
+                mp4 = firstImg.mp4
+                gifv = firstImg.gifv
+                imagesCount = item.images_count
+                type = firstImg.type
+            }
+        } else {
+            link = item.link
+            animated = item.animated!
+            mp4 = item.mp4
+            gifv = item.gifv
+            type = item.type!
+        }
+        views = item.views
         
-        newImagesCount = item.is_album ? item.images_count! : nil
-        newViews = item.views
-        
-        self.init(id: item.id, title: item.title, isAlbum: item.is_album, link: newLink, animated: newAnimated, type: newType, imagesCount: newImagesCount, mp4: newMp4, image: ToolBox.placeHolderImg, views: newViews)
+        self.init(id: item.id, title: item.title, isAlbum: item.is_album, link: link, animated: animated, type: type, imagesCount: imagesCount, mp4: mp4, image: ToolBox.placeHolderImg, views: views, gifv: gifv)
     }
     //Designated init for inheritance
-    init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage) {
+    init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage, gifv: String?) {
         self.title = title
         self.link = link
         self.animated = animated
@@ -86,6 +102,7 @@ class Gallery {
         self.isAlbum = false
         self.views = 0
         self.imagesCount = nil
+        self.gifv = gifv
     }
 }
 

@@ -24,21 +24,6 @@ class ToolBox {
         return result
     }
     
-    static func sortLinks(item: RawGalleryData,link: inout String, animated: inout Bool, type: inout String, mp4: inout String?) {
-        if item.is_album {
-            let firstImage = item.images![0]
-            link = firstImage.link
-            animated = firstImage.animated
-            type = firstImage.type
-            mp4 = firstImage.mp4
-        } else {
-            link = item.link
-            animated = item.animated!
-            type = item.type!
-            mp4 = item.mp4
-        }
-    }
-    
     static func calculateLabelFrame(text: String?, width: CGFloat,font: UIFont, hPadding: CGFloat, vPadding: CGFloat) -> CGRect {
         guard let string = text else {
             return CGRect.zero

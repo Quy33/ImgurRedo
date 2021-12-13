@@ -17,6 +17,7 @@ struct RawImageData: Codable {
     let animated: Bool?
     let link: String
     let mp4: String?
+    let gifv: String?
     let images: [RawAlbumData]?
 }
 struct RawAlbumData: Codable {
@@ -26,4 +27,5 @@ struct RawAlbumData: Codable {
     let animated: Bool
     let link: String
     let mp4: String?
+    let gifv: String?
 }

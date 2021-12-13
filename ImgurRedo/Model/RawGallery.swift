@@ -18,6 +18,7 @@ struct RawGalleryData: Codable {
     let type: String?
     let animated: Bool?
     let mp4: String?
+    let gifv: String?
     let images_count: Int?
     let images: [RawGalleryAlbumData]?
     let views: Int
@@ -27,4 +28,5 @@ struct RawGalleryAlbumData: Codable {
     let type: String
     let animated: Bool
     let mp4: String?
+    let gifv: String?
 }

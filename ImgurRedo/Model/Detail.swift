@@ -10,15 +10,15 @@ import UIKit
 class Image: Gallery {
     let description: String?
 
-    init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage, description: String?) {
+    init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage, description: String?, gifv: String?) {
         self.description = description
-        super.init(title: title, link: link, animated: animated, type: type, mp4: mp4, image: image)
+        super.init(title: title, link: link, animated: animated, type: type, mp4: mp4, image: image, gifv: gifv)
     }
     convenience init() {
-        self.init(title: nil, link: "", animated: false, type: "", mp4: nil, image: ToolBox.placeHolderImg, description: nil)
+        self.init(title: nil, link: "", animated: false, type: "", mp4: nil, image: ToolBox.placeHolderImg, description: nil, gifv: nil)
     }
     convenience init(_ model: RawImageData) {
-        self.init(title: model.title, link: model.link, animated: model.animated!, type: model.type!, mp4: model.mp4, image: ToolBox.placeHolderImg, description: model.description)
+        self.init(title: model.title, link: model.link, animated: model.animated!, type: model.type!, mp4: model.mp4, image: ToolBox.placeHolderImg, description: model.description, gifv: model.gifv)
     }
 }
 class Album {
@@ -39,7 +39,7 @@ class Album {
         let albumImages = model.images!
         var images: [Image] = []
         for image in albumImages {
-            let newImage = Image(title: image.title, link: image.link, animated: image.animated, type: image.type, mp4: image.mp4, image: ToolBox.placeHolderImg, description: image.description)
+            let newImage = Image(title: image.title, link: image.link, animated: image.animated, type: image.type, mp4: image.mp4, image: ToolBox.placeHolderImg, description: image.description, gifv: image.gifv)
             images.append(newImage)
         }
 
