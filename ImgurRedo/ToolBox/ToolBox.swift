@@ -24,7 +24,7 @@ class ToolBox {
         return result
     }
     
-    static func sortLinks(item: GalleryDataModel,link: inout String, animated: inout Bool, type: inout String, mp4: inout String?) {
+    static func sortLinks(item: RawGalleryData,link: inout String, animated: inout Bool, type: inout String, mp4: inout String?) {
         if item.is_album {
             let firstImage = item.images![0]
             link = firstImage.link
@@ -88,6 +88,30 @@ class PaddingLabel: UILabel {
         let insetBounds = bounds.inset(by: inset)
         let ctr = super.textRect(forBounds: insetBounds, limitedToNumberOfLines: numberOfLines)
         return ctr
+    }
+}
+//MARK: String Extension
+extension String {
+    func searchExtension() -> ExtensionType? {
+        var ext: ExtensionType?
+        for type in ExtensionType.allCases {
+            if self.contains(type.rawValue) {
+                ext = type
+            }
+        }
+        return ext
+    }
+    func matchExtension() -> ExtensionType {
+        var ext: ExtensionType
+        switch self {
+        case "image/gif":
+            ext = .gif
+        case "video/mp4":
+            ext = .mp4
+        default:
+            ext = .png
+        }
+        return ext
     }
 }
 //MARK: Enums

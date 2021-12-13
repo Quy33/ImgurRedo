@@ -7,14 +7,14 @@
 
 import Foundation
 
-class CommentDataModel: Decodable {
-    let data: [CommentData]
+class RawComment: Decodable {
+    let data: [RawCommentData]
 }
-class CommentData: Decodable {
+class RawCommentData: Decodable {
     let id: Int
     let parent_id: Int
     let comment: String
-    var children: [CommentData]
+    var children: [RawCommentData]
     let author: String
     let datetime: Int
 }

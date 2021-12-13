@@ -15,7 +15,7 @@ struct NetWorkManager {
     
     private let header = (key: "Authorization", value: "Client-ID 11dd115895de7c5")
     
-    func requestGallery(parameter p: GalleryParameterModel) async throws -> DataModel {
+    func requestGallery(parameter p: GarleryParameter) async throws -> RawGallery {
         guard var urlComponents = URLComponents(string: "\(baseURL)/gallery/\(p.section)/\(p.sort)/\(p.window)/\(p.page)") else {
             throw NetworkingError.invalidData
         }
@@ -54,7 +54,7 @@ struct NetWorkManager {
         var urls: [String] = []
         do {
             let detector = try NSDataDetector(types: type.rawValue)
-            var matches = detector.matches(in: text, options: .reportCompletion, range: NSMakeRange(0, text.count))
+            let matches = detector.matches(in: text, options: .reportCompletion, range: NSMakeRange(0, text.count))
             urls = matches.compactMap{ $0.url?.absoluteString }
             urls = urls.map{ trimLink($0) }
             return urls
@@ -118,24 +118,8 @@ struct NetWorkManager {
         }
         return results
     }
-//    func requestContentType(_ link: String) async throws -> String? {
-//        guard let url = URL(string: link), link.contains("https") else {
-//            throw NetworkingError.invalidData
-//        }
-//        var request = URLRequest(url: url)
-//        request.httpMethod = "HEAD"
-//        let (_,response) = try await URLSession.shared.data(for: request)
-//        guard let urlResponse = response as? HTTPURLResponse else {
-//            throw NetworkingError.invalidData
-//        }
-//        guard let contentType = urlResponse.value(forHTTPHeaderField: "Content-Type") else {
-//            throw NetworkingError.invalidData
-//        }
-//        return contentType
-//    }
 //MARK: Detail Screen Networking
-
-    func requestData(isAlbum: Bool, id: String) async throws -> (detailData: DetailDataModel, commentData: CommentDataModel) {
+    func requestData(isAlbum: Bool, id: String) async throws -> (detailData: RawDetail, commentData: RawComment) {
         
         let detail = isAlbum ? "album" : "image"
         let detailUrlString = "\(baseURL)/\(detail)/\(id)"

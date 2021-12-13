@@ -7,10 +7,10 @@
 
 import Foundation
 
-struct DataModel: Codable {    
-    let data: [GalleryDataModel]
+struct RawGallery: Codable {    
+    let data: [RawGalleryData]
 }
-struct GalleryDataModel: Codable {
+struct RawGalleryData: Codable {
     let id: String
     let title: String
     let is_album: Bool
@@ -19,10 +19,10 @@ struct GalleryDataModel: Codable {
     let animated: Bool?
     let mp4: String?
     let images_count: Int?
-    let images: [GalleryDataAlbumModel]?
+    let images: [RawGalleryAlbumData]?
     let views: Int
 }
-struct GalleryDataAlbumModel: Codable {
+struct RawGalleryAlbumData: Codable {
     let link: String
     let type: String
     let animated: Bool

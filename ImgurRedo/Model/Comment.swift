@@ -36,7 +36,7 @@ class Comment {
     convenience init() {
         self.init(value: "", id: 0, parentId: 0, author: "")
     }
-    convenience init(data: CommentData) {
+    convenience init(data: RawCommentData) {
         self.init(value: data.comment, id: data.id, parentId: data.parent_id, author: data.author)
         date = Date(timeIntervalSince1970: Double(data.datetime))
     }

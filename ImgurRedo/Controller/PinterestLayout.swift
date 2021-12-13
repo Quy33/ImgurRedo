@@ -64,15 +64,14 @@ class PinterestLayout: UICollectionViewLayout {
             
             let leftColumn = yOffSets[0]
             let rightColumn = yOffSets[1]
-            let shortestColumn = min(leftColumn, rightColumn)
             
-            switch shortestColumn {
+            switch min(leftColumn, rightColumn) {
             case leftColumn:
                 column = 0
             case rightColumn:
                 column = 1
             default:
-                fatalError()
+                break
             }
 
             //Normal calculation
@@ -90,8 +89,6 @@ class PinterestLayout: UICollectionViewLayout {
             
             contentHeight = max(frame.maxY, contentHeight)
             yOffSets[column] += height
-            
-//            column = column < (numberOfColumns - 1) ? (column + 1) : 0
         }
     }
     // Passing the cache

@@ -33,7 +33,7 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         spinner?.hidesWhenStopped = true
         loadingView?.isHidden = true
     }
-    func configure(image: UIImage, title: String, count: Int?, views: Int, type: String, isLast: Bool, isLoading: Bool, errorTuple: ErrorTuple) {
+    func configure(image: UIImage, title: String, count: Int?, views: Int, type: ExtensionType, isLast: Bool, isLoading: Bool, errorTuple: ErrorTuple) {
         
         if !isLast {
             resetCellUI(boolean: false)
@@ -89,7 +89,7 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         titleLabel?.textAlignment = .center
     }
     //MARK: Config The elements inside the cell
-    private func typeFrameConfig(type: String) {
+    private func typeFrameConfig(type: ExtensionType) {
         let typeRect = typeFrame?.frame ?? CGRect(x: 0, y: 0, width: 0, height: 0)
         typeFrame?.layer.cornerRadius = typeRect.height / 2
         typeFrame?.layer.masksToBounds = true
@@ -98,9 +98,9 @@ class ImgurCollectionViewCell: UICollectionViewCell {
         var isHidden = false
         
         switch type {
-        case "image/gif":
+        case .gif:
             isType = "GIF"
-        case "video/mp4":
+        case .mp4:
             isType = "MP4"
         default :
             isType = "IMG"

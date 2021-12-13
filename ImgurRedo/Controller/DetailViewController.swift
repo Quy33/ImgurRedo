@@ -9,18 +9,17 @@ import UIKit
 import AVKit
 import AVFoundation
 
-/// <#Description#>
 class DetailViewController: UIViewController {
     
     @IBOutlet weak var detailTableView: UITableView?
     @IBOutlet weak var loadingFrame: UIView?
     @IBOutlet weak var errorLabel: UILabel?
-    @IBOutlet weak var commentsBtn: UIButton!
+    @IBOutlet weak var commentsBtn: UIButton?
     
     static let identifier = "DetailViewController"
     private let networkManager = NetWorkManager()
-    private var imageItem = DetailModel()
-    private var albumItem = DetailAlbumModel()
+    private var imageItem = Image()
+    private var albumItem = Album()
     private var heights: [CGFloat] = []
     private var isCached = false
     private var errorTuple: ErrorTuple = (isError: false, description: nil)
@@ -45,14 +44,14 @@ class DetailViewController: UIViewController {
         
         registerCell(tableView: detailTableView)
         
-        DetailModel.setQuality(isThumbnail: true, size: .mediumThumbnail)
+        Image.setQuality(isThumbnail: true, size: .mediumThumbnail)
         
         loadingFrame?.isHidden = true
         loadDetails()
     }
 //MARK: Networking Call
     private func loadDetails(){
-        loadUI(true)
+        loadUI(isLoading: true, button: commentsBtn, tableView: detailTableView)
         Task {
             do {
                 let metaData = try await networkManager.requestData(isAlbum: galleryGot.isAlbum, id: galleryGot.id)
@@ -60,7 +59,7 @@ class DetailViewController: UIViewController {
                 let detailModel = metaData.detailData
                 
                 if galleryGot.isAlbum {
-                    albumItem = DetailAlbumModel(detailModel.data)
+                    albumItem = Album(detailModel.data)
                     let urls = albumItem.images.map{ $0.url }
                     let images = try await networkManager.batchesDownload(urls: urls)
                     for (index,item) in albumItem.images.enumerated() {
@@ -68,12 +67,12 @@ class DetailViewController: UIViewController {
                     }
                     heights = .init(repeating: 0, count: albumItem.images.count)
                 } else {
-                    imageItem = DetailModel(detailModel.data)
+                    imageItem = Image(detailModel.data)
                     imageItem.image = try await networkManager.singleDownload(url: imageItem.url)
                     heights.append(0)
                 }
                 DispatchQueue.main.async {
-                    self.loadUI(false)
+                    self.loadUI(isLoading: false, button: self.commentsBtn, tableView: self.detailTableView)
                     self.detailTableView?.reloadData()
                 }
                 //Comments
@@ -87,15 +86,18 @@ class DetailViewController: UIViewController {
             } catch {
                 DispatchQueue.main.async {
                     print("Error: \(error)")
-                    self.loadUI(false)
+                    self.loadUI(isLoading: false, button: self.commentsBtn, tableView: self.detailTableView)
                     self.errorTuple = (isError: true, description: error.localizedDescription)
-                    self.updateError(errorTuple: self.errorTuple)
+                    self.updateError(errorTuple: self.errorTuple,
+                                     loadingFrame: self.loadingFrame,
+                                     tableView: self.detailTableView,
+                                     errorLabel: self.errorLabel)
                 }
             }
         }
     }
 //MARK: Comments Functions
-    func appendNode(container: inout [Comment], _ data: CommentData,_ visit: (inout [Comment], CommentData)->Void ) {
+    func appendNode(container: inout [Comment], _ data: RawCommentData,_ visit: (inout [Comment], RawCommentData)->Void ) {
         visit(&container, data)
         data.children.forEach {
             appendNode(container: &container, $0, visit)
@@ -122,40 +124,55 @@ class DetailViewController: UIViewController {
         tableView.register(nib, forCellReuseIdentifier: DetailTableViewCell.identifier)
     }
 //MARK: Call to update UI
-    private func updateError(errorTuple: ErrorTuple) {
-        errorLabel?.text = errorTuple.description
+    private func updateError(errorTuple: ErrorTuple, loadingFrame: UIView?, tableView: UITableView?, errorLabel: UILabel?) {
+        guard let loadingFrame = loadingFrame,
+              let tableView = tableView,
+              let errorLabel = errorLabel
+        else {
+            return
+        }
+        errorLabel.text = errorTuple.description
         if errorTuple.isError {
-            loadingFrame?.isHidden = false
-            detailTableView?.isHidden = true
+            loadingFrame.isHidden = false
+            tableView.isHidden = true
         } else {
-            loadingFrame?.isHidden = true
-            detailTableView?.isHidden = false
+            loadingFrame.isHidden = true
+            tableView.isHidden = false
         }
     }
     @objc private func didPullToRefresh() {
-        reload()
+        reload(tableView: detailTableView)
     }
-    private func reload() {
-        albumItem = DetailAlbumModel()
-        imageItem = DetailModel()
+    private func reload(tableView: UITableView?) {
+        guard let tableView = tableView else {
+            return
+        }
+        albumItem = Album()
+        imageItem = Image()
         isCached = false
-        detailTableView?.reloadData()
+        tableView.reloadData()
         heights = []
         loadDetails()
     }
-    private func loadUI(_ bool: Bool){
-        if bool {
-            detailTableView?.refreshControl?.beginRefreshing()
-        } else {
-            detailTableView?.refreshControl?.endRefreshing()
+    private func loadUI(isLoading bool: Bool,button: UIButton?, tableView: UITableView?){
+        guard let button = button,  let tableView = tableView else {
+            return
         }
-        commentsBtn.isHidden = bool
+        if bool {
+            tableView.refreshControl?.beginRefreshing()
+        } else {
+            tableView.refreshControl?.endRefreshing()
+        }
+        button.isHidden = bool
     }
 //MARK: Buttons
     @IBAction func reloadErrorPressed(_ sender: UIButton?){
         errorTuple = (isError: false, description: nil)
-        updateError(errorTuple: errorTuple)
-        reload()
+        updateError(errorTuple: self.errorTuple,
+                    loadingFrame: self.loadingFrame,
+                    tableView: self.detailTableView,
+                    errorLabel: self.errorLabel)
+        reload(tableView: detailTableView)
     }
     @IBAction func commentsBtnPressed(_ sender: UIButton) {
         if !comments.isEmpty {

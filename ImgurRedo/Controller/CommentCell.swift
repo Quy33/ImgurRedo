@@ -193,7 +193,7 @@ class CommentCell: UITableViewCell {
         )
         constraints.append(dateLabel.bottomAnchor.constraint(equalTo: headerStackView.bottomAnchor)
         )
-        constraints.append(dateLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: 50))
+        constraints.append(dateLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: 40))
         
         constraints.append(childCountView.trailingAnchor.constraint(equalTo: headerStackView.trailingAnchor))
         constraints.append(childCountView.widthAnchor.constraint(equalToConstant: 50))

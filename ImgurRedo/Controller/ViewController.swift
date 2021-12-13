@@ -15,7 +15,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var errorLabel: UILabel?
     
     private let networkManager = NetWorkManager()
-    private var galleries: [GalleryModel] = []
+    private var galleries: [Gallery] = []
     private var pageAt = 0
     private var indexPathToMove = IndexPath(item: 0, section: 0)
     private var lowerFrameHeight: CGFloat = 0
@@ -33,7 +33,7 @@ class ViewController: UIViewController {
         imgurCollectionView?.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
         
         setLayout(collectionView: imgurCollectionView)
-        GalleryModel.setQuality(isThumbnail: true, size: .mediumThumbnail)
+        Gallery.setQuality(isThumbnail: true, size: .mediumThumbnail)
         errorFrame?.isHidden = true
 
         initialDownload()
@@ -41,7 +41,7 @@ class ViewController: UIViewController {
 
 //MARK: Networking Calls
     private func initialDownload() {
-        let para = GalleryParameterModel()
+        let para = GarleryParameter()
         ViewController.isDownloading = true
         imgurCollectionView?.refreshControl?.beginRefreshing()
         Task {
@@ -65,7 +65,7 @@ class ViewController: UIViewController {
     }
     
     private func downloadNextPage(page: Int,indexPath: IndexPath) {
-        let para = GalleryParameterModel(page: page)
+        let para = GarleryParameter(page: page)
         ViewController.isDownloading = true
         imgurCollectionView?.reloadItems(at: [indexPath])
         Task {
@@ -86,9 +86,9 @@ class ViewController: UIViewController {
             }
         }
     }
-    private func performDownload(parameter: GalleryParameterModel) async throws -> [GalleryModel] {
+    private func performDownload(parameter: GarleryParameter) async throws -> [Gallery] {
         let dataModel = try await networkManager.requestGallery(parameter: parameter)
-        let newGalleries = dataModel.data.map{ GalleryModel($0) }
+        let newGalleries = dataModel.data.map{ Gallery($0) }
         let urls = newGalleries.map{ $0.url }
         let images = try await networkManager.batchesDownload(urls: urls)
         
@@ -197,7 +197,7 @@ extension ViewController: UICollectionViewDataSource {
                            title: "Test Title",
                            count: 0,
                            views: 0,
-                           type: "image/png",
+                           type: .png,
                            isLast: true,
                            isLoading: ViewController.isDownloading,
                            errorTuple: errorTuple)
@@ -207,7 +207,7 @@ extension ViewController: UICollectionViewDataSource {
                            title: gallery.title!,
                            count: gallery.imagesCount,
                            views: gallery.views,
-                           type: gallery.type,
+                           type: gallery.type.matchExtension(),
                            isLast: false,
                            isLoading: false,
                            errorTuple: errorTuple)
@@ -230,10 +230,11 @@ extension ViewController: UICollectionViewDelegate {
             let lastIndex = IndexPath(item: lastCell, section: 0)
             downloadNextPage(page: pageAt, indexPath: lastIndex)
             return
+        } else {
+            //Segue
+            indexPathToMove = indexPath
+            performSegue(withIdentifier: DetailViewController.identifier, sender: self)
         }
-        //Segue
-        indexPathToMove = indexPath
-        performSegue(withIdentifier: DetailViewController.identifier, sender: self)
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let gallery = galleries[indexPathToMove.item]
@@ -247,9 +248,12 @@ extension ViewController: UICollectionViewDelegate {
         guard let cell = cell as? ImgurCollectionViewCell else {
             return
         }
+        //Call to get the cell bottom frame height
         if lowerFrameHeight == 0 {
-            lowerFrameHeight = cell.bottomFrame!.frame.height
-            reload(collectionView: imgurCollectionView)
+            if let bottomFrame = cell.bottomFrame {
+                lowerFrameHeight = bottomFrame.frame.height
+                reload(collectionView: imgurCollectionView)
+            }
         }
     }
 }
@@ -262,17 +266,18 @@ extension ViewController: PinterestLayoutDelegate {
         }
         if indexPath.row == galleries.count {
             return 300
+        } else {
+            let gallery = galleries[indexPath.row]
+
+            let imageFrame = ToolBox.calculateImageRatio(gallery.image, frameWidth: width)
+                    
+            let titleHPadding: CGFloat = 10
+            let titleVPadding: CGFloat = 20
+            let font: UIFont = .systemFont(ofSize: 17)
+            let titleFrame = ToolBox.calculateLabelFrame(text: gallery.title, width: width, font: font, hPadding: titleHPadding, vPadding: titleVPadding)
+
+            return imageFrame.height + lowerFrameHeight + titleFrame.height
         }
-        let gallery = galleries[indexPath.row]
-
-        let imageFrame = ToolBox.calculateImageRatio(gallery.image, frameWidth: width)
-                
-        let titleHPadding: CGFloat = 10
-        let titleVPadding: CGFloat = 20
-        let font: UIFont = .systemFont(ofSize: 17)
-        let titleFrame = ToolBox.calculateLabelFrame(text: gallery.title, width: width, font: font, hPadding: titleHPadding, vPadding: titleVPadding)
-
-        return imageFrame.height + lowerFrameHeight + titleFrame.height
     }
 }
 

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DetailModel: GalleryModel {
+class Image: Gallery {
     let description: String?
 
     init(title: String?, link: String, animated: Bool, type: String, mp4: String?, image: UIImage, description: String?) {
@@ -17,16 +17,16 @@ class DetailModel: GalleryModel {
     convenience init() {
         self.init(title: nil, link: "", animated: false, type: "", mp4: nil, image: ToolBox.placeHolderImg, description: nil)
     }
-    convenience init(_ model: DetailImageModel) {
+    convenience init(_ model: RawImageData) {
         self.init(title: model.title, link: model.link, animated: model.animated!, type: model.type!, mp4: model.mp4, image: ToolBox.placeHolderImg, description: model.description)
     }
 }
-class DetailAlbumModel {
+class Album {
     let title: String?
     let description: String?
-    var images: [DetailModel]
+    var images: [Image]
     let link: String
-    init(title: String?, description: String?, images: [DetailModel], link: String) {
+    init(title: String?, description: String?, images: [Image], link: String) {
         self.title = title
         self.description = description
         self.images = images
@@ -35,11 +35,11 @@ class DetailAlbumModel {
     convenience init() {
         self.init(title: nil, description: nil, images: [], link: "")
     }
-    convenience init(_ model: DetailImageModel) {
+    convenience init(_ model: RawImageData) {
         let albumImages = model.images!
-        var images: [DetailModel] = []
+        var images: [Image] = []
         for image in albumImages {
-            let newImage = DetailModel(title: image.title, link: image.link, animated: image.animated, type: image.type, mp4: image.mp4, image: ToolBox.placeHolderImg, description: image.description)
+            let newImage = Image(title: image.title, link: image.link, animated: image.animated, type: image.type, mp4: image.mp4, image: ToolBox.placeHolderImg, description: image.description)
             images.append(newImage)
         }
 

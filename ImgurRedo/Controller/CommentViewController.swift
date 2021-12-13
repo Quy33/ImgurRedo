@@ -12,21 +12,25 @@ class CommentViewController: UIViewController {
 
     static let identifier = "CommentViewController"
     var commentsGot: [Comment] = []
-    private var dataSource: [Comment] = []
+    private var dataSource: [Comment] = [] {
+        didSet{
+            detectImageLink()
+            commentTableView.reloadData()
+            downloadCellImage()
+        }
+    }
     private let networkManager = NetWorkManager()
 
     @IBOutlet weak var commentTableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        setNavBar()
         dataSource = commentsGot
         
         registerCell()
         commentTableView.dataSource = self
         commentTableView.delegate = self
-        detectImageLink()
-        downloadCellImage()
     }
     //Temp fix
     override func viewWillDisappear(_ animated: Bool) {
@@ -90,6 +94,13 @@ class CommentViewController: UIViewController {
             }
         }
     }
+    private func setNavBar(){
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithDefaultBackground()
+        appearance.backgroundColor = .lightGray
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
+    }
 }
 //MARK: TableView Stuff
 extension CommentViewController: UITableViewDataSource {
@@ -125,22 +136,9 @@ extension CommentViewController: UITableViewDelegate {
             comment.isCollapsed = false
         } else {
             let next = IndexPath(row: indexPath.row + 1, section: 0)
-            dataSource.insert(contentsOf: comment.children, at: next.row)
             comment.isCollapsed = true
+            dataSource.insert(contentsOf: comment.children, at: next.row)
         }
-        detectImageLink()
-        tableView.reloadData()
-        downloadCellImage()
     }
 }
-extension String {
-    func searchExtension() -> ExtensionType? {
-        var ext: ExtensionType?
-        for type in ExtensionType.allCases {
-            if self.contains(type.rawValue) {
-                ext = type
-            }
-        }
-        return ext
-    }
-}
+

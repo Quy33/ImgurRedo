@@ -7,19 +7,19 @@
 
 import Foundation
 
-struct DetailDataModel: Codable {
-    let data: DetailImageModel
+struct RawDetail: Codable {
+    let data: RawImageData
 }
-struct DetailImageModel: Codable {
+struct RawImageData: Codable {
     let title: String
     let description: String?
     let type: String?
     let animated: Bool?
     let link: String
     let mp4: String?
-    let images: [DetailDataAlbumModel]?
+    let images: [RawAlbumData]?
 }
-struct DetailDataAlbumModel: Codable {
+struct RawAlbumData: Codable {
     let title: String?
     let description: String?
     let type: String

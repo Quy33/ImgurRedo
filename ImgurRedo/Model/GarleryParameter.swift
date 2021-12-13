@@ -7,7 +7,7 @@
 
 import Foundation
 
-class GalleryParameterModel {
+class GarleryParameter {
     let section: Section
     let sort: Sort
     let page: Int

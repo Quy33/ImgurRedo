@@ -1,5 +1,5 @@
 //
-//  GalleryModel.swift
+//  GalleryDataSource.swift
 //  ImgurRedo
 //
 //  Created by Mcrew-Tech on 17/11/2021.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class GalleryModel {
+class Gallery {
     final let id: String
     let title: String?
     final let isAlbum: Bool
@@ -23,17 +23,17 @@ class GalleryModel {
     private static var isThumbnail = true
     
     static func setQuality(isThumbnail: Bool, size: ThumbnailSize){
-        GalleryModel.thumbnailSize = size
-        GalleryModel.isThumbnail = isThumbnail
+        Gallery.thumbnailSize = size
+        Gallery.isThumbnail = isThumbnail
     }
     
     var url: URL {
         var urlString = ""
-        if GalleryModel.isThumbnail {
+        if Gallery.isThumbnail {
             urlString = animated ? mp4! : link
-            urlString = ToolBox.concatStr(string: urlString, size: GalleryModel.thumbnailSize)
+            urlString = ToolBox.concatStr(string: urlString, size: Gallery.thumbnailSize)
         } else {
-            urlString = animated ? ToolBox.concatStr(string: mp4!, size: GalleryModel.thumbnailSize) : link
+            urlString = animated ? ToolBox.concatStr(string: mp4!, size: Gallery.thumbnailSize) : link
         }
         guard let link = URL(string: urlString) else {
             return ToolBox.blankURL
@@ -59,7 +59,7 @@ class GalleryModel {
         self.init(id: "", title: nil, isAlbum: false, link: "", animated: false, type: "", imagesCount: nil, mp4: nil, image: placeHolder, views: 0)
     }
     
-    convenience init(_ item: GalleryDataModel) {
+    convenience init(_ item: RawGalleryData) {
         var newLink = ""
         var newAnimated = false
         var newType = ""
