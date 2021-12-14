@@ -24,7 +24,6 @@ class ImgurCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var spinner: UIActivityIndicatorView?
     
     
-    
     static let identifier = "ImgurCollectionViewCell"
 
     override func awakeFromNib() {

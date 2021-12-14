@@ -370,12 +370,14 @@ extension DetailViewController: UITableViewDelegate {
         if galleryGot.isAlbum {
             if albumItem.images[indexPath.row].animated {
                 if let mp4Link = URL(string: albumItem.images[indexPath.row].mp4!) {
+                    print(mp4Link)
                     playVideo(url: mp4Link)
                 }
             }
         } else {
             if imageItem.animated {
                 if let mp4Link = URL(string: imageItem.mp4!) {
+                    print(mp4Link)
                     playVideo(url: mp4Link)
                 }
             }
