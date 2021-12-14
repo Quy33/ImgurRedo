@@ -54,27 +54,6 @@ class ToolBox {
 typealias ErrorTuple = (isError: Bool, description: String?)
 typealias ConfigTuple = (top: String?, title: String?, image: UIImage, description: String?, bottom: String?, isBottom: Bool, animated: Bool)
 
-class PaddingLabel: UILabel {
-    var inset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-    
-    override var intrinsicContentSize: CGSize {
-        var size = super.intrinsicContentSize
-        size.width = size.width + inset.left + inset.right
-        size.height = size.height + inset.top + inset.bottom
-        return size
-    }
-    
-    override func drawText(in rect: CGRect) {
-        let insetRect = rect.inset(by: inset)
-        super.drawText(in: insetRect)
-    }
-    
-    override func textRect(forBounds bounds: CGRect, limitedToNumberOfLines numberOfLines: Int) -> CGRect {
-        let insetBounds = bounds.inset(by: inset)
-        let ctr = super.textRect(forBounds: insetBounds, limitedToNumberOfLines: numberOfLines)
-        return ctr
-    }
-}
 //MARK: String Extension
 extension String {
     func searchExtension() -> ExtensionType? {
@@ -106,6 +85,7 @@ enum ExtensionType: String, CaseIterable {
     case jpg = "jpg"
     case mp4 = "mp4"
     case gif = "gif"
+    case gifv = "gifv"
 }
 enum ThumbnailSize: Character {
     case smallSquare = "s"

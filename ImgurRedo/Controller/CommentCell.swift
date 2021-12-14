@@ -100,6 +100,8 @@ class CommentCell: UITableViewCell {
                                 textColor: .black,
                                 font: authorFont,
                                 lineBreak: .byCharWrapping)
+        authorLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+
         childLabel = makeLabel(numberOfLines: 1,
                                bgColor: .link,
                                inset: childLabelInset,
@@ -114,7 +116,8 @@ class CommentCell: UITableViewCell {
                               textColor: .black,
                               font: authorFont,
                               lineBreak: .byWordWrapping)
-        
+        dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
         separators = makeUIView(amount: count, color: .darkGray)
         
         let attributes: [NSAttributedString.Key:Any] = [
@@ -235,8 +238,6 @@ class CommentCell: UITableViewCell {
         if let image = comment.image {
             calculateThenSetImage(image)
         }
-        authorLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
     }
     private func makeUIView(amount: Int, color: UIColor) -> [UIView] {
         var results: [UIView] = []

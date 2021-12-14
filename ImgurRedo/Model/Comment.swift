@@ -19,7 +19,9 @@ class Comment {
     var level = 0
     var image: UIImage?
     var imageLink: URL?
+    var videoLink: URL?
     var hasImageLink: Bool = false
+    var hasVideoLink: Bool = false
     var contentType: ExtensionType?
     var date: Date = Date()
     var dateString: String {

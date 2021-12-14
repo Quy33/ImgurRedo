@@ -14,7 +14,7 @@ class CommentViewController: UIViewController {
     var commentsGot: [Comment] = []
     private var dataSource: [Comment] = [] {
         didSet{
-            detectImageLink()
+            detectMediaLink()
             commentTableView.reloadData()
             downloadCellImage()
         }
@@ -42,7 +42,34 @@ class CommentViewController: UIViewController {
     }
 //MARK: Functions to detect & download comments image link
     
-    private func detectImageLink() {
+//    private func detectImageLink() {
+//        for comment in dataSource {
+//            let links = networkManager.detectLinks(text: comment.value)
+//            for link in links {
+//                if link.contains(NetWorkManager.baseImgLink) {
+//                    if let contentType = link.searchExtension() {
+//                        var urlString = ""
+//                        switch contentType {
+//                        case .png, .jpeg, .jpg:
+//                            urlString = link
+//                        case .mp4, .gif:
+//                            urlString = ToolBox.concatStr(string: link, size: .hugeThumbnail)
+//                        }
+//
+//                        guard let url = URL(string: urlString) else {
+//                            continue
+//                        }
+//
+//                        comment.value = comment.value.replacingOccurrences(of: link, with: "")
+//                        comment.contentType = contentType
+//                        comment.imageLink = url
+//                        comment.hasImageLink = true
+//                    }
+//                }
+//            }
+//        }
+//    }
+    private func detectMediaLink() {
         for comment in dataSource {
             let links = networkManager.detectLinks(text: comment.value)
             for link in links {
@@ -50,25 +77,30 @@ class CommentViewController: UIViewController {
                     if let contentType = link.searchExtension() {
                         var urlString = ""
                         switch contentType {
-                        case .png, .jpeg, .jpg:
+                        case .mp4, .gif, .gifv:
+                            urlString = link.replacingOccurrences(
+                                of: contentType.rawValue,
+                                with: "mp4"
+                            )
+                            if let url = URL(string: urlString) {
+                                comment.videoLink = url
+                                comment.hasVideoLink = true
+                            }
+                        default:
                             urlString = link
-                        case .mp4, .gif:
-                            urlString = ToolBox.concatStr(string: link, size: .hugeThumbnail)
+                            if let url = URL(string: urlString) {
+                                comment.imageLink = url
+                                comment.hasImageLink = true
+                            }
                         }
-                        
-                        guard let url = URL(string: urlString) else {
-                            continue
-                        }
-                        
                         comment.value = comment.value.replacingOccurrences(of: link, with: "")
                         comment.contentType = contentType
-                        comment.imageLink = url
-                        comment.hasImageLink = true
                     }
                 }
             }
         }
     }
+    
     private func updateCell(for row: Int) {
         let indexPath = IndexPath(row: row, section: 0)
         DispatchQueue.main.async {
