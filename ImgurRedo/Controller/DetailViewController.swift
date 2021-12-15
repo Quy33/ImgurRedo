@@ -29,7 +29,7 @@ class DetailViewController: UIViewController {
     var galleryGot = (isAlbum: true, id: "bVdwhbk")
 //    var galleryGot = (isAlbum: true, id: "ftt1IUE")
 //    var galleryGot = (isAlbum: true, id: "yXA62jZ")
-//    var galleryGot = (isAlbum: true, id: "4XRlTcp")
+//    var galleryGot = (isAlbum: true, id: "YWdwwYH")
     
     
     
