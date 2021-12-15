@@ -41,34 +41,6 @@ class CommentViewController: UIViewController {
         commentTableView.register(CommentCell.self, forCellReuseIdentifier: CommentCell.identifier)
     }
 //MARK: Functions to detect & download comments image link
-    
-//    private func detectImageLink() {
-//        for comment in dataSource {
-//            let links = networkManager.detectLinks(text: comment.value)
-//            for link in links {
-//                if link.contains(NetWorkManager.baseImgLink) {
-//                    if let contentType = link.searchExtension() {
-//                        var urlString = ""
-//                        switch contentType {
-//                        case .png, .jpeg, .jpg:
-//                            urlString = link
-//                        case .mp4, .gif:
-//                            urlString = ToolBox.concatStr(string: link, size: .hugeThumbnail)
-//                        }
-//
-//                        guard let url = URL(string: urlString) else {
-//                            continue
-//                        }
-//
-//                        comment.value = comment.value.replacingOccurrences(of: link, with: "")
-//                        comment.contentType = contentType
-//                        comment.imageLink = url
-//                        comment.hasImageLink = true
-//                    }
-//                }
-//            }
-//        }
-//    }
     private func detectMediaLink() {
         for comment in dataSource {
             let links = networkManager.detectLinks(text: comment.value)

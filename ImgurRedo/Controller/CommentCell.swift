@@ -27,13 +27,6 @@ class CommentCell: UITableViewCell {
     private var childCountView = UIView()
     private var bottomSeparator = UIView()
     
-    let playerView: PlayerView = {
-        let player = PlayerView()
-        player.translatesAutoresizingMaskIntoConstraints = false
-        player.backgroundColor = .link
-        return player
-    }()
-    
     private var commentImage: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -145,10 +138,6 @@ class CommentCell: UITableViewCell {
         
         if hasImage {
             commentStackView.addArrangedSubview(commentImage)
-        } else {
-            if hasVideo {
-                commentStackView.addArrangedSubview(playerView)
-            }
         }
         
         commentStackView.addArrangedSubview(commentTextView)
@@ -185,13 +174,6 @@ class CommentCell: UITableViewCell {
         constraints.append(commentStackView.heightAnchor.constraint(equalTo: outerStackView.heightAnchor))
         
         constraints.append(commentTextView.widthAnchor.constraint(equalTo:  commentStackView.widthAnchor))
-        
-        if hasVideo {
-            constraints.append(playerView.widthAnchor.constraint(equalTo: commentStackView.widthAnchor)
-            )
-            constraints.append(playerView.heightAnchor.constraint(equalToConstant: 200)
-            )
-        }
         
         //Bottom of Comment Stack View
         constraints.append(bottomSeparator.widthAnchor.constraint(equalTo: commentStackView.widthAnchor)
