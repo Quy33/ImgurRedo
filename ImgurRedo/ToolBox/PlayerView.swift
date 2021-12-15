@@ -27,16 +27,6 @@ class PlayerView: UIView {
         initialSetup()
     }
     
-    private var assetPlayer: AVPlayer? {
-        didSet {
-            DispatchQueue.main.async {
-                if let layer = self.layer as? AVPlayerLayer {
-                    //.6
-                    layer.player = self.assetPlayer
-                }
-            }
-        }
-    }
     private var playerItem: AVPlayerItem?
     private var urlAsset: AVURLAsset?
     
@@ -49,6 +39,16 @@ class PlayerView: UIView {
         urlAsset.loadValuesAsynchronously(forKeys: keys) { [weak self] in
             guard let strongSelf = self else { return }
             strongSelf.startLoading(urlAsset)
+        }
+    }
+    
+    private var assetPlayer: AVPlayer? {
+        didSet {
+            DispatchQueue.main.async {
+                if let layer = self.layer as? AVPlayerLayer {
+                    layer.player = self.assetPlayer
+                }
+            }
         }
     }
     

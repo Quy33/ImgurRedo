@@ -26,10 +26,10 @@ class DetailViewController: UIViewController {
     private var comments: [Comment] = []
         
 //    var galleryGot = (isAlbum: true, id: "2eOWNGV")
-    var galleryGot = (isAlbum: true, id: "bVdwhbk")
+//    var galleryGot = (isAlbum: true, id: "bVdwhbk")
 //    var galleryGot = (isAlbum: true, id: "ftt1IUE")
 //    var galleryGot = (isAlbum: true, id: "yXA62jZ")
-//    var galleryGot = (isAlbum: true, id: "YWdwwYH")
+    var galleryGot = (isAlbum: true, id: "YWdwwYH")
     
     
     

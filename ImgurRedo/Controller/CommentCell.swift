@@ -27,6 +27,13 @@ class CommentCell: UITableViewCell {
     private var childCountView = UIView()
     private var bottomSeparator = UIView()
     
+    let playerView: PlayerView = {
+        let player = PlayerView()
+        player.translatesAutoresizingMaskIntoConstraints = false
+        player.backgroundColor = .link
+        return player
+    }()
+    
     private var commentImage: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -39,7 +46,7 @@ class CommentCell: UITableViewCell {
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?, comment: Comment) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .clear
-        setup(separatorAmount: comment.level, hasImage: comment.hasImageLink)
+        setup(separatorAmount: comment.level, hasImage: comment.hasImageLink, hasVideo: comment.hasVideoLink)
         config(comment)
     }
     override func awakeFromNib() {
@@ -56,10 +63,10 @@ class CommentCell: UITableViewCell {
         // Configure the view for the selected state
     }
     //MARK: Comment Setup
-    private func setup(separatorAmount count: Int, hasImage: Bool) {
+    private func setup(separatorAmount count: Int, hasImage: Bool, hasVideo: Bool) {
         setProperties(count: count)
-        addSubViews(hasImage: hasImage)
-        setConstraints()
+        addSubViews(hasImage: hasImage, hasVideo: hasVideo)
+        setConstraints(hasVideo: hasVideo)
     }
     private func setProperties(count: Int) {
         outerStackView = makeStackView(axis: .horizontal,
@@ -128,7 +135,7 @@ class CommentCell: UITableViewCell {
         commentTextView = makeTextView(font: normalFont, bgColor: .clear, scrollable: false, textInset: commentInset, linkAttr: attributes)
         
     }
-    private func addSubViews(hasImage: Bool) {
+    private func addSubViews(hasImage: Bool, hasVideo: Bool) {
         contentView.addSubview(outerStackView)
                 
         separators.forEach{ outerStackView.addArrangedSubview($0) }
@@ -138,6 +145,10 @@ class CommentCell: UITableViewCell {
         
         if hasImage {
             commentStackView.addArrangedSubview(commentImage)
+        } else {
+            if hasVideo {
+                commentStackView.addArrangedSubview(playerView)
+            }
         }
         
         commentStackView.addArrangedSubview(commentTextView)
@@ -148,7 +159,7 @@ class CommentCell: UITableViewCell {
         headerStackView.addArrangedSubview(childCountView)
         childCountView.addSubview(childLabel)
     }
-    private func setConstraints() {
+    private func setConstraints(hasVideo: Bool) {
         var constraints: [NSLayoutConstraint] = []
         
         //Outer Stack View
@@ -174,6 +185,13 @@ class CommentCell: UITableViewCell {
         constraints.append(commentStackView.heightAnchor.constraint(equalTo: outerStackView.heightAnchor))
         
         constraints.append(commentTextView.widthAnchor.constraint(equalTo:  commentStackView.widthAnchor))
+        
+        if hasVideo {
+            constraints.append(playerView.widthAnchor.constraint(equalTo: commentStackView.widthAnchor)
+            )
+            constraints.append(playerView.heightAnchor.constraint(equalToConstant: 200)
+            )
+        }
         
         //Bottom of Comment Stack View
         constraints.append(bottomSeparator.widthAnchor.constraint(equalTo: commentStackView.widthAnchor)
