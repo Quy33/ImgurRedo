@@ -21,6 +21,14 @@ class BasicPlayerView: UIView {
     private var playerItem: AVPlayerItem?
     private var playerLooper: AVPlayerLooper?
     var url: URL?
+    var videoSize: CGSize? {
+        guard let link = url else { return nil }
+        guard let track = AVURLAsset(url: link).tracks(withMediaType: AVMediaType.video).first else {
+            return nil
+        }
+        let size = track.naturalSize.applying(track.preferredTransform)
+        return CGSize(width: abs(size.width), height: abs(size.height))
+    }
     
     func setupPlayer(_ link: URL) {
         url = link
@@ -31,6 +39,7 @@ class BasicPlayerView: UIView {
         player = queuePlayer
         playerLooper = AVPlayerLooper(player: queuePlayer, templateItem: item)
     }
+    
     func play() {
         guard player?.isPlaying == false else { return }
         player?.play()

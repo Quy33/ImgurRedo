@@ -269,7 +269,7 @@ extension ViewController: PinterestLayoutDelegate {
         } else {
             let gallery = galleries[indexPath.row]
 
-            let imageFrame = ToolBox.calculateImageRatio(gallery.image, frameWidth: width)
+            let imageFrame = ToolBox.calculateMediaRatio(gallery.image.size, frameWidth: width)
                     
             let titleHPadding: CGFloat = 10
             let titleVPadding: CGFloat = 20

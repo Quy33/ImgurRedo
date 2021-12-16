@@ -271,7 +271,7 @@ class DetailViewController: UIViewController {
             }
         }
         
-        let image = ToolBox.calculateImageRatio(config.image, frameWidth: width)
+        let image = ToolBox.calculateMediaRatio(config.image.size, frameWidth: width)
         
         var separator = cell.separatorFrame?.frame.height ?? 0
         separator = config.isBottom ? 0 : separator

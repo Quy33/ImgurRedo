@@ -44,9 +44,9 @@ class ToolBox {
         return frameWithPadding
     }
     
-    static func calculateImageRatio(_ image: UIImage, frameWidth width: CGFloat) -> CGRect {
+    static func calculateMediaRatio(_ size: CGSize, frameWidth width: CGFloat) -> CGRect {
         let boundingRect = CGRect(x: 0, y: 0, width: width, height: CGFloat(MAXFLOAT))
-        let rect = AVMakeRect(aspectRatio: image.size, insideRect: boundingRect)
+        let rect = AVMakeRect(aspectRatio: size, insideRect: boundingRect)
         return rect
     }
 }

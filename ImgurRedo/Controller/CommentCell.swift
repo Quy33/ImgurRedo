@@ -15,6 +15,7 @@ class CommentCell: UITableViewCell {
     private var networkManager = NetWorkManager()
     private let outerStackViewSpacing: CGFloat = 0
     private let separatorWidth: CGFloat = 15
+    private var comment = Comment()
 //MARK: Cell UIs
     private var outerStackView = UIStackView()
     private var commentStackView = UIStackView()
@@ -45,12 +46,14 @@ class CommentCell: UITableViewCell {
     }()
     
     private var commentTextView = UITextView()
+    
 //MARK: Cell setup
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?, comment: Comment) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .clear
-        setup(separatorAmount: comment.level, hasImage: comment.hasImageLink, hasVideo: comment.hasVideoLink)
-        config(comment)
+        self.comment = comment
+        setup()
+        config()
     }
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -66,12 +69,12 @@ class CommentCell: UITableViewCell {
         // Configure the view for the selected state
     }
     //MARK: Comment Setup
-    private func setup(separatorAmount count: Int, hasImage: Bool, hasVideo: Bool) {
-        setProperties(count: count)
-        addSubViews(hasImage: hasImage, hasVideo: hasVideo)
-        setConstraints(hasVideo: hasVideo)
+    private func setup() {
+        setProperties()
+        addSubViews()
+        setConstraints()
     }
-    private func setProperties(count: Int) {
+    private func setProperties() {
         outerStackView = makeStackView(axis: .horizontal,
                                        distribution: .fill,
                                        color: .lightGray,
@@ -128,7 +131,7 @@ class CommentCell: UITableViewCell {
                               lineBreak: .byWordWrapping)
         dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
-        separators = makeUIView(amount: count, color: .darkGray)
+        separators = makeUIView(amount: comment.level, color: .darkGray)
         
         let attributes: [NSAttributedString.Key:Any] = [
             .foregroundColor: UIColor.purple,
@@ -138,7 +141,7 @@ class CommentCell: UITableViewCell {
         commentTextView = makeTextView(font: normalFont, bgColor: .clear, scrollable: false, textInset: commentInset, linkAttr: attributes)
         
     }
-    private func addSubViews(hasImage: Bool, hasVideo: Bool) {
+    private func addSubViews() {
         contentView.addSubview(outerStackView)
                 
         separators.forEach{ outerStackView.addArrangedSubview($0) }
@@ -146,9 +149,9 @@ class CommentCell: UITableViewCell {
         
         commentStackView.addArrangedSubview(headerStackView)
         
-        if hasImage {
+        if comment.hasImageLink {
             commentStackView.addArrangedSubview(commentImage)
-        } else if hasVideo {
+        } else if comment.hasVideoLink {
             commentStackView.addArrangedSubview(commentPlayerView)
         }
         
@@ -160,7 +163,7 @@ class CommentCell: UITableViewCell {
         headerStackView.addArrangedSubview(childCountView)
         childCountView.addSubview(childLabel)
     }
-    private func setConstraints(hasVideo: Bool) {
+    private func setConstraints() {
         var constraints: [NSLayoutConstraint] = []
         
         //Outer Stack View
@@ -192,11 +195,11 @@ class CommentCell: UITableViewCell {
         )
         constraints.append(bottomSeparator.heightAnchor.constraint(equalToConstant: 1)
         )
-        if hasVideo {
-            constraints.append(commentPlayerView.widthAnchor.constraint(equalTo: commentStackView.widthAnchor)
-            )
-            constraints.append(commentPlayerView.heightAnchor.constraint(equalToConstant: 200)
-            )
+        if comment.hasVideoLink {
+//            constraints.append(commentPlayerView.widthAnchor.constraint(equalTo: commentStackView.widthAnchor)
+//            )
+//            constraints.append(commentPlayerView.heightAnchor.constraint(equalToConstant: 200)
+//            )
         }
         
         //Header Stack View
@@ -231,7 +234,7 @@ class CommentCell: UITableViewCell {
         NSLayoutConstraint.activate(constraints)
     }
     //MARK: Small functions
-    private func config(_ comment: Comment){
+    private func config(){
         if comment.value.isEmpty {
             commentTextView.removeFromSuperview()
         }
@@ -254,9 +257,14 @@ class CommentCell: UITableViewCell {
         commentImage.image = comment.image ?? ToolBox.placeHolderImg
 
         if let image = comment.image {
-            calculateThenSetImage(image)
+            let imageRect = calculateMediaFrame(image.size)
+            commentImage.widthAnchor.constraint(equalToConstant: imageRect.width).isActive = true
+            commentImage.heightAnchor.constraint(equalToConstant: imageRect.height).isActive = true
         } else if comment.hasVideoLink {
             commentPlayerView.setupPlayer(comment.videoLink!)
+            let videoRect = calculateMediaFrame(commentPlayerView.videoSize ?? CGSize.zero)
+            commentPlayerView.widthAnchor.constraint(equalToConstant: videoRect.width).isActive = true
+            commentPlayerView.heightAnchor.constraint(equalToConstant: videoRect.height).isActive = true
         }
     }
     func updateCollapsed(isCollapsed: Bool, count: Int) {
@@ -298,21 +306,13 @@ class CommentCell: UITableViewCell {
         return label
     }
 
-    private func calculateThenSetImage(_ image: UIImage) {
+    private func calculateMediaFrame(_ size: CGSize) -> CGRect {
         let screen = UIScreen.main.bounds
         let separatorAmount = CGFloat(separators.count)
         let padding = 10
         let insetWidth = screen.width - (separatorWidth * separatorAmount) - CGFloat(padding * 2)
-        let imageRect = ToolBox.calculateImageRatio(image, frameWidth: insetWidth)
-        
-        var constraints = [NSLayoutConstraint]()
-        
-        constraints.append(commentImage.widthAnchor.constraint(equalToConstant: imageRect.width)
-        )
-        constraints.append(commentImage.heightAnchor.constraint(equalToConstant: imageRect.height)
-        )
-        
-        NSLayoutConstraint.activate(constraints)
+        let imageRect = ToolBox.calculateMediaRatio(size, frameWidth: insetWidth)
+        return imageRect
     }
     private func makeTextView(font: UIFont, bgColor: UIColor, scrollable: Bool, textInset: UIEdgeInsets,linkAttr attributes: [NSAttributedString.Key : Any]?) -> UITextView {
         let textView = UITextView()
