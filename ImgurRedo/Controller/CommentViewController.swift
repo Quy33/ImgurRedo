@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreMedia
+import AVFoundation
 
 class CommentViewController: UIViewController {
 
@@ -114,6 +115,9 @@ extension CommentViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let comment = dataSource[indexPath.row]
         let cell = CommentCell.init(style: .default, reuseIdentifier: CommentCell.identifier, comment: comment)
+        if comment.hasVideoLink {
+            cell.commentPlayerView.setupPlayer(comment.videoLink!)
+        }
         return cell
     }
 }
@@ -159,6 +163,27 @@ extension CommentViewController: UITableViewDelegate {
         }
         commentCell.updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count)
         downloadCellImage()
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let commentCell = cell as? CommentCell else { return }
+        let comment = dataSource[indexPath.row]
+        if comment.hasVideoLink {
+            if let visibleRows = tableView.indexPathsForVisibleRows {
+                visibleRows.forEach {
+                    if indexPath == $0 {
+                        commentCell.commentPlayerView.player?.play()
+                    }
+                }
+            }
+        }
+    }
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let commentCell = cell as? CommentCell else { return }
+        let comment = dataSource[indexPath.row]
+        if comment.hasVideoLink {
+            commentCell.commentPlayerView.player?.pause()
+        }
     }
 }
 

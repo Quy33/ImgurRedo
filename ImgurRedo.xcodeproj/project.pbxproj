@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		53209BD227454E4E0098D13B /* ToolBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53209BD127454E4E0098D13B /* ToolBox.swift */; };
+		534DF779276AECFB00EA424B /* BasicPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534DF778276AECFA00EA424B /* BasicPlayerView.swift */; };
 		53537E602743501B00849494 /* Networking file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53537E5F2743501B00849494 /* Networking file.swift */; };
 		53537E622743988E00849494 /* NetWorkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53537E612743988E00849494 /* NetWorkManager.swift */; };
 		53537E672743996B00849494 /* GarleryParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53537E662743996B00849494 /* GarleryParameter.swift */; };
@@ -37,6 +38,7 @@
 
 /* Begin PBXFileReference section */
 		53209BD127454E4E0098D13B /* ToolBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolBox.swift; sourceTree = "<group>"; };
+		534DF778276AECFA00EA424B /* BasicPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicPlayerView.swift; sourceTree = "<group>"; };
 		53537E5F2743501B00849494 /* Networking file.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Networking file.swift"; sourceTree = "<group>"; };
 		53537E612743988E00849494 /* NetWorkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetWorkManager.swift; sourceTree = "<group>"; };
 		53537E662743996B00849494 /* GarleryParameter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarleryParameter.swift; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 				53209BD127454E4E0098D13B /* ToolBox.swift */,
 				53D2857C2768A40500A0E495 /* PaddingLabel.swift */,
 				53D2857E2768A53F00A0E495 /* PlayerView.swift */,
+				534DF778276AECFA00EA424B /* BasicPlayerView.swift */,
 			);
 			path = ToolBox;
 			sourceTree = "<group>";
@@ -250,6 +253,7 @@
 				53E298B6274E86D1000AC971 /* Comment.swift in Sources */,
 				5394B64327460E2A004D0A5B /* DetailViewController.swift in Sources */,
 				53D2857F2768A53F00A0E495 /* PlayerView.swift in Sources */,
+				534DF779276AECFB00EA424B /* BasicPlayerView.swift in Sources */,
 				53D6F34F2755D4280027C9FC /* CommentViewController.swift in Sources */,
 				5394B64B274638E8004D0A5B /* Detail.swift in Sources */,
 				53537E672743996B00849494 /* GarleryParameter.swift in Sources */,

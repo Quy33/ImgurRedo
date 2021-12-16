@@ -32,6 +32,17 @@ class CommentCell: UITableViewCell {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
+    var commentPlayerView: BasicPlayerView = {
+        let view = BasicPlayerView()
+        
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .link
+        if let layer = view.layer as? AVPlayerLayer {
+            layer.videoGravity = .resizeAspect
+        }
+        
+        return view
+    }()
     
     private var commentTextView = UITextView()
 //MARK: Cell setup
@@ -137,6 +148,8 @@ class CommentCell: UITableViewCell {
         
         if hasImage {
             commentStackView.addArrangedSubview(commentImage)
+        } else if hasVideo {
+            commentStackView.addArrangedSubview(commentPlayerView)
         }
         
         commentStackView.addArrangedSubview(commentTextView)
@@ -179,6 +192,12 @@ class CommentCell: UITableViewCell {
         )
         constraints.append(bottomSeparator.heightAnchor.constraint(equalToConstant: 1)
         )
+        if hasVideo {
+            constraints.append(commentPlayerView.widthAnchor.constraint(equalTo: commentStackView.widthAnchor)
+            )
+            constraints.append(commentPlayerView.heightAnchor.constraint(equalToConstant: 200)
+            )
+        }
         
         //Header Stack View
         constraints.append(headerStackView.widthAnchor.constraint(equalTo: commentStackView.widthAnchor)
