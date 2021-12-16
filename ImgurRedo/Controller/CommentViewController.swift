@@ -12,13 +12,7 @@ class CommentViewController: UIViewController {
 
     static let identifier = "CommentViewController"
     var commentsGot: [Comment] = []
-    private var dataSource: [Comment] = [] {
-        didSet{
-            detectMediaLink()
-            commentTableView.reloadData()
-            downloadCellImage()
-        }
-    }
+    private var dataSource: [Comment] = []
     private let networkManager = NetWorkManager()
 
     @IBOutlet weak var commentTableView: UITableView!
@@ -31,6 +25,9 @@ class CommentViewController: UIViewController {
         registerCell()
         commentTableView.dataSource = self
         commentTableView.delegate = self
+        detectMediaLink()
+        commentTableView.reloadData()
+        downloadCellImage()
     }
     //Temp fix
     override func viewWillDisappear(_ animated: Bool) {
@@ -58,7 +55,7 @@ class CommentViewController: UIViewController {
                                 comment.videoLink = url
                                 comment.hasVideoLink = true
                             }
-                        default:
+                        case .jpg ,.png, .jpeg:
                             urlString = link
                             if let url = URL(string: urlString) {
                                 comment.imageLink = url
@@ -70,13 +67,6 @@ class CommentViewController: UIViewController {
                     }
                 }
             }
-        }
-    }
-    
-    private func updateCell(for row: Int) {
-        let indexPath = IndexPath(row: row, section: 0)
-        DispatchQueue.main.async {
-            self.commentTableView.reloadRows(at: [indexPath], with: .none)
         }
     }
     
@@ -98,6 +88,13 @@ class CommentViewController: UIViewController {
             }
         }
     }
+    private func updateCell(for row: Int) {
+        let indexPath = IndexPath(row: row, section: 0)
+        DispatchQueue.main.async {
+            self.commentTableView.reloadRows(at: [indexPath], with: .none)
+        }
+    }
+    
     private func setNavBar(){
         let appearance = UINavigationBarAppearance()
         appearance.configureWithDefaultBackground()
@@ -123,9 +120,11 @@ extension CommentViewController: UITableViewDataSource {
 extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let comment = dataSource[indexPath.row]
-        guard !comment.children.isEmpty else {
-            return
-        }
+        guard let commentCell = (tableView.cellForRow(at: indexPath) as? CommentCell),
+            (!comment.children.isEmpty) else { return }
+        
+        var indexes: [IndexPath] = []
+        
         if comment.isCollapsed {
             comment.traverse(container: &dataSource, selected: comment) { item, selected, cont  in
                 for (index,comment) in cont.enumerated() {
@@ -133,16 +132,33 @@ extension CommentViewController: UITableViewDelegate {
                         continue
                     } else if comment.id == item.id {
                         comment.isCollapsed = false
-                        cont.remove(at: index)
+                        let indexToRemove = IndexPath(row: index, section: 0)
+                        indexes.append(indexToRemove)
                     }
                 }
             }
+            
+            let lowerRange = indexes.first!
+            let upperRange = indexes.last!
+            dataSource.removeSubrange(lowerRange.row...upperRange.row)
+            tableView.deleteRows(at: indexes, with: .fade)
+            
             comment.isCollapsed = false
         } else {
             let next = IndexPath(row: indexPath.row + 1, section: 0)
-            comment.isCollapsed = true
             dataSource.insert(contentsOf: comment.children, at: next.row)
+            detectMediaLink()
+            
+            let upperBound = next.row + comment.children.count
+            for index in next.row..<upperBound {
+                let newIndex = IndexPath(row: index, section: 0)
+                indexes.append(newIndex)
+            }
+            tableView.insertRows(at: indexes, with: .fade)
+            comment.isCollapsed = true
         }
+        commentCell.updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count)
+        downloadCellImage()
     }
 }
 

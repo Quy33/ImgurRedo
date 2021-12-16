@@ -51,17 +51,17 @@ struct NetWorkManager {
     //MARK: Link Detector
     func detectLinks(text: String) -> [String] {
         let type: NSTextCheckingResult.CheckingType = .link
-        var urls: [String] = []
+        var urlStrings: [String] = []
         do {
             let detector = try NSDataDetector(types: type.rawValue)
             let matches = detector.matches(in: text, options: .reportCompletion, range: NSMakeRange(0, text.count))
-            urls = matches.compactMap{ $0.url?.absoluteString }
-            urls = urls.map{ trimLink($0) }
-            return urls
+            urlStrings = matches.compactMap{ $0.url?.absoluteString }
+            urlStrings = urlStrings.map{ trimLink($0) }
+            return urlStrings
         } catch {
             print(error)
         }
-        return urls
+        return urlStrings
     }
     private func trimLink(_ text: String) -> String {
         var result = ""
@@ -71,7 +71,6 @@ struct NetWorkManager {
         let subString = text[range.lowerBound..<text.endIndex]
         
         result = String(subString)
-        
         return result
     }
     

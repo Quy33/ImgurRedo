@@ -15,7 +15,6 @@ class CommentCell: UITableViewCell {
     private var networkManager = NetWorkManager()
     private let outerStackViewSpacing: CGFloat = 0
     private let separatorWidth: CGFloat = 15
-    
 //MARK: Cell UIs
     private var outerStackView = UIStackView()
     private var commentStackView = UIStackView()
@@ -239,6 +238,10 @@ class CommentCell: UITableViewCell {
             calculateThenSetImage(image)
         }
     }
+    func updateCollapsed(isCollapsed: Bool, count: Int) {
+        childLabel.text = isCollapsed ? "X" : "\(count)"
+    }
+    
     private func makeUIView(amount: Int, color: UIColor) -> [UIView] {
         var results: [UIView] = []
         for _ in 0 ..< amount {
