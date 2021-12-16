@@ -172,7 +172,9 @@ extension CommentViewController: UITableViewDelegate {
             if let visibleRows = tableView.indexPathsForVisibleRows {
                 visibleRows.forEach {
                     if indexPath == $0 {
-                        commentCell.commentPlayerView.player?.play()
+                        DispatchQueue.main.async {
+                            commentCell.commentPlayerView.player?.play()
+                        }
                     }
                 }
             }
@@ -182,7 +184,9 @@ extension CommentViewController: UITableViewDelegate {
         guard let commentCell = cell as? CommentCell else { return }
         let comment = dataSource[indexPath.row]
         if comment.hasVideoLink {
-            commentCell.commentPlayerView.player?.pause()
+            DispatchQueue.main.async {
+                commentCell.commentPlayerView.player?.pause()
+            }
         }
     }
 }

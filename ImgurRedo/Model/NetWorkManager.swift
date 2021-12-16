@@ -53,10 +53,13 @@ struct NetWorkManager {
         let type: NSTextCheckingResult.CheckingType = .link
         var urlStrings: [String] = []
         do {
+            let range = NSMakeRange(0, text.utf16.count)
             let detector = try NSDataDetector(types: type.rawValue)
-            let matches = detector.matches(in: text, options: .reportCompletion, range: NSMakeRange(0, text.count))
+            let matches = detector.matches(in: text, options: .reportCompletion, range: range)
+
             urlStrings = matches.compactMap{ $0.url?.absoluteString }
             urlStrings = urlStrings.map{ trimLink($0) }
+            
             return urlStrings
         } catch {
             print(error)
@@ -71,6 +74,9 @@ struct NetWorkManager {
         let subString = text[range.lowerBound..<text.endIndex]
         
         result = String(subString)
+        if result.contains("http://") {
+            result = result.replacingOccurrences(of: "http", with: "https")
+        }
         return result
     }
     
