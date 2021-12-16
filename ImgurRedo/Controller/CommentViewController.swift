@@ -74,7 +74,7 @@ class CommentViewController: UIViewController {
     private func downloadCellImage() {
         Task {
             for (index,comment) in self.dataSource.enumerated() {
-                guard comment.hasImageLink else {
+                guard comment.hasImageLink && comment.image == nil else {
                     continue
                 }
                 if let link = comment.imageLink {
@@ -115,9 +115,6 @@ extension CommentViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let comment = dataSource[indexPath.row]
         let cell = CommentCell.init(style: .default, reuseIdentifier: CommentCell.identifier, comment: comment)
-        if comment.hasVideoLink {
-            cell.commentPlayerView.setupPlayer(comment.videoLink!)
-        }
         return cell
     }
 }
@@ -126,9 +123,7 @@ extension CommentViewController: UITableViewDelegate {
         let comment = dataSource[indexPath.row]
         guard let commentCell = (tableView.cellForRow(at: indexPath) as? CommentCell),
             (!comment.children.isEmpty) else { return }
-        
         var indexes: [IndexPath] = []
-        
         if comment.isCollapsed {
             comment.traverse(container: &dataSource, selected: comment) { item, selected, cont  in
                 for (index,comment) in cont.enumerated() {
@@ -173,7 +168,7 @@ extension CommentViewController: UITableViewDelegate {
                 visibleRows.forEach {
                     if indexPath == $0 {
                         DispatchQueue.main.async {
-                            commentCell.commentPlayerView.player?.play()
+                            commentCell.play()
                         }
                     }
                 }
@@ -185,7 +180,7 @@ extension CommentViewController: UITableViewDelegate {
         let comment = dataSource[indexPath.row]
         if comment.hasVideoLink {
             DispatchQueue.main.async {
-                commentCell.commentPlayerView.player?.pause()
+                commentCell.commentPlayerView.cleanup()
             }
         }
     }

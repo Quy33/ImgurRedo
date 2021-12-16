@@ -255,6 +255,8 @@ class CommentCell: UITableViewCell {
 
         if let image = comment.image {
             calculateThenSetImage(image)
+        } else if comment.hasVideoLink {
+            commentPlayerView.setupPlayer(comment.videoLink!)
         }
     }
     func updateCollapsed(isCollapsed: Bool, count: Int) {
@@ -328,6 +330,12 @@ class CommentCell: UITableViewCell {
         }
         
         return textView
+    }
+    func play(){
+        commentPlayerView.play()
+    }
+    func pause() {
+        commentPlayerView.pause()
     }
 }
 

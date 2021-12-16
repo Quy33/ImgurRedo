@@ -31,4 +31,21 @@ class BasicPlayerView: UIView {
         player = queuePlayer
         playerLooper = AVPlayerLooper(player: queuePlayer, templateItem: item)
     }
+    func play() {
+        guard player?.isPlaying == false else { return }
+        player?.play()
+    }
+    func pause() {
+        guard player?.isPlaying == true else { return }
+        player?.pause()
+    }
+    func cleanup() {
+        pause()
+        player = nil
+        playerLooper = nil
+        playerItem = nil
+    }
+    deinit {
+        cleanup()
+    }
 }
