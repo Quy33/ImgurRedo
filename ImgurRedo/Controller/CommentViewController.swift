@@ -26,9 +26,9 @@ class CommentViewController: UIViewController {
         registerCell()
         commentTableView.dataSource = self
         commentTableView.delegate = self
-        detectMediaLink()
-        commentTableView.reloadData()
-        downloadCellImage()
+//        detectMediaLink()
+//        commentTableView.reloadData()
+//        downloadCellImage()
     }
     //Temp fix
     override func viewWillDisappear(_ animated: Bool) {
@@ -114,75 +114,80 @@ extension CommentViewController: UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let comment = dataSource[indexPath.row]
-        let cell = CommentCell.init(style: .default, reuseIdentifier: CommentCell.identifier, comment: comment)
+//        let cell = CommentCell.init(style: .default, reuseIdentifier: CommentCell.identifier, comment: comment)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: CommentCell.identifier, for: indexPath) as? CommentCell
+        else {
+            return UITableViewCell()
+        }
+        
         return cell
     }
 }
-extension CommentViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let comment = dataSource[indexPath.row]
-        guard let commentCell = (tableView.cellForRow(at: indexPath) as? CommentCell),
-            (!comment.children.isEmpty) else { return }
-        var indexes: [IndexPath] = []
-        if comment.isCollapsed {
-            comment.traverse(container: &dataSource, selected: comment) { item, selected, cont  in
-                for (index,comment) in cont.enumerated() {
-                    if comment.id == selected.id {
-                        continue
-                    } else if comment.id == item.id {
-                        comment.isCollapsed = false
-                        let indexToRemove = IndexPath(row: index, section: 0)
-                        indexes.append(indexToRemove)
-                    }
-                }
-            }
-            
-            let lowerRange = indexes.first!
-            let upperRange = indexes.last!
-            dataSource.removeSubrange(lowerRange.row...upperRange.row)
-            tableView.deleteRows(at: indexes, with: .fade)
-            
-            comment.isCollapsed = false
-        } else {
-            let next = IndexPath(row: indexPath.row + 1, section: 0)
-            dataSource.insert(contentsOf: comment.children, at: next.row)
-            detectMediaLink()
-            
-            let upperBound = next.row + comment.children.count
-            for index in next.row..<upperBound {
-                let newIndex = IndexPath(row: index, section: 0)
-                indexes.append(newIndex)
-            }
-            tableView.insertRows(at: indexes, with: .fade)
-            comment.isCollapsed = true
-        }
-        commentCell.updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count)
-        downloadCellImage()
-    }
+//extension CommentViewController: UITableViewDelegate {
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        let comment = dataSource[indexPath.row]
+//        guard let commentCell = (tableView.cellForRow(at: indexPath) as? CommentCell),
+//            (!comment.children.isEmpty) else { return }
+//        var indexes: [IndexPath] = []
+//        if comment.isCollapsed {
+//            comment.traverse(container: &dataSource, selected: comment) { item, selected, cont  in
+//                for (index,comment) in cont.enumerated() {
+//                    if comment.id == selected.id {
+//                        continue
+//                    } else if comment.id == item.id {
+//                        comment.isCollapsed = false
+//                        let indexToRemove = IndexPath(row: index, section: 0)
+//                        indexes.append(indexToRemove)
+//                    }
+//                }
+//            }
+//
+//            let lowerRange = indexes.first!
+//            let upperRange = indexes.last!
+//            dataSource.removeSubrange(lowerRange.row...upperRange.row)
+//            tableView.deleteRows(at: indexes, with: .fade)
+//
+//            comment.isCollapsed = false
+//        } else {
+//            let next = IndexPath(row: indexPath.row + 1, section: 0)
+//            dataSource.insert(contentsOf: comment.children, at: next.row)
+//            detectMediaLink()
+//
+//            let upperBound = next.row + comment.children.count
+//            for index in next.row..<upperBound {
+//                let newIndex = IndexPath(row: index, section: 0)
+//                indexes.append(newIndex)
+//            }
+//            tableView.insertRows(at: indexes, with: .fade)
+//            comment.isCollapsed = true
+//        }
+////        commentCell.updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count)
+//        downloadCellImage()
+//    }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard let commentCell = cell as? CommentCell else { return }
-        let comment = dataSource[indexPath.row]
-        if comment.hasVideoLink {
-            if let visibleRows = tableView.indexPathsForVisibleRows {
-                visibleRows.forEach {
-                    if indexPath == $0 {
-                        DispatchQueue.main.async {
-                            commentCell.play()
-                        }
-                    }
-                }
-            }
-        }
-    }
-    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard let commentCell = cell as? CommentCell else { return }
-        let comment = dataSource[indexPath.row]
-        if comment.hasVideoLink {
-            DispatchQueue.main.async {
-                commentCell.commentPlayerView.cleanup()
-            }
-        }
-    }
+//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        guard let commentCell = cell as? CommentCell else { return }
+//        let comment = dataSource[indexPath.row]
+//        if comment.hasVideoLink {
+//            if let visibleRows = tableView.indexPathsForVisibleRows {
+//                visibleRows.forEach {
+//                    if indexPath == $0 {
+//                        DispatchQueue.main.async {
+//                            commentCell.play()
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        guard let commentCell = cell as? CommentCell else { return }
+//        let comment = dataSource[indexPath.row]
+//        if comment.hasVideoLink {
+//            DispatchQueue.main.async {
+//                commentCell.commentPlayerView.cleanup()
+//            }
+//        }
+//    }
 }
 
