@@ -16,6 +16,11 @@ class Comment {
     var children: [Comment] = []
     var author: String
     var isCollapsed = false
+    var isTop: Bool {
+        get{
+            return level == 0 ? true : false
+        }
+    }
     var level = 0
     var image: UIImage?
     var imageLink: URL?

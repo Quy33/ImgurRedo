@@ -337,6 +337,248 @@ class CommentCell: UITableViewCell {
 //    func pause() {
 //        commentPlayerView.pause()
 //    }
+//MARK: Variables
     static let identifier = "CommentCell"
+    private let separatorWidth: CGFloat = 10
+//MARK: UI Elements
+    private var outerStv = UIStackView()
+    private var leftBar = UIView()
+    private var commentStv = UIStackView()
+    var commentTextView = UITextView()
+    private var bottomBar = UIView()
+    private var upperStv = UIStackView()
+    private var userNameLbl = PaddingLabel()
+    private var collapseLbl = PaddingLabel()
+    private var collapseContainer = UIView()
+    private var commentImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.backgroundColor = .link
+        imageView.image = ToolBox.placeHolderImg
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+//MARK: Unused Functions
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+
+    }
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+
+        // Configure the view for the selected state
+    }
+
+//MARK: Cell Init
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setProperties()
+        addUiElements()
+        setUiConstraints()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func addUiElements() {
+        contentView.addSubview(outerStv)
+        outerStv.addArrangedSubview(leftBar)
+        outerStv.addArrangedSubview(commentStv)
+        commentStv.addArrangedSubview(upperStv)
+        upperStv.addArrangedSubview(userNameLbl)
+        upperStv.addArrangedSubview(collapseContainer)
+        collapseContainer.addSubview(collapseLbl)
+        commentStv.addArrangedSubview(commentImageView)
+        commentStv.addArrangedSubview(commentTextView)
+        commentStv.addArrangedSubview(bottomBar)
+    }
+    
+    private func setUiConstraints() {
+        var constraints: [NSLayoutConstraint] = []
+        //Outer View
+        constraints.append(outerStv.topAnchor.constraint(equalTo: contentView.topAnchor)
+        )
+        constraints.append(outerStv.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        )
+        constraints.append(outerStv.leadingAnchor.constraint(equalTo: contentView.leadingAnchor)
+        )
+        constraints.append(outerStv.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
+        )
+        //OuterView arranged subView
+        constraints.append(leftBar.leadingAnchor.constraint(equalTo: outerStv.leadingAnchor)
+        )
+        constraints.append(leftBar.topAnchor.constraint(equalTo: outerStv.topAnchor)
+        )
+        constraints.append(leftBar.bottomAnchor.constraint(equalTo: outerStv.bottomAnchor)
+        )
+        constraints.append(leftBar.widthAnchor.constraint(equalToConstant: separatorWidth)
+        )
+        
+        constraints.append(commentStv.trailingAnchor.constraint(equalTo: outerStv.trailingAnchor)
+        )
+        constraints.append(commentStv.topAnchor.constraint(equalTo: outerStv.topAnchor)
+        )
+        constraints.append(commentStv.bottomAnchor.constraint(equalTo: outerStv.bottomAnchor)
+        )
+        //commentStv arranged subView
+        constraints.append(commentTextView.widthAnchor.constraint(equalTo: commentStv.widthAnchor)
+        )
+        constraints.append(bottomBar.widthAnchor.constraint(
+            equalTo: commentStv.widthAnchor)
+        )
+        constraints.append(bottomBar.heightAnchor.constraint(
+            equalToConstant: separatorWidth)
+        )
+        constraints.append(bottomBar.bottomAnchor.constraint(
+            equalTo: commentStv.bottomAnchor)
+        )
+        constraints.append(upperStv.widthAnchor.constraint(equalTo: commentStv.widthAnchor)
+        )
+        constraints.append(upperStv.topAnchor.constraint(equalTo: commentStv.topAnchor)
+        )
+        constraints.append(commentImageView.widthAnchor.constraint(equalTo: commentStv.widthAnchor)
+        )
+//        constraints.append(commentImageView.heightAnchor.constraint(equalToConstant: 200)
+//        )
+        //upperStv arranged subView
+        constraints.append(userNameLbl.leadingAnchor.constraint(equalTo: upperStv.leadingAnchor)
+        )
+        constraints.append(userNameLbl.topAnchor.constraint(equalTo: upperStv.topAnchor)
+        )
+        constraints.append(userNameLbl.bottomAnchor.constraint(equalTo: upperStv.bottomAnchor)
+        )
+        constraints.append(collapseContainer.trailingAnchor.constraint(equalTo: upperStv.trailingAnchor)
+        )
+        constraints.append(collapseContainer.heightAnchor.constraint(equalTo: upperStv.heightAnchor)
+        )
+        constraints.append(collapseContainer.widthAnchor.constraint(equalToConstant: 50)
+        )
+        //collapseContainer subView
+        constraints.append(collapseLbl.topAnchor.constraint(equalTo: collapseContainer.topAnchor)
+        )
+        constraints.append(collapseLbl.bottomAnchor.constraint(equalTo: collapseContainer.bottomAnchor)
+        )
+        constraints.append(collapseLbl.leadingAnchor.constraint(equalTo: collapseContainer.leadingAnchor)
+        )
+        constraints.append(collapseLbl.trailingAnchor.constraint(equalTo: collapseContainer.trailingAnchor)
+        )
+        
+        NSLayoutConstraint.activate(constraints)
+    }
+//MARK: Cell Config
+    func config(_ comment: Comment) {
+        leftBar.isHidden = comment.isTop
+        let width = CGFloat(comment.level) * separatorWidth
+        outerStv.spacing = width
+        commentTextView.text = comment.value
+        updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count)
+        
+        commentImageView.image = comment.image
+        commentImageView.isHidden = !comment.hasImageLink
+
+        userNameLbl.text = comment.author
+    }
+    func updateCollapsed(isCollapsed: Bool, count: Int){
+        collapseLbl.text = isCollapsed ? "X" : "\(count)"
+        collapseContainer.isHidden = count == 0 ? true : false
+    }
+
+//MARK: Make UI functions
+    private func makeLabel(numberOfLines lines: Int = 1,
+                           bgColor: UIColor,
+                           inset: UIEdgeInsets = .zero,
+                           textAlignment alignment: NSTextAlignment = .left,
+                           textColor: UIColor = .black,
+                           font: UIFont = .systemFont(ofSize: 17),
+                           lineBreak: NSLineBreakMode = .byWordWrapping
+    ) -> PaddingLabel {
+        let label = PaddingLabel()
+        label.numberOfLines = lines
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = bgColor
+        label.text = "Hello World"
+        label.inset = inset
+        label.textAlignment = alignment
+        label.textColor = textColor
+        label.font = font
+        label.lineBreakMode = lineBreak
+        return label
+    }
+    private func makeUIView(color: UIColor) -> UIView {
+        let separator = UIView()
+        separator.translatesAutoresizingMaskIntoConstraints = false
+        separator.backgroundColor = color
+        return separator
+    }
+    private func makeStackView(axis: NSLayoutConstraint.Axis, distribution: UIStackView.Distribution, color: UIColor, spacing: CGFloat, alignment: UIStackView.Alignment) -> UIStackView {
+        let stackView = UIStackView()
+        stackView.axis = axis
+        stackView.spacing = spacing
+        stackView.distribution = distribution
+        stackView.alignment = alignment
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.backgroundColor = color
+        return stackView
+    }
+    private func makeTextView(font: UIFont = .systemFont(ofSize: 17),
+                              bgColor: UIColor,
+                              scrollable: Bool = false,
+                              textInset: UIEdgeInsets = .zero,
+                              linkAttr attributes: [NSAttributedString.Key : Any]?
+    ) -> UITextView {
+        let textView = UITextView()
+        textView.translatesAutoresizingMaskIntoConstraints = false
+
+        textView.font = font
+        textView.backgroundColor = bgColor
+        textView.isScrollEnabled = scrollable
+        textView.isEditable = false
+        textView.dataDetectorTypes = .link
+        textView.textContainerInset = textInset
+
+        if let attributes = attributes {
+            textView.linkTextAttributes = attributes
+        }
+
+        return textView
+    }
+    
+    private func setProperties() {
+        
+        let attributes: [NSAttributedString.Key:Any] = [
+            .foregroundColor: UIColor.purple,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        
+        outerStv = makeStackView (
+            axis: .horizontal,
+            distribution: .fill,
+            color: .green,
+            spacing: 0,
+            alignment: .center
+        )
+        commentStv = makeStackView(
+            axis: .vertical,
+            distribution: .fill,
+            color: .red,
+            spacing: 0,
+            alignment: .center
+        )
+        upperStv = makeStackView(
+            axis: .horizontal,
+            distribution: .fill,
+            color: .link,
+            spacing: 0,
+            alignment: .center
+        )
+        commentTextView = makeTextView(bgColor: .lightGray, linkAttr: attributes)
+        leftBar = makeUIView(color: .yellow)
+        bottomBar = makeUIView(color: .yellow)
+        userNameLbl = makeLabel(numberOfLines: 0,bgColor: .purple)
+        collapseLbl = makeLabel(bgColor: .red, textAlignment: .center)
+    }
 }
 
