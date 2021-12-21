@@ -53,13 +53,13 @@ class CommentViewController: UIViewController {
                                 with: "mp4"
                             )
                             if let url = URL(string: urlString) {
-                                comment.videoLink = url
+                                comment.videoData = Comment.VideoData(link: url)
                                 comment.hasVideoLink = true
                             }
                         case .jpg ,.png, .jpeg:
                             urlString = link
                             if let url = URL(string: urlString) {
-                                comment.imageLink = url
+                                comment.imageData = Comment.ImageData(image: nil, link: url)
                                 comment.hasImageLink = true
                             }
                         }
@@ -74,14 +74,14 @@ class CommentViewController: UIViewController {
     private func downloadCellImage() {
         Task {
             for (index,comment) in self.dataSource.enumerated() {
-                guard comment.hasImageLink && comment.image == nil else {
+                guard comment.hasImageLink && comment.imageData?.image == nil else {
                     continue
                 }
-                if let link = comment.imageLink {
+                if let link = comment.imageData?.link {
                     do {
                         let newImage = try await networkManager.singleDownload(url: link)
                         let cellWidth = calculateWidth(comment)
-                        comment.image = newImage.drawImage(toWidth: cellWidth)
+                        comment.imageData?.image = newImage.drawImage(toWidth: cellWidth)
                         updateCell(for: index)
                     } catch {
                         print(error)
@@ -176,29 +176,29 @@ extension CommentViewController: UITableViewDelegate {
         downloadCellImage()
     }
     
-//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        guard let commentCell = cell as? CommentCell else { return }
-//        let comment = dataSource[indexPath.row]
-//        if comment.hasVideoLink {
-//            if let visibleRows = tableView.indexPathsForVisibleRows {
-//                visibleRows.forEach {
-//                    if indexPath == $0 {
-//                        DispatchQueue.main.async {
-//                            commentCell.play()
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        guard let commentCell = cell as? CommentCell else { return }
-//        let comment = dataSource[indexPath.row]
-//        if comment.hasVideoLink {
-//            DispatchQueue.main.async {
-//                commentCell.commentPlayerView.cleanup()
-//            }
-//        }
-//    }
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let commentCell = cell as? CommentCell else { return }
+        let comment = dataSource[indexPath.row]
+        if comment.hasVideoLink {
+            if let visibleRows = tableView.indexPathsForVisibleRows {
+                visibleRows.forEach {
+                    if indexPath == $0 {
+                        DispatchQueue.main.async {
+                            commentCell.play()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let commentCell = cell as? CommentCell else { return }
+        let comment = dataSource[indexPath.row]
+        if comment.hasVideoLink {
+            DispatchQueue.main.async {
+                commentCell.cleanup()
+            }
+        }
+    }
 }
 

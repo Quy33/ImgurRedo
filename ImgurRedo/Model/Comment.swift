@@ -22,9 +22,8 @@ class Comment {
         }
     }
     var level = 0
-    var image: UIImage?
-    var imageLink: URL?
-    var videoLink: URL?
+    var imageData: ImageData?
+    var videoData: VideoData?
     var hasImageLink: Bool = false
     var hasVideoLink: Bool = false
     var contentType: ExtensionType?
@@ -32,6 +31,13 @@ class Comment {
     var dateString: String {
         let localDate = relativeTime(date: date, style: .abbreviated)
         return localDate
+    }
+    struct ImageData {
+        var image: UIImage?
+        let link: URL
+    }
+    struct VideoData {
+        let link: URL
     }
     
     init(value: String, id: Int, parentId: Int, author: String) {

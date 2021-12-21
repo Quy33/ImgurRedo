@@ -362,6 +362,7 @@ class CommentCell: UITableViewCell {
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
+    private var playerView = PlayerView()
 //MARK: Unused Functions
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -435,6 +436,7 @@ class CommentCell: UITableViewCell {
         upperStv.addArrangedSubview(collapseContainer)
         collapseContainer.addSubview(collapseLbl)
         commentStv.addArrangedSubview(commentImageView)
+        commentStv.addArrangedSubview(playerView)
         commentStv.addArrangedSubview(commentTextView)
         commentStv.addArrangedSubview(dateLbl)
         commentStv.addArrangedSubview(bottomStv)
@@ -484,6 +486,9 @@ class CommentCell: UITableViewCell {
         )
         constraints.append(bottomStv.bottomAnchor.constraint(equalTo: commentStv.bottomAnchor)
         )
+        constraints.append(playerView.widthAnchor.constraint(equalTo: commentStv.widthAnchor)
+        )
+        constraints.append(playerView.heightAnchor.constraint(equalToConstant: 200))
         //bottomStv arranged subview
         constraints.append(bottomBar.heightAnchor.constraint(
             equalToConstant: CommentCell.separatorWidth)
@@ -533,13 +538,19 @@ class CommentCell: UITableViewCell {
         commentTextView.text = comment.value
         commentTextView.isHidden = comment.value.isEmpty
                 
-        commentImageView.image = comment.image ?? ToolBox.placeHolderImg
+        commentImageView.image = comment.imageData?.image ?? ToolBox.placeHolderImg
         commentImageView.isHidden = !comment.hasImageLink
 
         userNameLbl.text = comment.author
         dateLbl.text = comment.dateString
         
         updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count, isTop: comment.isTop)
+        
+        playerView.isHidden = !comment.hasVideoLink
+        if comment.hasVideoLink {
+            playerView.prepareToPlay(withUrl: comment.videoData!.link)
+            playerView.pause()
+        }
     }
     func updateCollapsed(isCollapsed: Bool, count: Int, isTop: Bool){
         collapseLbl.text = isCollapsed ? "X" : "\(count)"
@@ -612,6 +623,13 @@ class CommentCell: UITableViewCell {
         }
 
         return textView
+    }
+    
+    func play() {
+        playerView.play()
+    }
+    func cleanup() {
+        playerView.cleanup()
     }
 }
 
