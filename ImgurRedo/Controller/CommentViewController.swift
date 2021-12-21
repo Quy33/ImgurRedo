@@ -79,7 +79,9 @@ class CommentViewController: UIViewController {
                 }
                 if let link = comment.imageLink {
                     do {
-                        comment.image = try await networkManager.singleDownload(url: link)
+                        let newImage = try await networkManager.singleDownload(url: link)
+                        let cellWidth = calculateWidth(comment)
+                        comment.image = newImage.drawImage(toWidth: cellWidth)
                         updateCell(for: index)
                     } catch {
                         print(error)
@@ -104,6 +106,14 @@ class CommentViewController: UIViewController {
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
     }
+    private func calculateWidth(_ comment: Comment) -> CGFloat {
+        let leftBarW = comment.isTop ? 0 : CommentCell.separatorWidth
+        let spacing = CGFloat(comment.level) * CommentCell.outerStvSpacing
+        let screenWidth = self.view.frame.width
+        let result = screenWidth - leftBarW - spacing
+        
+        return result
+    }
 }
 //MARK: TableView Stuff
 extension CommentViewController: UITableViewDataSource {
@@ -126,6 +136,7 @@ extension CommentViewController: UITableViewDataSource {
 extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let comment = dataSource[indexPath.row]
+        print(comment.isTop)
         guard let commentCell = (tableView.cellForRow(at: indexPath) as? CommentCell),
             (!comment.children.isEmpty) else { return }
         var indexes: [IndexPath] = []
@@ -161,7 +172,7 @@ extension CommentViewController: UITableViewDelegate {
             tableView.insertRows(at: indexes, with: .fade)
             comment.isCollapsed = true
         }
-        commentCell.updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count)
+        commentCell.updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count, isTop: comment.isTop)
         downloadCellImage()
     }
     

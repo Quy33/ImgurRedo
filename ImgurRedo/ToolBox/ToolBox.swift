@@ -95,5 +95,18 @@ enum ThumbnailSize: Character {
     case largeThumbnail = "l"
     case hugeThumbnail = "h"
 }
-
+//MARK: Image Extension
+extension UIImage {
+    func drawImage(toWidth w: CGFloat) -> UIImage {
+        let calculatedSize = ToolBox.calculateMediaRatio(self.size, frameWidth: w).size
+        let rect = CGRect(origin: .zero, size: calculatedSize)
+        
+        let renderer = UIGraphicsImageRenderer(size: calculatedSize)
+        let resizedImage = renderer.image { _ in
+            self.draw(in: rect)
+        }
+        
+        return resizedImage
+    }
+}
 
