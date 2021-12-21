@@ -194,7 +194,6 @@ extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let commentCell = cell as? CommentCell else { return }
         let comment = dataSource[indexPath.row]
-        comment.imageData?.image = nil
         if comment.hasVideoLink {
             DispatchQueue.main.async {
                 commentCell.cleanup()
