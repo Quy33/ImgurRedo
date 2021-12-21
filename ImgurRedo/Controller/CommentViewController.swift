@@ -81,7 +81,8 @@ class CommentViewController: UIViewController {
                     do {
                         let newImage = try await networkManager.singleDownload(url: link)
                         let cellWidth = calculateWidth(comment)
-                        comment.imageData?.image = newImage.drawImage(toWidth: cellWidth)
+                        let resizedImage = newImage.drawImage(toWidth: cellWidth)
+                        comment.imageData?.image = resizedImage
                         updateCell(for: index)
                     } catch {
                         print(error)
@@ -136,7 +137,6 @@ extension CommentViewController: UITableViewDataSource {
 extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let comment = dataSource[indexPath.row]
-        print(comment.isTop)
         guard let commentCell = (tableView.cellForRow(at: indexPath) as? CommentCell),
             (!comment.children.isEmpty) else { return }
         var indexes: [IndexPath] = []
@@ -194,6 +194,7 @@ extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let commentCell = cell as? CommentCell else { return }
         let comment = dataSource[indexPath.row]
+        comment.imageData?.image = nil
         if comment.hasVideoLink {
             DispatchQueue.main.async {
                 commentCell.cleanup()
