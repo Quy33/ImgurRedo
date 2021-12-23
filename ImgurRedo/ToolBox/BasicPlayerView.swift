@@ -60,17 +60,32 @@ class BasicPlayerView: UIView {
     override class var layerClass: AnyClass {
         return AVPlayerLayer.self
     }
-    var playerLayer: AVPlayerLayer { return layer as! AVPlayerLayer }
+    var playerLayer: AVPlayerLayer?
     
     private var avPlayer: AVPlayer? {
-        get{ playerLayer.player }
-        set{ playerLayer.player = newValue }
+        get{ playerLayer?.player }
+        set{ playerLayer?.player = newValue }
     }
     private var url: URL?
     private var urlAsset: AVURLAsset?
     private var playerItem: AVPlayerItem?
     private var assetExporter: AVAssetExportSession?
-
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        initialSetup()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func initialSetup() {
+        if let layer = layer as? AVPlayerLayer {
+            layer.videoGravity = .resizeAspectFill
+            playerLayer = layer
+        }
+    }
     
     func prepareToPlay(url: URL, shouldPlayImmediately: Bool) {
         guard !(self.url == url && avPlayer != nil && avPlayer?.error == nil) else {

@@ -365,7 +365,6 @@ class CommentCell: UITableViewCell {
     private var playerView: BasicPlayerView = {
         let view = BasicPlayerView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.playerLayer.videoGravity = .resizeAspectFill
         return view
     }()
 //MARK: Unused Functions
@@ -378,7 +377,6 @@ class CommentCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-
 //MARK: Cell Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -551,7 +549,7 @@ class CommentCell: UITableViewCell {
         
         updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count, isTop: comment.isTop)
         
-        playerView.isHidden = !comment.hasVideoLink
+//        playerView.isHidden = !comment.hasVideoLink
         if comment.hasVideoLink {
             playerView.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: true)
         }
@@ -562,9 +560,10 @@ class CommentCell: UITableViewCell {
         bottomLeftBar.isHidden = isTop && isCollapsed ? false : true
         
         if !collapseContainer.isHidden {
-            DispatchQueue.main.async { [unowned self] in
-                collapseLbl.clipsToBounds = true
-                collapseLbl.layer.cornerRadius = collapseLbl.frame.height/2
+            DispatchQueue.main.async { [weak self] in
+                guard let strongSelf = self else { return }
+                strongSelf.collapseLbl.clipsToBounds = true
+                strongSelf.collapseLbl.layer.cornerRadius = strongSelf.collapseLbl.frame.height/2
             }
         }
     }
