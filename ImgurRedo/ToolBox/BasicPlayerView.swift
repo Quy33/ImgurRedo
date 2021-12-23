@@ -61,12 +61,16 @@ class BasicPlayerView: UIView {
         return AVPlayerLayer.self
     }
     var playerLayer: AVPlayerLayer { return layer as! AVPlayerLayer }
+    
     private var avPlayer: AVPlayer? {
         get{ playerLayer.player }
         set{ playerLayer.player = newValue }
     }
-    private var playerItem: AVPlayerItem?
     private var url: URL?
+    private var urlAsset: AVURLAsset?
+    private var playerItem: AVPlayerItem?
+    private var assetExporter: AVAssetExportSession?
+
     
     func prepareToPlay(url: URL, shouldPlayImmediately: Bool) {
         guard !(self.url == url && avPlayer != nil && avPlayer?.error == nil) else {
@@ -76,35 +80,41 @@ class BasicPlayerView: UIView {
             return
         }
         cleanup()
-        let playerItem = AVPlayerItem(url: url)
-        let avPlayer = AVPlayer(playerItem: playerItem)
-        self.playerItem = playerItem
-        self.avPlayer = avPlayer
+        
         self.url = url
-        if shouldPlayImmediately {
-            DispatchQueue.main.async {
-                avPlayer.play()
-            }
+        let option = [AVURLAssetPreferPreciseDurationAndTimingKey:true]
+        let asset = AVURLAsset(url: url, options: option)
+        let key = ["tracks"]
+        urlAsset = asset
+        asset.loadValuesAsynchronously(forKeys: key) { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.startLoading(asset: asset, shouldPlayImmediately: true)
         }
         NotificationCenter.default.addObserver(self, selector: #selector(self.playerItemDidEndPlaying(_:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+    }
+    private func startLoading(asset: AVURLAsset, shouldPlayImmediately: Bool) {
+        var error: NSError?
+        if asset.statusOfValue(forKey: "tracks", error: &error) == .loaded {
+            let item = AVPlayerItem(asset: asset)
+            let player = AVPlayer(playerItem: item)
+            playerItem = item
+            avPlayer = player
+            if shouldPlayImmediately {
+                player.play()
+            }
+        }
     }
     func play() {
         guard avPlayer?.isPlaying == true else {
             return
         }
-        DispatchQueue.main.async { [weak self] in
-            guard let strongSelf = self else { return }
-            strongSelf.avPlayer?.play()
-        }
+        avPlayer?.play()
     }
     func pause() {
         guard avPlayer?.isPlaying == false else {
             return
         }
-        DispatchQueue.main.async { [weak self] in
-            guard let strongSelf = self else { return }
-            strongSelf.avPlayer?.pause()
-        }
+        avPlayer?.pause()
     }
     @objc private func playerItemDidEndPlaying(_ notification: Notification) {
         guard (notification.object as? AVPlayerItem == playerItem) else {
