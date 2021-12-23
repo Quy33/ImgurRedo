@@ -362,7 +362,12 @@ class CommentCell: UITableViewCell {
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
-    private var playerView = PlayerView()
+    private var playerView: BasicPlayerView = {
+        let view = BasicPlayerView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.playerLayer.videoGravity = .resizeAspectFill
+        return view
+    }()
 //MARK: Unused Functions
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -548,8 +553,7 @@ class CommentCell: UITableViewCell {
         
         playerView.isHidden = !comment.hasVideoLink
         if comment.hasVideoLink {
-            playerView.prepareToPlay(withUrl: comment.videoData!.link)
-            playerView.pause()
+            playerView.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: true)
         }
     }
     func updateCollapsed(isCollapsed: Bool, count: Int, isTop: Bool){
@@ -630,6 +634,9 @@ class CommentCell: UITableViewCell {
     }
     func cleanup() {
         playerView.cleanup()
+    }
+    func prepareToPlay(url: URL, shouldPlayImmediately: Bool) {
+        playerView.prepareToPlay(url: url, shouldPlayImmediately: shouldPlayImmediately)
     }
 }
 

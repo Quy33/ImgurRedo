@@ -180,24 +180,14 @@ extension CommentViewController: UITableViewDelegate {
         guard let commentCell = cell as? CommentCell else { return }
         let comment = dataSource[indexPath.row]
         if comment.hasVideoLink {
-            if let visibleRows = tableView.indexPathsForVisibleRows {
-                visibleRows.forEach {
-                    if indexPath == $0 {
-                        DispatchQueue.main.async {
-                            commentCell.play()
-                        }
-                    }
-                }
-            }
+            commentCell.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: true)
         }
     }
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let commentCell = cell as? CommentCell else { return }
         let comment = dataSource[indexPath.row]
         if comment.hasVideoLink {
-            DispatchQueue.main.async {
-                commentCell.cleanup()
-            }
+            commentCell.cleanup()
         }
     }
 }
