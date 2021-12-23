@@ -9,7 +9,7 @@ import UIKit
 import AVKit
 import AVFoundation
 
-class BasicPlayerView: UIView {
+class BasicPlayerView: UIImageView {
 //    override class var layerClass: AnyClass { AVPlayerLayer.self }
 //    private var playerLayer: AVPlayerLayer? { self.layer as? AVPlayerLayer }
 //
@@ -81,6 +81,7 @@ class BasicPlayerView: UIView {
     }
     
     private func initialSetup() {
+        self.image = ToolBox.placeHolderImg
         if let layer = layer as? AVPlayerLayer {
             layer.videoGravity = .resizeAspectFill
             playerLayer = layer
@@ -141,8 +142,11 @@ class BasicPlayerView: UIView {
     }
     func cleanup() {
         pause()
-        avPlayer = nil
+        url = nil
+        urlAsset?.cancelLoading()
+        urlAsset = nil
         playerItem = nil
+        avPlayer = nil
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
     }
     deinit {

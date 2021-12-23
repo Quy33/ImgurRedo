@@ -176,10 +176,13 @@ extension CommentViewController: UITableViewDelegate {
         downloadCellImage()
     }
     
-//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        guard let commentCell = cell as? CommentCell else { return }
-//        let comment = dataSource[indexPath.row]
-//    }
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let commentCell = cell as? CommentCell else { return }
+        let comment = dataSource[indexPath.row]
+        if comment.hasVideoLink {
+            commentCell.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: true)
+        }
+    }
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let commentCell = cell as? CommentCell else { return }
         let comment = dataSource[indexPath.row]

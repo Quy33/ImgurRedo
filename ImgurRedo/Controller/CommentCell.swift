@@ -363,8 +363,9 @@ class CommentCell: UITableViewCell {
         return imageView
     }()
     private var playerView: BasicPlayerView = {
-        let view = BasicPlayerView()
+        let view = BasicPlayerView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
         return view
     }()
 //MARK: Unused Functions
@@ -491,7 +492,6 @@ class CommentCell: UITableViewCell {
         )
         constraints.append(playerView.widthAnchor.constraint(equalTo: commentStv.widthAnchor)
         )
-        constraints.append(playerView.heightAnchor.constraint(equalToConstant: 200))
         //bottomStv arranged subview
         constraints.append(bottomBar.heightAnchor.constraint(
             equalToConstant: CommentCell.separatorWidth)
@@ -549,7 +549,7 @@ class CommentCell: UITableViewCell {
         
         updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count, isTop: comment.isTop)
         
-//        playerView.isHidden = !comment.hasVideoLink
+        playerView.isHidden = !comment.hasVideoLink
         if comment.hasVideoLink {
             playerView.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: true)
         }
