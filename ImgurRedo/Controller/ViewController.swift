@@ -38,6 +38,10 @@ class ViewController: UIViewController {
 
         initialDownload()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        clearVideos()
+    }
 
 //MARK: Networking Calls
     private func initialDownload() {
@@ -171,6 +175,30 @@ class ViewController: UIViewController {
         
         imgurCollectionView?.reloadData()
         initialDownload()
+    }
+    
+//MARK: Clear Documents directory
+    private func clearVideos() {
+        if let docDir = FileManager.default.urls(
+            for: .documentDirectory, in: .userDomainMask
+        ).last
+        {
+            do {
+                let fileUrls = try FileManager.default.contentsOfDirectory(
+                    at: docDir,
+                    includingPropertiesForKeys: nil,
+                    options: .skipsHiddenFiles)
+                for fileUrl in fileUrls {
+                    if fileUrl.pathExtension == "mp4" {
+                        try FileManager.default.removeItem(at: fileUrl)
+                    }
+                }
+                print("Finished clearing all video in documents directory")
+            } catch {
+                print("Error Clearing Videos: \(error)")
+                return
+            }
+        }
     }
 }
 //MARK: CollectionView DataSource

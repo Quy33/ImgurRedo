@@ -38,6 +38,7 @@ class CommentViewController: UIViewController {
     private func registerCell() {
         commentTableView.register(CommentCell.self, forCellReuseIdentifier: CommentCell.identifier)
     }
+    
 //MARK: Functions to detect & download comments image link
     private func detectMediaLink() {
         for comment in dataSource {
@@ -119,11 +120,12 @@ class CommentViewController: UIViewController {
     private func calculateWidth(_ comment: Comment) -> CGFloat {
         let leftBarW = comment.isTop ? 0 : CommentCell.barWidth
         let spacing = CGFloat(comment.level) * CommentCell.outerStvSpacing
-        var screenWidth = UIScreen.main.bounds.width
+        let screenWidth = UIScreen.main.bounds.width
         let result = screenWidth - leftBarW - spacing
         
         return result
     }
+    
 }
 //MARK: TableView Stuff
 extension CommentViewController: UITableViewDataSource {
