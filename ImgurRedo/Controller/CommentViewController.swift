@@ -142,6 +142,7 @@ extension CommentViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         cell.config(comment)
+        cell.setPlayerDelegate(self)
         return cell
     }
 }
@@ -202,4 +203,8 @@ extension CommentViewController: UITableViewDelegate {
         }
     }
 }
-
+extension CommentViewController: BasicPlayerViewDelegate {
+    func canPresentPlayer() -> CommentViewController {
+        return self
+    }
+}

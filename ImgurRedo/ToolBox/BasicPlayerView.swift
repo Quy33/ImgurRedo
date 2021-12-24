@@ -9,11 +9,16 @@ import UIKit
 import AVKit
 import AVFoundation
 
+protocol BasicPlayerViewDelegate {
+    func canPresentPlayer() -> CommentViewController
+}
+
 class BasicPlayerView: UIImageView {
     override class var layerClass: AnyClass {
         return AVPlayerLayer.self
     }
     var playerLayer: AVPlayerLayer?
+    var delegate: BasicPlayerViewDelegate?
     
     private var avPlayer: AVPlayer? {
         get{ playerLayer?.player }
@@ -56,8 +61,9 @@ class BasicPlayerView: UIImageView {
         if let layer = layer as? AVPlayerLayer {
             layer.videoGravity = .resizeAspectFill
             playerLayer = layer
-            setupButton()
             self.contentMode = .center
+            self.isUserInteractionEnabled = true
+            setupButton()
         }
     }
     private func setupSpinner() {
@@ -126,19 +132,13 @@ class BasicPlayerView: UIImageView {
         guard avPlayer?.isPlaying == true else {
             return
         }
-        DispatchQueue.main.async { [weak self] in
-            guard let strongSelf = self else {return}
-            strongSelf.avPlayer?.play()
-        }
+        avPlayer?.play()
     }
     func pause() {
         guard avPlayer?.isPlaying == false else {
             return
         }
-        DispatchQueue.main.async { [weak self] in
-            guard let strongSelf = self else {return}
-            strongSelf.avPlayer?.pause()
-        }
+        avPlayer?.pause()
     }
     @objc private func playerItemDidEndPlaying(_ notification: Notification) {
         guard (notification.object as? AVPlayerItem == playerItem) else {
@@ -215,7 +215,21 @@ class BasicPlayerView: UIImageView {
         assetExporter = nil
     }
     @objc private func showViewDidPressed(_ sender: UIButton) {
-        print("Show")
+        if let target = delegate?.canPresentPlayer() {
+            guard let avPlayer = avPlayer, let url = url else {
+                return
+            }
+            showViewController(target: target, avPlayer: avPlayer, videoLink: url)
+        }
+    }
+    private func showViewController(target: CommentViewController, avPlayer: AVPlayer, videoLink: URL) {
+        let playerVC = AVPlayerViewController()
+        let player = AVPlayer(url: videoLink)
+        avPlayer.pause()
+        playerVC.player = player
+        target.present(playerVC, animated: true) {
+            playerVC.player?.play()
+        }
     }
     
     func cleanup() {

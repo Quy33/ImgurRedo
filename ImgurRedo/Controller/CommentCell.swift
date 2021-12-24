@@ -658,5 +658,8 @@ class CommentCell: UITableViewCell {
     func prepareToPlay(url: URL, shouldPlayImmediately: Bool) {
         playerView.prepareToPlay(url: url, shouldPlayImmediately: shouldPlayImmediately)
     }
+    func setPlayerDelegate(_ target: CommentViewController) {
+        playerView.delegate = target
+    }
 }
 
