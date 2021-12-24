@@ -122,6 +122,8 @@ class BasicPlayerView: UIImageView {
         urlAsset = nil
         playerItem = nil
         avPlayer = nil
+        spinner.stopAnimating()
+        spinner.removeFromSuperview()
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
     }
     deinit {

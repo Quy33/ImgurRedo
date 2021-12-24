@@ -193,7 +193,7 @@ extension CommentViewController: UITableViewDelegate {
         }
     }
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard let commentCell = cell as? CommentCell else { return }
+        guard let commentCell = cell as? CommentCell, (indexPath.row < dataSource.endIndex) else { return }
         let comment = dataSource[indexPath.row]
         if comment.hasVideoLink {
             commentCell.cleanup()
