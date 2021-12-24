@@ -339,13 +339,15 @@ class CommentCell: UITableViewCell {
 //    }
 //MARK: Variables
     static let identifier = "CommentCell"
-    static let separatorWidth: CGFloat = 2
+    static let barWidth: CGFloat = 2
+    static let separatorWidth: CGFloat = 5
     static let outerStvSpacing: CGFloat = 10
 //MARK: UI Elements
     private var outerStv = UIStackView()
     private var leftBar = UIView()
     private var commentStv = UIStackView()
     private var commentTextView = UITextView()
+    private var bottomSeparator = UIView()
     private var bottomBar = UIView()
     private var upperStv = UIStackView()
     private var userNameLbl = PaddingLabel()
@@ -429,23 +431,36 @@ class CommentCell: UITableViewCell {
         
         bottomStv = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 0, alignment: .center)
         bottomLeftBar = makeUIView(color: .lightGray)
+        bottomBar = makeUIView(color: .darkGray)
+        bottomSeparator = makeUIView(color: .clear)
     }
     
     private func addUiElements() {
+        //<ContentView SubView>
         contentView.addSubview(outerStv)
-        outerStv.addArrangedSubview(leftBar)
-        outerStv.addArrangedSubview(commentStv)
-        commentStv.addArrangedSubview(upperStv)
-        upperStv.addArrangedSubview(userNameLbl)
-        upperStv.addArrangedSubview(collapseContainer)
-        collapseContainer.addSubview(collapseLbl)
-        commentStv.addArrangedSubview(commentImageView)
-        commentStv.addArrangedSubview(playerView)
-        commentStv.addArrangedSubview(commentTextView)
-        commentStv.addArrangedSubview(dateLbl)
-        commentStv.addArrangedSubview(bottomStv)
-        bottomStv.addArrangedSubview(bottomLeftBar)
-        bottomStv.addArrangedSubview(bottomBar)
+            //<OuterStv ArrangedSubView>
+            outerStv.addArrangedSubview(leftBar)
+            outerStv.addArrangedSubview(commentStv)
+                //<CommentStv ArrangedSubView>
+                commentStv.addArrangedSubview(upperStv)
+                    //<UpperStv ArrangedSubView>
+                    upperStv.addArrangedSubview(userNameLbl)
+                    upperStv.addArrangedSubview(collapseContainer)
+                    //</UpperStv ArrangedSubView>
+                collapseContainer.addSubview(collapseLbl)
+                commentStv.addArrangedSubview(commentImageView)
+                commentStv.addArrangedSubview(playerView)
+                commentStv.addArrangedSubview(commentTextView)
+                commentStv.addArrangedSubview(dateLbl)
+                commentStv.addArrangedSubview(bottomSeparator)
+                commentStv.addArrangedSubview(bottomStv)
+                    //<BottomStv ArrangedStv>
+                    bottomStv.addArrangedSubview(bottomLeftBar)
+                    bottomStv.addArrangedSubview(bottomBar)
+                    //</BottomStv ArrangedStv>
+                //</CommentStv ArrangedSubView>
+            //</OuterStv ArrangedSubView>
+        //</ContentView SubView>
     }
     
     private func setUiConstraints() {
@@ -466,7 +481,7 @@ class CommentCell: UITableViewCell {
         )
         constraints.append(leftBar.bottomAnchor.constraint(equalTo: outerStv.bottomAnchor)
         )
-        constraints.append(leftBar.widthAnchor.constraint(equalToConstant: CommentCell.separatorWidth)
+        constraints.append(leftBar.widthAnchor.constraint(equalToConstant: CommentCell.barWidth)
         )
         
         constraints.append(commentStv.trailingAnchor.constraint(equalTo: outerStv.trailingAnchor)
@@ -492,16 +507,21 @@ class CommentCell: UITableViewCell {
         )
         constraints.append(playerView.widthAnchor.constraint(equalTo: commentStv.widthAnchor)
         )
+        constraints.append(bottomSeparator.widthAnchor.constraint(equalTo: commentStv.widthAnchor)
+        )
+        constraints.append(bottomSeparator.heightAnchor.constraint(
+            equalToConstant: CommentCell.separatorWidth)
+        )
         //bottomStv arranged subview
         constraints.append(bottomBar.heightAnchor.constraint(
-            equalToConstant: CommentCell.separatorWidth)
+            equalToConstant: CommentCell.barWidth)
         )
         constraints.append(bottomBar.trailingAnchor.constraint(
             equalTo: bottomStv.trailingAnchor)
         )
-        constraints.append(bottomLeftBar.heightAnchor.constraint(equalToConstant: CommentCell.separatorWidth)
+        constraints.append(bottomLeftBar.heightAnchor.constraint(equalToConstant: CommentCell.barWidth)
         )
-        constraints.append(bottomLeftBar.widthAnchor.constraint(equalToConstant: CommentCell.separatorWidth)
+        constraints.append(bottomLeftBar.widthAnchor.constraint(equalToConstant: CommentCell.barWidth)
         )
         constraints.append(bottomLeftBar.leadingAnchor.constraint(equalTo: bottomStv.leadingAnchor)
         )
@@ -551,6 +571,7 @@ class CommentCell: UITableViewCell {
         
         playerView.isHidden = !comment.hasVideoLink
         if comment.hasVideoLink {
+            playerView.image = comment.videoData?.thumbnail ?? ToolBox.placeHolderImg
             playerView.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: true)
         }
     }
@@ -627,7 +648,7 @@ class CommentCell: UITableViewCell {
 
         return textView
     }
-    
+//MARK: PlayerView function
     func play() {
         playerView.play()
     }

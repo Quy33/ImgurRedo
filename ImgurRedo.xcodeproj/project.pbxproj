@@ -29,7 +29,6 @@
 		53D138D42742639000E05A70 /* ImgurCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D138D22742639000E05A70 /* ImgurCollectionViewCell.swift */; };
 		53D138D52742639000E05A70 /* ImgurCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 53D138D32742639000E05A70 /* ImgurCollectionViewCell.xib */; };
 		53D2857D2768A40500A0E495 /* PaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D2857C2768A40500A0E495 /* PaddingLabel.swift */; };
-		53D2857F2768A53F00A0E495 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D2857E2768A53F00A0E495 /* PlayerView.swift */; };
 		53D6F34F2755D4280027C9FC /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D6F34E2755D4280027C9FC /* CommentViewController.swift */; };
 		53D6F35227561F640027C9FC /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D6F35027561F640027C9FC /* CommentCell.swift */; };
 		53E298B4274E8310000AC971 /* RawComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E298B3274E8310000AC971 /* RawComment.swift */; };
@@ -61,7 +60,6 @@
 		53D138D22742639000E05A70 /* ImgurCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImgurCollectionViewCell.swift; sourceTree = "<group>"; };
 		53D138D32742639000E05A70 /* ImgurCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImgurCollectionViewCell.xib; sourceTree = "<group>"; };
 		53D2857C2768A40500A0E495 /* PaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingLabel.swift; sourceTree = "<group>"; };
-		53D2857E2768A53F00A0E495 /* PlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerView.swift; sourceTree = "<group>"; };
 		53D6F34E2755D4280027C9FC /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		53D6F35027561F640027C9FC /* CommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
 		53E298B3274E8310000AC971 /* RawComment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawComment.swift; sourceTree = "<group>"; };
@@ -84,7 +82,6 @@
 			children = (
 				53209BD127454E4E0098D13B /* ToolBox.swift */,
 				53D2857C2768A40500A0E495 /* PaddingLabel.swift */,
-				53D2857E2768A53F00A0E495 /* PlayerView.swift */,
 				534DF778276AECFA00EA424B /* BasicPlayerView.swift */,
 			);
 			path = ToolBox;
@@ -252,7 +249,6 @@
 				5394B64627461196004D0A5B /* DetailTableViewCell.swift in Sources */,
 				53E298B6274E86D1000AC971 /* Comment.swift in Sources */,
 				5394B64327460E2A004D0A5B /* DetailViewController.swift in Sources */,
-				53D2857F2768A53F00A0E495 /* PlayerView.swift in Sources */,
 				534DF779276AECFB00EA424B /* BasicPlayerView.swift in Sources */,
 				53D6F34F2755D4280027C9FC /* CommentViewController.swift in Sources */,
 				5394B64B274638E8004D0A5B /* Detail.swift in Sources */,

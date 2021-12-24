@@ -53,7 +53,9 @@ class CommentViewController: UIViewController {
                                 with: "mp4"
                             )
                             if let url = URL(string: urlString) {
-                                comment.videoData = Comment.VideoData(link: url)
+                                let thumbnailStr = ToolBox.concatStr(string: link, size: .mediumThumbnail)
+                                let thumbnailUrl = URL(string: thumbnailStr) ?? ToolBox.blankURL
+                                comment.videoData = Comment.VideoData(thumbnail: nil, thumbnailLink: thumbnailUrl, link: url)
                                 comment.hasVideoLink = true
                             }
                         case .jpg ,.png, .jpeg:
@@ -74,20 +76,27 @@ class CommentViewController: UIViewController {
     private func downloadCellImage() {
         Task {
             for (index,comment) in self.dataSource.enumerated() {
-                guard comment.hasImageLink && comment.imageData?.image == nil else {
-                    continue
-                }
-                if let link = comment.imageData?.link {
-                    do {
-                        let newImage = try await networkManager.singleDownload(url: link)
-                        let cellWidth = calculateWidth(comment)
-                        let resizedImage = newImage.drawImage(toWidth: cellWidth)
+                let imageBool = (comment.hasImageLink
+                                 && comment.imageData?.image == nil)
+                let videoBool = (comment.hasVideoLink
+                                 && comment.videoData?.thumbnail == nil)
+                guard imageBool || videoBool else { continue }
+                
+                let cellWidth = calculateWidth(comment)
+                do {
+                    if let imageLink = comment.imageData?.link {
+                        let image = try await networkManager.singleDownload(url: imageLink)
+                        let resizedImage = image.drawImage(toWidth: cellWidth)
                         comment.imageData?.image = resizedImage
-                        updateCell(for: index)
-                    } catch {
-                        print(error)
-                        continue
+                    } else if let thumbnailLink = comment.videoData?.thumbnailLink {
+                        let image = try await networkManager.singleDownload(url: thumbnailLink)
+                        let resizedImage = image.drawImage(toWidth: cellWidth)
+                        comment.videoData?.thumbnail = resizedImage
                     }
+                    updateCell(for: index)
+                } catch {
+                    print(error)
+                    continue
                 }
             }
         }
@@ -108,9 +117,9 @@ class CommentViewController: UIViewController {
         navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
     }
     private func calculateWidth(_ comment: Comment) -> CGFloat {
-        let leftBarW = comment.isTop ? 0 : CommentCell.separatorWidth
+        let leftBarW = comment.isTop ? 0 : CommentCell.barWidth
         let spacing = CGFloat(comment.level) * CommentCell.outerStvSpacing
-        let screenWidth = self.view.frame.width
+        var screenWidth = UIScreen.main.bounds.width
         let result = screenWidth - leftBarW - spacing
         
         return result

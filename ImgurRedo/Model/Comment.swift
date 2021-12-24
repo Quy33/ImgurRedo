@@ -37,6 +37,8 @@ class Comment {
         let link: URL
     }
     struct VideoData {
+        var thumbnail: UIImage?
+        let thumbnailLink: URL
         let link: URL
     }
     
