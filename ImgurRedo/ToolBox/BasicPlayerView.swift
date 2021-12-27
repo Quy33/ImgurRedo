@@ -10,7 +10,7 @@ import AVKit
 import AVFoundation
 
 protocol BasicPlayerViewDelegate {
-    func presentAVPlayerVC(url: URL)
+    func presentAVPlayerVC(url: URL,currentPlayer: AVPlayer)
 }
 
 class BasicPlayerView: UIImageView {
@@ -47,7 +47,7 @@ class BasicPlayerView: UIImageView {
         button.setImage(UIImage.init(systemName: "pencil"), for: .normal)
         return button
     }()
-    
+//MARK: Init
     override init(frame: CGRect) {
         super.init(frame: frame)
         initialSetup()
@@ -66,6 +66,7 @@ class BasicPlayerView: UIImageView {
             setupButton()
         }
     }
+//MARK: UI setup
     private func setupSpinner() {
         self.addSubview(spinner)
         NSLayoutConstraint.activate([
@@ -81,7 +82,14 @@ class BasicPlayerView: UIImageView {
             showViewBtn.centerYAnchor.constraint(equalTo: self.centerYAnchor)
         ])
     }
+//MARK: Button Function
+        @objc private func showViewDidPressed(_ sender: UIButton) {
+            if let videoUrl = url, let currentPlayer = avPlayer {
+                delegate?.presentAVPlayerVC(url: videoUrl, currentPlayer: currentPlayer)
+            }
+        }
     
+//MARK: Setup Player
     func prepareToPlay(url: URL, shouldPlayImmediately: Bool) {
         guard !(self.url == url && avPlayer != nil && avPlayer?.error == nil) else {
             if shouldPlayImmediately {
@@ -125,9 +133,9 @@ class BasicPlayerView: UIImageView {
                 strongSelf.spinner.removeFromSuperview()
             }
             exportVideo(asset: asset)
-
         }
     }
+//MARK: Player Function
     func play() {
         guard avPlayer?.isPlaying == true else {
             return
@@ -140,6 +148,7 @@ class BasicPlayerView: UIImageView {
         }
         avPlayer?.pause()
     }
+//MARK: Looping Player & Exporting Video
     @objc private func playerItemDidEndPlaying(_ notification: Notification) {
         guard (notification.object as? AVPlayerItem == playerItem) else {
             return
@@ -173,7 +182,8 @@ class BasicPlayerView: UIImageView {
         exporter.outputFileType = .mp4
         assetExporter = exporter
         
-        exporter.exportAsynchronously {
+        exporter.exportAsynchronously { [weak self] in
+            guard let strongSelf = self else { return }
             if let error = exporter.error {
                 print("Error Exporting: \(error)")
             } else {
@@ -184,6 +194,7 @@ class BasicPlayerView: UIImageView {
                     print("Exporting video")
                 case .completed:
                     print("Export completed")
+                    strongSelf.url = exporter.outputURL
                 case .failed:
                     print("Failed to export video")
                 case .cancelled:
@@ -214,12 +225,7 @@ class BasicPlayerView: UIImageView {
         }
         assetExporter = nil
     }
-    @objc private func showViewDidPressed(_ sender: UIButton) {
-        if let videoUrl = url {
-            delegate?.presentAVPlayerVC(url: videoUrl)
-        }
-    }
-    
+//MARK: Cleaning up
     func cleanup() {
         pause()
         url = nil
@@ -236,6 +242,7 @@ class BasicPlayerView: UIImageView {
         cleanup()
     }
 }
+//MARK: AVPlayer extension
 extension AVPlayer {
     var isPlaying: Bool {
         return (self.rate != 0 && self.error == nil)
