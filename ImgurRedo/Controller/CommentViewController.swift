@@ -8,6 +8,7 @@
 import UIKit
 import CoreMedia
 import AVFoundation
+import AVKit
 
 class CommentViewController: UIViewController {
 
@@ -15,6 +16,7 @@ class CommentViewController: UIViewController {
     var commentsGot: [Comment] = []
     private var dataSource: [Comment] = []
     private let networkManager = NetWorkManager()
+    private let playerVC = AVPlayerViewController()
 
     @IBOutlet weak var commentTableView: UITableView!
     
@@ -142,7 +144,7 @@ extension CommentViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         cell.config(comment)
-        cell.setPlayerDelegate(self)
+        cell.setPlayerViewDelegate(self)
         return cell
     }
 }
@@ -204,7 +206,11 @@ extension CommentViewController: UITableViewDelegate {
     }
 }
 extension CommentViewController: BasicPlayerViewDelegate {
-    func canPresentPlayer() -> CommentViewController {
-        return self
+    func presentAVPlayerVC(url: URL) {
+        let player = AVPlayer(url: url)
+        playerVC.player = player
+        self.present(playerVC, animated: true) {
+            player.play()
+        }
     }
 }

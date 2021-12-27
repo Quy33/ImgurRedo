@@ -10,7 +10,7 @@ import AVKit
 import AVFoundation
 
 protocol BasicPlayerViewDelegate {
-    func canPresentPlayer() -> CommentViewController
+    func presentAVPlayerVC(url: URL)
 }
 
 class BasicPlayerView: UIImageView {
@@ -215,20 +215,8 @@ class BasicPlayerView: UIImageView {
         assetExporter = nil
     }
     @objc private func showViewDidPressed(_ sender: UIButton) {
-        if let target = delegate?.canPresentPlayer() {
-            guard let avPlayer = avPlayer, let url = url else {
-                return
-            }
-            showViewController(target: target, avPlayer: avPlayer, videoLink: url)
-        }
-    }
-    private func showViewController(target: CommentViewController, avPlayer: AVPlayer, videoLink: URL) {
-        let playerVC = AVPlayerViewController()
-        let player = AVPlayer(url: videoLink)
-        avPlayer.pause()
-        playerVC.player = player
-        target.present(playerVC, animated: true) {
-            playerVC.player?.play()
+        if let videoUrl = url {
+            delegate?.presentAVPlayerVC(url: videoUrl)
         }
     }
     
@@ -253,3 +241,4 @@ extension AVPlayer {
         return (self.rate != 0 && self.error == nil)
     }
 }
+
