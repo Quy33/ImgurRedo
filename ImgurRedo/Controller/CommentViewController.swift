@@ -17,7 +17,7 @@ class CommentViewController: UIViewController {
     private var dataSource: [Comment] = []
     private let networkManager = NetWorkManager()
     private let playerVC = AVPlayerViewController()
-    private var currentCellPlayer = AVPlayer()
+    private var currentCellPlayer: BasicPlayerView?
 
     @IBOutlet weak var commentTableView: UITableView!
     
@@ -209,11 +209,11 @@ extension CommentViewController: UITableViewDelegate {
 }
 //MARK: Video Player Extension
 extension CommentViewController: BasicPlayerViewDelegate {
-    func presentAVPlayerVC(url: URL, currentPlayer: AVPlayer) {
+    func presentAVPlayerVC(url: URL, playerView: BasicPlayerView) {
         let player = AVPlayer(url: url)
-        currentPlayer.pause()
+        playerView.pause()
         playerVC.player = player
-        currentCellPlayer = currentPlayer
+        currentCellPlayer = playerView
         self.present(playerVC, animated: true) {
             player.play()
         }
@@ -221,6 +221,9 @@ extension CommentViewController: BasicPlayerViewDelegate {
 }
 extension CommentViewController: AVPlayerViewControllerDelegate {
     func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        currentCellPlayer.play()
+        if let playerView = currentCellPlayer {
+            playerView.play()
+            currentCellPlayer = nil
+        }
     }
 }
