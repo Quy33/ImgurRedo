@@ -171,6 +171,7 @@ class BasicPlayerView: UIImageView {
         if status == .loaded {
             let item = AVPlayerItem(asset: asset)
             let player = AVPlayer(playerItem: item)
+            player.isMuted = true
             playerItem = item
             avPlayer = player
             if shouldPlayImmediately {
