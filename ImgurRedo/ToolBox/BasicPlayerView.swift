@@ -10,7 +10,7 @@ import AVKit
 import AVFoundation
 
 protocol BasicPlayerViewDelegate {
-    func presentAVPlayerVC(url: URL,playerView: BasicPlayerView)
+    func presentAVPlayerVC(url: URL,playFunction:@escaping (()->Void))
 }
 
 class BasicPlayerView: UIImageView {
@@ -124,7 +124,8 @@ class BasicPlayerView: UIImageView {
 //MARK: Button Function
     @objc private func showViewDidPressed(_ sender: UIButton) {
         if let videoUrl = url {
-            delegate?.presentAVPlayerVC(url: videoUrl, playerView: self)
+            pause()
+            delegate?.presentAVPlayerVC(url: videoUrl, playFunction: play)
         }
     }
     @objc private func playPauseDidPressed(_ sender: UIButton) {
