@@ -196,7 +196,7 @@ extension CommentViewController: UITableViewDelegate {
         guard let commentCell = cell as? CommentCell else { return }
         let comment = dataSource[indexPath.row]
         if comment.hasVideoLink {
-            commentCell.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: true)
+            commentCell.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: false)
         }
     }
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {

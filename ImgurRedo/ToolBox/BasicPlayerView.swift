@@ -25,6 +25,7 @@ class BasicPlayerView: UIImageView {
         set{ playerLayer?.player = newValue }
     }
     private var url: URL?
+    private var urlOnDisk: URL?
     private var urlAsset: AVURLAsset?
     private var playerItem: AVPlayerItem?
     private var assetExporter: AVAssetExportSession?
@@ -54,7 +55,7 @@ class BasicPlayerView: UIImageView {
         if let layer = layer as? AVPlayerLayer {
             layer.videoGravity = .resizeAspectFill
             playerLayer = layer
-            self.contentMode = .center
+            self.contentMode = .scaleAspectFit
             self.isUserInteractionEnabled = true
             setupShowViewBtn()
             setupPlayPauseBtn()
@@ -99,14 +100,17 @@ class BasicPlayerView: UIImageView {
         ])
     }
     private func setupPlayPauseBtn() {
+        let btnSize = CGSize(width: 30, height: 30)
+        let playImg = UIImage(systemName: "play.fill")
+        
         playPauseBtn.translatesAutoresizingMaskIntoConstraints = false
         playPauseBtn.backgroundColor = .darkGray
         playPauseBtn.tintColor = .white
-        let btnSize = CGSize(width: 30, height: 30)
         playPauseBtn.frame = CGRect(origin: .zero, size: btnSize)
         playPauseBtn.clipsToBounds = true
         playPauseBtn.layer.cornerRadius = btnSize.height/3
         playPauseBtn.isHidden = true
+        playPauseBtn.setImage(playImg, for: .normal)
         
         playPauseBtn.addTarget(self, action: #selector(playPauseDidPressed(_:)), for: .touchUpInside)
         self.addSubview(playPauseBtn)
@@ -140,7 +144,13 @@ class BasicPlayerView: UIImageView {
     }
 //MARK: Setup Player
     func prepareToPlay(url: URL, shouldPlayImmediately: Bool) {
-        guard !(self.url == url && avPlayer != nil && avPlayer?.error == nil) else {
+        let fileUrl = documentDir.appendingPathComponent(url.lastPathComponent)
+        let fileExist = FileManager.default.fileExists(atPath: fileUrl.path)
+        
+        let firstCondition = !(self.url == url && avPlayer != nil && avPlayer?.error == nil)
+        let secondCondition = !(urlOnDisk == fileUrl && assetExporter != nil && assetExporter?.error == nil)
+
+        guard firstCondition || secondCondition else {
             if shouldPlayImmediately {
                 play()
             }
@@ -148,20 +158,19 @@ class BasicPlayerView: UIImageView {
         }
         cleanup()
         
-        let fileUrl = documentDir.appendingPathComponent(url.lastPathComponent)
-        let fileExist = FileManager.default.fileExists(atPath: fileUrl.path)
         let videoUrl = fileExist ? fileUrl : url
-        
-        self.url = videoUrl
         let option = [AVURLAssetPreferPreciseDurationAndTimingKey:true]
         let asset = AVURLAsset(url: videoUrl, options: option)
         let key = ["tracks"]
+        
+        self.url = url
+        urlOnDisk = fileExist ? fileUrl : nil
         urlAsset = asset
         setupSpinner()
         spinner.startAnimating()
         asset.loadValuesAsynchronously(forKeys: key) { [weak self] in
             guard let strongSelf = self else { return }
-            strongSelf.startLoading(asset: asset, shouldPlayImmediately: true)
+            strongSelf.startLoading(asset: asset, shouldPlayImmediately: shouldPlayImmediately)
         }
         NotificationCenter.default.addObserver(self, selector: #selector(self.playerItemDidEndPlaying(_:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
     }
@@ -171,12 +180,8 @@ class BasicPlayerView: UIImageView {
         if status == .loaded {
             let item = AVPlayerItem(asset: asset)
             let player = AVPlayer(playerItem: item)
-            player.isMuted = true
             playerItem = item
             avPlayer = player
-            if shouldPlayImmediately {
-                play()
-            }
             DispatchQueue.main.async { [weak self] in
                 guard let strongSelf = self else { return }
                 strongSelf.spinner.stopAnimating()
@@ -185,6 +190,9 @@ class BasicPlayerView: UIImageView {
                 strongSelf.playPauseBtn.isHidden = false
             }
             exportVideo(asset: asset)
+            if shouldPlayImmediately {
+                play()
+            }
         }
     }
 //MARK: Player Function
@@ -192,20 +200,27 @@ class BasicPlayerView: UIImageView {
         guard let avPlayer = avPlayer, !avPlayer.isPlaying else {
             return
         }
-        DispatchQueue.main.async { [weak self] in
-            guard let strongSelf = self else { return }
-            strongSelf.playPauseBtn.setImage(UIImage(systemName: "pause.fill"), for: .normal)
-            avPlayer.play()
-        }
+        avPlayer.play()
+        updatePlayBtn()
     }
     func pause() {
         guard let avPlayer = avPlayer, avPlayer.isPlaying else {
             return
         }
+        avPlayer.pause()
+        updatePlayBtn()
+    }
+    func updatePlayBtn() {
+        guard let isPlaying = avPlayer?.isPlaying else { return }
+        let playImg = UIImage(systemName: "play.fill")
+        let pauseImg = UIImage(systemName: "pause.fill")
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
-            strongSelf.playPauseBtn.setImage(UIImage(systemName: "play.fill"), for: .normal)
-            avPlayer.pause()
+            let newImage = isPlaying ? pauseImg : playImg
+            strongSelf.playPauseBtn.setImage(
+                newImage,
+                for: .normal
+            )
         }
     }
 //MARK: Looping Player & Exporting Video
@@ -222,16 +237,31 @@ class BasicPlayerView: UIImageView {
                && !FileManager.default.fileExists(atPath: outputUrl.path) && assetExporter?.status != .exporting)
         else { return }
         
+        let invalidTrack = CMPersistentTrackID(kCMPersistentTrackID_Invalid)
         let composition = AVMutableComposition()
+        let timeRange = CMTimeRangeMake(start: .zero, duration: asset.duration)
+        
         if let compositionVideoTrack = composition.addMutableTrack(
             withMediaType: .video,
-            preferredTrackID: CMPersistentTrackID(kCMPersistentTrackID_Invalid)),
+            preferredTrackID: invalidTrack
+        ),
            let sourceVideoTrack = asset.tracks(withMediaType: .video).first {
             do {
-                let timeRange = CMTimeRangeMake(start: .zero, duration: asset.duration)
                 try compositionVideoTrack.insertTimeRange(timeRange, of: sourceVideoTrack, at: .zero)
             } catch {
-                print("Error making a composite video track")
+                print("Failed to compose video file")
+                return
+            }
+        }
+        
+        if let compositionAudioTrack = composition.addMutableTrack(
+            withMediaType: .audio,
+            preferredTrackID: invalidTrack
+        ), let sourceAudioTrack = asset.tracks(withMediaType: .audio).first {
+            do {
+                try compositionAudioTrack.insertTimeRange(timeRange, of: sourceAudioTrack, at: .zero)
+            } catch {
+                print("Failed to compose audio file")
                 return
             }
         }
@@ -254,7 +284,7 @@ class BasicPlayerView: UIImageView {
                     print("Exporting video")
                 case .completed:
                     print("Export completed")
-                    strongSelf.url = exporter.outputURL
+                    strongSelf.urlOnDisk = exporter.outputURL
                 case .failed:
                     print("Failed to export video")
                 case .cancelled:
@@ -288,9 +318,9 @@ class BasicPlayerView: UIImageView {
 //MARK: Cleaning up
     func cleanup() {
         pause()
-        url = nil
         stopExporter()
         urlAsset?.cancelLoading()
+        url = nil
         urlAsset = nil
         playerItem = nil
         avPlayer = nil

@@ -31,7 +31,7 @@ class DetailViewController: UIViewController {
 //    var galleryGot = (isAlbum: true, id: "yXA62jZ")
     var galleryGot = (isAlbum: true, id: "YWdwwYH")
 //    var galleryGot = (isAlbum: true, id: "9CL3zDX")
-//    var galleryGot = (isAlbum: true, id: "p8DwSiV")
+//    var galleryGot = (isAlbum: false, id: "OdJDoCY")
     
     
     override func viewDidLoad() {
