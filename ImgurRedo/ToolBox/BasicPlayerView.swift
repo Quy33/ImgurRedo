@@ -136,10 +136,13 @@ class BasicPlayerView: UIImageView {
         guard let avPlayer = avPlayer else {
             return
         }
-        if avPlayer.isPlaying {
-            pause()
-        } else {
+        switch avPlayer.timeControlStatus {
+        case .paused:
             play()
+        case .playing:
+            pause()
+        default:
+            break
         }
     }
 //MARK: Setup Player
@@ -197,26 +200,37 @@ class BasicPlayerView: UIImageView {
     }
 //MARK: Player Function
     func play() {
-        guard let avPlayer = avPlayer, !avPlayer.isPlaying else {
+        guard let avPlayer = avPlayer, avPlayer.timeControlStatus == .paused else {
             return
         }
         avPlayer.play()
         updatePlayBtn()
     }
     func pause() {
-        guard let avPlayer = avPlayer, avPlayer.isPlaying else {
+        guard let avPlayer = avPlayer, avPlayer.timeControlStatus == .playing else {
             return
         }
         avPlayer.pause()
         updatePlayBtn()
     }
     func updatePlayBtn() {
-        guard let isPlaying = avPlayer?.isPlaying else { return }
+        guard let status = avPlayer?.timeControlStatus else { return }
         let playImg = UIImage(systemName: "play.fill")
         let pauseImg = UIImage(systemName: "pause.fill")
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
-            let newImage = isPlaying ? pauseImg : playImg
+            
+            var newImage: UIImage?
+            switch status {
+            case .paused:
+                newImage = playImg
+            case .waitingToPlayAtSpecifiedRate:
+                newImage = pauseImg
+            case .playing:
+                newImage = pauseImg
+            @unknown default:
+                break
+            }
             strongSelf.playPauseBtn.setImage(
                 newImage,
                 for: .normal
@@ -244,8 +258,7 @@ class BasicPlayerView: UIImageView {
         if let compositionVideoTrack = composition.addMutableTrack(
             withMediaType: .video,
             preferredTrackID: invalidTrack
-        ),
-           let sourceVideoTrack = asset.tracks(withMediaType: .video).first {
+        ), let sourceVideoTrack = asset.tracks(withMediaType: .video).first {
             do {
                 try compositionVideoTrack.insertTimeRange(timeRange, of: sourceVideoTrack, at: .zero)
             } catch {
@@ -254,15 +267,17 @@ class BasicPlayerView: UIImageView {
             }
         }
         
-        if let compositionAudioTrack = composition.addMutableTrack(
-            withMediaType: .audio,
-            preferredTrackID: invalidTrack
-        ), let sourceAudioTrack = asset.tracks(withMediaType: .audio).first {
-            do {
-                try compositionAudioTrack.insertTimeRange(timeRange, of: sourceAudioTrack, at: .zero)
-            } catch {
-                print("Failed to compose audio file")
-                return
+        if !asset.tracks(withMediaType: .audio).isEmpty {
+            if let compositionalAudioTrack = composition.addMutableTrack(
+                withMediaType: .audio,
+                preferredTrackID: invalidTrack
+            ), let sourceAudioTrack = asset.tracks(withMediaType: .audio).first {
+                do {
+                    try compositionalAudioTrack.insertTimeRange(timeRange, of: sourceAudioTrack, at: .zero)
+                } catch {
+                    print("Failed to compose audio file")
+                    return
+                }
             }
         }
         
@@ -332,10 +347,5 @@ class BasicPlayerView: UIImageView {
         cleanup()
     }
 }
-//MARK: AVPlayer extension
-extension AVPlayer {
-    var isPlaying: Bool {
-        return (self.rate != 0 && self.error == nil)
-    }
-}
+
 

@@ -70,7 +70,9 @@ class CommentCell: UITableViewCell {
             .foregroundColor: UIColor.systemPink,
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
+        let smallFont = UIFont.systemFont(ofSize: 15, weight: .light)
         
+        //OuterStv
         outerStv = makeStackView (
             axis: .horizontal,
             distribution: .fill,
@@ -85,6 +87,8 @@ class CommentCell: UITableViewCell {
             spacing: 0,
             alignment: .center
         )
+        leftBar = makeUIView(color: .lightGray)
+        //CommentStv
         upperStv = makeStackView(
             axis: .horizontal,
             distribution: .fill,
@@ -92,19 +96,24 @@ class CommentCell: UITableViewCell {
             spacing: 0,
             alignment: .center
         )
+        
         commentTextView = makeTextView(bgColor: .clear, linkAttr: attributes)
         commentTextView.textColor = .white
-        leftBar = makeUIView(color: .lightGray)
-        bottomBar = makeUIView(color: .darkGray)
-        let smallFont = UIFont.systemFont(ofSize: 15, weight: .light)
-        userNameLbl = makeLabel(numberOfLines: 0,bgColor: .clear, textColor: .white, font: smallFont)
-        collapseLbl = makeLabel(bgColor: .link, textAlignment: .center, textColor: .white)
+        
         dateLbl = makeLabel(bgColor: .clear, textAlignment: .right, textColor: .white, font: smallFont)
         
+        bottomSeparator = makeUIView(color: .clear)
+        
         bottomStv = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 0, alignment: .center)
+        //UpperStv
+        userNameLbl = makeLabel(numberOfLines: 0,bgColor: .clear, textColor: .white, font: smallFont)
+        
+        //Collapse Container
+        collapseLbl = makeLabel(bgColor: .link, textAlignment: .center, textColor: .white)
+        collapseLbl.numberOfLines = 2
+        //BottomStv
         bottomLeftBar = makeUIView(color: .lightGray)
         bottomBar = makeUIView(color: .darkGray)
-        bottomSeparator = makeUIView(color: .clear)
     }
     
     private func addUiElements() {
@@ -118,8 +127,10 @@ class CommentCell: UITableViewCell {
                     //<UpperStv ArrangedSubView>
                     upperStv.addArrangedSubview(userNameLbl)
                     upperStv.addArrangedSubview(collapseContainer)
+                        //<CollapseContainer Subview>
+                        collapseContainer.addSubview(collapseLbl)
+                        //</CollapseContainer Subview>
                     //</UpperStv ArrangedSubView>
-                collapseContainer.addSubview(collapseLbl)
                 commentStv.addArrangedSubview(commentImageView)
                 commentStv.addArrangedSubview(playerView)
                 commentStv.addArrangedSubview(commentTextView)
@@ -239,26 +250,26 @@ class CommentCell: UITableViewCell {
         userNameLbl.text = comment.author
         dateLbl.text = comment.dateString
         
-        updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count, isTop: comment.isTop)
-        
         playerView.isHidden = !comment.hasVideoLink
         if comment.hasVideoLink {
             playerView.image = comment.videoData?.thumbnail ?? ToolBox.placeHolderImg
             playerView.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: false)
         }
-    }
-    func updateCollapsed(isCollapsed: Bool, count: Int, isTop: Bool){
-        collapseLbl.text = isCollapsed ? "X" : "\(count)"
-        collapseContainer.isHidden = count == 0 ? true : false
-        bottomLeftBar.isHidden = isTop && isCollapsed ? false : true
         
-        if !collapseContainer.isHidden {
+        updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count, isTop: comment.isTop)
+        
+        if !comment.children.isEmpty {
             DispatchQueue.main.async { [weak self] in
                 guard let strongSelf = self else { return }
                 strongSelf.collapseLbl.clipsToBounds = true
                 strongSelf.collapseLbl.layer.cornerRadius = strongSelf.collapseLbl.frame.height/2
             }
         }
+    }
+    func updateCollapsed(isCollapsed: Bool, count: Int, isTop: Bool){
+        collapseLbl.text = isCollapsed ? "X" : "\(count)"
+        collapseContainer.isHidden = count == 0 ? true : false
+        bottomLeftBar.isHidden = isTop && isCollapsed ? false : true
     }
 
 //MARK: Make UI functions
