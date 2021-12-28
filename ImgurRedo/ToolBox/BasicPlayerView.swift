@@ -292,21 +292,8 @@ class BasicPlayerView: UIImageView {
             if let error = exporter.error {
                 print("Error Exporting: \(error)")
             } else {
-                switch exporter.status {
-                case .waiting:
-                    print("Waiting to export Video")
-                case .exporting:
-                    print("Exporting video")
-                case .completed:
-                    print("Export completed")
-                    strongSelf.urlOnDisk = exporter.outputURL
-                case .failed:
-                    print("Failed to export video")
-                case .cancelled:
-                    print("Cancelled exporting video")
-                default:
-                    print("Other options")
-                }
+                guard exporter.status == .completed else { return }
+                strongSelf.urlOnDisk = exporter.outputURL
             }
         }
     }

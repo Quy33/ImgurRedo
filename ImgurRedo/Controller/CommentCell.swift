@@ -107,10 +107,9 @@ class CommentCell: UITableViewCell {
         bottomStv = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 0, alignment: .center)
         //UpperStv
         userNameLbl = makeLabel(numberOfLines: 0,bgColor: .clear, textColor: .white, font: smallFont)
-        
+        userNameLbl.numberOfLines = 2
         //Collapse Container
         collapseLbl = makeLabel(bgColor: .link, textAlignment: .center, textColor: .white)
-        collapseLbl.numberOfLines = 2
         //BottomStv
         bottomLeftBar = makeUIView(color: .lightGray)
         bottomBar = makeUIView(color: .darkGray)
