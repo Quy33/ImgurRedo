@@ -13,6 +13,10 @@ protocol BasicPlayerViewDelegate {
     func presentAVPlayerVC(url: URL,playFunction:@escaping ((Bool)->Void))
     func pauseAllCurrentPlayer()
 }
+//Default Implementation for optional method
+extension BasicPlayerViewDelegate {
+    func pauseAllCurrentPlayer() {}
+}
 
 class BasicPlayerView: UIImageView {
     override class var layerClass: AnyClass {
@@ -26,6 +30,7 @@ class BasicPlayerView: UIImageView {
         set{ playerLayer?.player = newValue }
     }
     var showControls = true
+    
     private var url: URL?
     private var urlOnDisk: URL?
     private var urlAsset: AVURLAsset?
@@ -40,9 +45,6 @@ class BasicPlayerView: UIImageView {
     private var playPauseBtn = UIButton(type: .system)
     private var muteBtn = UIButton(type: .system)
     
-    private let playerUIColor = UIColor.black.withAlphaComponent(0.5)
-    private let playerUITint = UIColor.white
-    private let playerUIFrame = CGRect(x: 0, y: 0, width: 30, height: 30)
 //MARK: Init
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -56,14 +58,15 @@ class BasicPlayerView: UIImageView {
     private func initialSetup() {
         if let layer = layer as? AVPlayerLayer {
             layer.videoGravity = .resizeAspectFill
-            
             playerLayer = layer
+            
             self.contentMode = .scaleAspectFit
             self.isUserInteractionEnabled = true
+            
+            setupMuteBtn()
             if showControls {
                 setupShowViewBtn()
                 setupPlayPauseBtn()
-                setupMuteBtn()
             }
         }
     }
@@ -117,10 +120,11 @@ class BasicPlayerView: UIImageView {
                 guard let strongSelf = self else { return }
                 strongSelf.spinner.stopAnimating()
                 strongSelf.spinner.removeFromSuperview()
+                
+                strongSelf.muteBtn.isHidden = asset.tracks(withMediaType: .audio).isEmpty
                 if strongSelf.showControls {
                     strongSelf.showViewBtn.isHidden = false
                     strongSelf.playPauseBtn.isHidden = false
-                    strongSelf.muteBtn.isHidden = false
                 }
                 if shouldPlayImmediately {
                     strongSelf.play()
@@ -134,53 +138,40 @@ class BasicPlayerView: UIImageView {
         guard let avPlayer = avPlayer, avPlayer.timeControlStatus == .paused else {
             return
         }
-        delegate?.pauseAllCurrentPlayer()
-        DispatchQueue.main.async { [weak self] in
-            guard let strongSelf = self else { return }
-            if now {
-                avPlayer.playImmediately(atRate: 1.0)
-            } else {
-                avPlayer.play()
-            }
-            strongSelf.updatePlayBtn()
+        if now {
+            avPlayer.playImmediately(atRate: 1.0)
+        } else {
+            avPlayer.play()
         }
+        updatePlayBtn()
     }
     func pause() {
-        guard let avPlayer = avPlayer, avPlayer.timeControlStatus == .playing else {
+        guard let avPlayer = avPlayer,
+        (avPlayer.timeControlStatus == .playing ||
+         avPlayer.timeControlStatus == .waitingToPlayAtSpecifiedRate) else {
             return
         }
-        DispatchQueue.main.async { [weak self] in
-            guard let strongSelf = self else { return }
-            avPlayer.pause()
-            strongSelf.updatePlayBtn()
-        }
+        avPlayer.pause()
+        updatePlayBtn()
     }
-    func toggleMute() {
-        guard let avPlayer = avPlayer else {
-            return
-        }
-        let muted = UIImage(systemName: "volume.slash")
-        let unMute = UIImage(systemName: "volume")
+    func toggleMute(isMuted: Bool) {
+        guard let avPlayer = avPlayer else { return }
         
-        let muteBtnImg = avPlayer.isMuted ? unMute : muted
-        DispatchQueue.main.async { [weak self] in
-            avPlayer.isMuted = !avPlayer.isMuted
-            guard let strongSelf = self else { return }
-            strongSelf.muteBtn.setImage(muteBtnImg, for: .normal)
-        }
+        let muteBtnImg = isMuted ? Support.muted : Support.unMute
+        avPlayer.isMuted = isMuted
+        muteBtn.setImage(muteBtnImg, for: .normal)
     }
     func updatePlayBtn() {
         guard let status = avPlayer?.timeControlStatus else { return }
-        let playImg = UIImage(systemName: "play")
-        let pauseImg = UIImage(systemName: "pause")
+        
         var newImage: UIImage?
         switch status {
         case .paused:
-            newImage = playImg
+            newImage = Support.play
         case .waitingToPlayAtSpecifiedRate:
-            newImage = pauseImg
+            newImage = Support.pause
         case .playing:
-            newImage = pauseImg
+            newImage = Support.pause
         @unknown default:
             break
         }
@@ -199,9 +190,14 @@ class BasicPlayerView: UIImageView {
     }
     private func exportVideo(asset: AVURLAsset) {
         let outputUrl = self.documentDir.appendingPathComponent(asset.url.lastPathComponent)
-        guard (asset.isExportable
-               && !FileManager.default.fileExists(atPath: outputUrl.path) && assetExporter?.status != .exporting)
-        else { return }
+        
+        let firstCondition = (asset.isExportable && !FileManager.default.fileExists(atPath: outputUrl.path))
+        let secondCondition = (assetExporter != nil && assetExporter?.error == nil)
+        
+        guard firstCondition && !secondCondition else {
+            return
+        }
+        stopExporter()
         
         let invalidTrack = CMPersistentTrackID(kCMPersistentTrackID_Invalid)
         let composition = AVMutableComposition()
@@ -272,10 +268,11 @@ class BasicPlayerView: UIImageView {
     }
 //MARK: UI setup
     private func setupSpinner() {
-        spinner.frame = playerUIFrame
+        let rect = CGRect(x: 0, y: 0, width: 30, height: 30)
+        spinner.frame = rect
         spinner.translatesAutoresizingMaskIntoConstraints = false
-        spinner.color = playerUITint
-        spinner.backgroundColor = playerUIColor
+        spinner.color = Support.playerUITint
+        spinner.backgroundColor = Support.playerUIColor
         spinner.clipsToBounds = true
         spinner.layer.cornerRadius = spinner.frame.height / 2
         self.addSubview(spinner)
@@ -283,27 +280,21 @@ class BasicPlayerView: UIImageView {
             spinner.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             spinner.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             spinner.widthAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1),
+                equalToConstant: spinner.frame.width),
             spinner.heightAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1)
+                equalToConstant: spinner.frame.height)
         ])
     }
     private func setupShowViewBtn() {
-        let buttonImage = UIImage(systemName: "rectangle.expand.vertical")
-
-        showViewBtn.frame = playerUIFrame
+        showViewBtn.frame = Support.playerUIFrame
         showViewBtn.translatesAutoresizingMaskIntoConstraints = false
         showViewBtn.clipsToBounds = true
-        showViewBtn.tintColor = playerUITint
-        showViewBtn.backgroundColor = playerUIColor
-        showViewBtn.layer.cornerRadius = playerUIFrame.height/3
+        showViewBtn.tintColor = Support.playerUITint
+        showViewBtn.backgroundColor = Support.playerUIColor
+        showViewBtn.layer.cornerRadius = Support.playerUIFrame.height/3
         showViewBtn.isHidden = true
         
-        var config = UIButton.Configuration.plain()
-        config.image = buttonImage
-        config.buttonSize = .mini
-        showViewBtn.configuration = config
-        
+        showViewBtn.setImage(Support.expand, for: .normal)
         showViewBtn.addTarget(self, action: #selector(showViewDidPressed(_:)), for: .touchUpInside)
         self.addSubview(showViewBtn)
         NSLayoutConstraint.activate([
@@ -312,22 +303,20 @@ class BasicPlayerView: UIImageView {
             showViewBtn.bottomAnchor.constraint(
                 equalTo: self.bottomAnchor, constant: -5),
             showViewBtn.widthAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1),
+                equalToConstant: showViewBtn.frame.width),
             showViewBtn.heightAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1)
+                equalToConstant: showViewBtn.frame.height)
         ])
     }
     private func setupPlayPauseBtn() {
-        let playImg = UIImage(systemName: "play")
-        
         playPauseBtn.translatesAutoresizingMaskIntoConstraints = false
-        playPauseBtn.backgroundColor = playerUIColor
-        playPauseBtn.tintColor = playerUITint
-        playPauseBtn.frame = playerUIFrame
+        playPauseBtn.backgroundColor = Support.playerUIColor
+        playPauseBtn.tintColor = Support.playerUITint
+        playPauseBtn.frame = Support.playerUIFrame
         playPauseBtn.clipsToBounds = true
         playPauseBtn.layer.cornerRadius = playPauseBtn.frame.height/3
         playPauseBtn.isHidden = true
-        playPauseBtn.setImage(playImg, for: .normal)
+        playPauseBtn.setImage(Support.play, for: .normal)
         
         playPauseBtn.addTarget(self, action: #selector(playPauseDidPressed(_:)), for: .touchUpInside)
         self.addSubview(playPauseBtn)
@@ -339,21 +328,20 @@ class BasicPlayerView: UIImageView {
                 equalTo: self.bottomAnchor, constant: -5
             ),
             playPauseBtn.widthAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1),
+                equalToConstant: playPauseBtn.frame.width),
             playPauseBtn.heightAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1)
+                equalToConstant: playPauseBtn.frame.height)
         ])
     }
     private func setupMuteBtn() {
-        let muted = UIImage(systemName: "volume.slash")
         muteBtn.translatesAutoresizingMaskIntoConstraints = false
-        muteBtn.backgroundColor = playerUIColor
-        muteBtn.tintColor = playerUITint
-        muteBtn.frame = playerUIFrame
+        muteBtn.backgroundColor = Support.playerUIColor
+        muteBtn.tintColor = Support.playerUITint
+        muteBtn.frame = Support.playerUIFrame
         muteBtn.clipsToBounds = true
-        muteBtn.layer.cornerRadius = muteBtn.frame.height/3
+        muteBtn.layer.cornerRadius = muteBtn.frame.height/2
         muteBtn.isHidden = true
-        muteBtn.setImage(muted, for: .normal)
+        muteBtn.setImage(Support.muted, for: .normal)
         muteBtn.addTarget(self, action: #selector(muteBtnPressed(_:)), for: .touchUpInside)
         self.addSubview(muteBtn)
         NSLayoutConstraint.activate([
@@ -364,9 +352,9 @@ class BasicPlayerView: UIImageView {
                 equalTo: self.topAnchor, constant: 5
             ),
             muteBtn.widthAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1),
+                equalToConstant: muteBtn.frame.width),
             muteBtn.heightAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1)
+                equalToConstant: muteBtn.frame.height)
         ])
     }
 //MARK: Button Function
@@ -388,13 +376,14 @@ class BasicPlayerView: UIImageView {
         }
     }
     @objc private func muteBtnPressed(_ sender: UIButton) {
-        toggleMute()
+        guard let avPlayer = avPlayer else { return }
+        toggleMute(isMuted: !avPlayer.isMuted)
     }
 
 //MARK: Cleaning up
     func cleanup() {
         pause()
-        toggleMute()
+        toggleMute(isMuted: true)
         stopExporter()
         urlAsset?.cancelLoading()
         url = nil
@@ -403,10 +392,48 @@ class BasicPlayerView: UIImageView {
         avPlayer = nil
         spinner.stopAnimating()
         spinner.removeFromSuperview()
+        
+        muteBtn.isHidden = true
+        showViewBtn.isHidden = true
+        playPauseBtn.isHidden = true
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
     }
     deinit {
         cleanup()
+    }
+//MARK: UIStuff
+    private struct Support {
+        static let playerUIColor = UIColor.black.withAlphaComponent(0.5)
+        static let playerUITint = UIColor.white
+        static let playerUIFrame = CGRect(x: 0, y: 0, width: 40, height: 40)
+        static let muted = UIImage(systemName: "volume.slash")
+        static let unMute = UIImage(systemName: "volume")
+        static let play = UIImage(systemName: "play")
+        static let pause = UIImage(systemName: "pause")
+        static let expand = UIImage(systemName: "rectangle.expand.vertical")
+    }
+//MARK: Clear all videos in documents directory
+    static func clearVideos() {
+        if let docDir = FileManager.default.urls(
+            for: .documentDirectory, in: .userDomainMask
+        ).last
+        {
+            do {
+                let fileUrls = try FileManager.default.contentsOfDirectory(
+                    at: docDir,
+                    includingPropertiesForKeys: nil,
+                    options: .skipsHiddenFiles)
+                for fileUrl in fileUrls {
+                    if fileUrl.pathExtension == "mp4" {
+                        try FileManager.default.removeItem(at: fileUrl)
+                    }
+                }
+                print("Finished clearing all video in documents directory")
+            } catch {
+                print("Error Clearing Videos: \(error)")
+                return
+            }
+        }
     }
 }
 

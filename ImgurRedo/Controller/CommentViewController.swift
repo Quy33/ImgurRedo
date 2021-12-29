@@ -204,7 +204,7 @@ extension CommentViewController: UITableViewDelegate {
         guard let commentCell = cell as? CommentCell else { return }
         let comment = dataSource[indexPath.row]
         if comment.hasVideoLink {
-            commentCell.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: false)
+            commentCell.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: true)
         }
     }
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -217,15 +217,6 @@ extension CommentViewController: UITableViewDelegate {
 }
 //MARK: Video Player Extension
 extension CommentViewController: BasicPlayerViewDelegate {
-    func pauseAllCurrentPlayer() {
-        for (index,comment) in dataSource.enumerated() {
-            let indexPath = IndexPath(row: index, section: 0)
-            if let commentCell = commentTableView.cellForRow(at: indexPath) as? CommentCell, comment.hasVideoLink {
-                commentCell.pause()
-            }
-            
-        }
-    }
     func presentAVPlayerVC(url: URL, playFunction: @escaping ((Bool) -> Void)) {
         let player = AVPlayer(url: url)
         playerVC.player = player
