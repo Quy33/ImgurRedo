@@ -108,5 +108,18 @@ extension UIImage {
         
         return resizedImage
     }
+    func drawBlankThumbnail(withWidth w: CGFloat,color: UIColor = .black) -> UIImage {
+        let calculatedSize = ToolBox.calculateMediaRatio(self.size, frameWidth: w).size
+        let rect = CGRect(origin: .zero, size: calculatedSize)
+        
+        let renderer = UIGraphicsImageRenderer(size: calculatedSize)
+        let image = UIImage()
+        let blankThumbnail = renderer.image { context in
+            color.setFill()
+            context.fill(rect)
+            image.draw(in: rect)
+        }
+        return blankThumbnail
+    }
 }
 

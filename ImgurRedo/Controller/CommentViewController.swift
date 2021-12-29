@@ -103,8 +103,8 @@ class CommentViewController: UIViewController {
                         comment.imageData?.image = resizedImage
                     } else if let thumbnailLink = comment.videoData?.thumbnailLink {
                         let image = try await networkManager.singleDownload(url: thumbnailLink)
-                        let resizedImage = image.drawImage(toWidth: cellWidth)
-                        comment.videoData?.thumbnail = resizedImage
+                        let thumbnail = image.drawBlankThumbnail(withWidth: cellWidth)
+                        comment.videoData?.thumbnail = thumbnail
                     }
                     updateCell(for: index)
                 } catch {

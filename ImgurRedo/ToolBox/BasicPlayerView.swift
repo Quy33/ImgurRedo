@@ -9,13 +9,9 @@ import UIKit
 import AVKit
 import AVFoundation
 
-protocol BasicPlayerViewDelegate {
+@objc protocol BasicPlayerViewDelegate {
     func presentAVPlayerVC(url: URL,playFunction:@escaping ((Bool)->Void))
-    func pauseAllCurrentPlayer()
-}
-//Default Implementation for optional method
-extension BasicPlayerViewDelegate {
-    func pauseAllCurrentPlayer() {}
+    @objc optional func pauseAllCurrentPlayer()
 }
 
 class BasicPlayerView: UIImageView {
