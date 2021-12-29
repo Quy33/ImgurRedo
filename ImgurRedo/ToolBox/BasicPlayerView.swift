@@ -24,6 +24,7 @@ class BasicPlayerView: UIImageView {
         get{ playerLayer?.player }
         set{ playerLayer?.player = newValue }
     }
+    var showControls = true
     private var url: URL?
     private var urlOnDisk: URL?
     private var urlAsset: AVURLAsset?
@@ -33,14 +34,13 @@ class BasicPlayerView: UIImageView {
         for: .documentDirectory, in: .userDomainMask
     ).last!
     
-    private var spinner: UIActivityIndicatorView = {
-        let view = UIActivityIndicatorView(style: .large)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.color = .white
-        return view
-    }()
+    private let spinner = UIActivityIndicatorView(style: .medium)
     private var showViewBtn = UIButton(type: .system)
     private var playPauseBtn = UIButton(type: .system)
+    
+    private let playerUIColor = UIColor.black.withAlphaComponent(0.5)
+    private let playerUITint = UIColor.white
+    private let playerUIFrame = CGRect(x: 0, y: 0, width: 30, height: 30)
 //MARK: Init
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -57,28 +57,39 @@ class BasicPlayerView: UIImageView {
             playerLayer = layer
             self.contentMode = .scaleAspectFit
             self.isUserInteractionEnabled = true
-            setupShowViewBtn()
-            setupPlayPauseBtn()
+            if showControls {
+                setupShowViewBtn()
+                setupPlayPauseBtn()
+            }
         }
     }
 //MARK: UI setup
     private func setupSpinner() {
+        spinner.frame = playerUIFrame
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.color = playerUITint
+        spinner.backgroundColor = playerUIColor
+        spinner.clipsToBounds = true
+        spinner.layer.cornerRadius = spinner.frame.height / 2
         self.addSubview(spinner)
         NSLayoutConstraint.activate([
             spinner.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             spinner.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            spinner.widthAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1),
+            spinner.heightAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1)
         ])
     }
     private func setupShowViewBtn() {
-        let rectSize = CGSize(width: 30, height: 30)
         let buttonImage = UIImage(systemName: "mount.fill")
 
-        showViewBtn.frame = CGRect(origin: .zero, size: rectSize)
+        showViewBtn.frame = playerUIFrame
         showViewBtn.translatesAutoresizingMaskIntoConstraints = false
         showViewBtn.clipsToBounds = true
-        showViewBtn.tintColor = .white
-        showViewBtn.backgroundColor = .darkGray
-        showViewBtn.layer.cornerRadius = rectSize.height/3
+        showViewBtn.tintColor = playerUITint
+        showViewBtn.backgroundColor = playerUIColor
+        showViewBtn.layer.cornerRadius = playerUIFrame.height/3
         showViewBtn.isHidden = true
         
         var config = UIButton.Configuration.plain()
@@ -90,25 +101,24 @@ class BasicPlayerView: UIImageView {
         self.addSubview(showViewBtn)
         NSLayoutConstraint.activate([
             showViewBtn.trailingAnchor.constraint(
-                equalTo: self.trailingAnchor, constant: -5
-            ),
+                equalTo: self.trailingAnchor, constant: -5),
             showViewBtn.bottomAnchor.constraint(
-                equalTo: self.bottomAnchor, constant: -5
-            ),
-            showViewBtn.heightAnchor.constraint(equalToConstant: rectSize.height),
-            showViewBtn.widthAnchor.constraint(equalToConstant: rectSize.width)
+                equalTo: self.bottomAnchor, constant: -5),
+            showViewBtn.widthAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1),
+            showViewBtn.heightAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1)
         ])
     }
     private func setupPlayPauseBtn() {
-        let btnSize = CGSize(width: 30, height: 30)
         let playImg = UIImage(systemName: "play.fill")
         
         playPauseBtn.translatesAutoresizingMaskIntoConstraints = false
-        playPauseBtn.backgroundColor = .darkGray
-        playPauseBtn.tintColor = .white
-        playPauseBtn.frame = CGRect(origin: .zero, size: btnSize)
+        playPauseBtn.backgroundColor = playerUIColor
+        playPauseBtn.tintColor = playerUITint
+        playPauseBtn.frame = playerUIFrame
         playPauseBtn.clipsToBounds = true
-        playPauseBtn.layer.cornerRadius = btnSize.height/3
+        playPauseBtn.layer.cornerRadius = playPauseBtn.frame.height/3
         playPauseBtn.isHidden = true
         playPauseBtn.setImage(playImg, for: .normal)
         
@@ -121,8 +131,10 @@ class BasicPlayerView: UIImageView {
             playPauseBtn.bottomAnchor.constraint(
                 equalTo: self.bottomAnchor, constant: -5
             ),
-            playPauseBtn.widthAnchor.constraint(equalToConstant: btnSize.width),
-            playPauseBtn.heightAnchor.constraint(equalToConstant: btnSize.height)
+            playPauseBtn.widthAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1),
+            playPauseBtn.heightAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1)
         ])
     }
 //MARK: Button Function
@@ -150,8 +162,12 @@ class BasicPlayerView: UIImageView {
         let fileUrl = documentDir.appendingPathComponent(url.lastPathComponent)
         let fileExist = FileManager.default.fileExists(atPath: fileUrl.path)
         
-        let firstCondition = !(self.url == url && avPlayer != nil && avPlayer?.error == nil)
-        let secondCondition = !(urlOnDisk == fileUrl && assetExporter != nil && assetExporter?.error == nil)
+        let firstCondition = !(self.url == url
+                               && avPlayer != nil
+                               && avPlayer?.error == nil)
+        let secondCondition = !(urlOnDisk == fileUrl
+                                && assetExporter != nil
+                                && assetExporter?.error == nil)
 
         guard firstCondition || secondCondition else {
             if shouldPlayImmediately {
@@ -189,12 +205,18 @@ class BasicPlayerView: UIImageView {
                 guard let strongSelf = self else { return }
                 strongSelf.spinner.stopAnimating()
                 strongSelf.spinner.removeFromSuperview()
-                strongSelf.showViewBtn.isHidden = false
-                strongSelf.playPauseBtn.isHidden = false
+                if strongSelf.showControls {
+                    strongSelf.showViewBtn.isHidden = false
+                    strongSelf.playPauseBtn.isHidden = false
+                }
             }
             exportVideo(asset: asset)
             if shouldPlayImmediately {
-                play()
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    player.playImmediately(atRate: 1.0)
+                    strongSelf.updatePlayBtn()
+                }
             }
         }
     }
@@ -203,39 +225,42 @@ class BasicPlayerView: UIImageView {
         guard let avPlayer = avPlayer, avPlayer.timeControlStatus == .paused else {
             return
         }
-        avPlayer.play()
-        updatePlayBtn()
+        DispatchQueue.main.async { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.avPlayer?.play()
+            strongSelf.updatePlayBtn()
+        }
     }
     func pause() {
         guard let avPlayer = avPlayer, avPlayer.timeControlStatus == .playing else {
             return
         }
-        avPlayer.pause()
-        updatePlayBtn()
+        DispatchQueue.main.async { [weak self] in
+            guard let strongSelf = self else { return }
+            avPlayer.pause()
+            strongSelf.updatePlayBtn()
+        }
+        
     }
     func updatePlayBtn() {
         guard let status = avPlayer?.timeControlStatus else { return }
         let playImg = UIImage(systemName: "play.fill")
         let pauseImg = UIImage(systemName: "pause.fill")
-        DispatchQueue.main.async { [weak self] in
-            guard let strongSelf = self else { return }
-            
-            var newImage: UIImage?
-            switch status {
-            case .paused:
-                newImage = playImg
-            case .waitingToPlayAtSpecifiedRate:
-                newImage = pauseImg
-            case .playing:
-                newImage = pauseImg
-            @unknown default:
-                break
-            }
-            strongSelf.playPauseBtn.setImage(
-                newImage,
-                for: .normal
-            )
+        var newImage: UIImage?
+        switch status {
+        case .paused:
+            newImage = playImg
+        case .waitingToPlayAtSpecifiedRate:
+            newImage = pauseImg
+        case .playing:
+            newImage = pauseImg
+        @unknown default:
+            break
         }
+        playPauseBtn.setImage(
+            newImage,
+            for: .normal
+        )
     }
 //MARK: Looping Player & Exporting Video
     @objc private func playerItemDidEndPlaying(_ notification: Notification) {
@@ -293,6 +318,7 @@ class BasicPlayerView: UIImageView {
                 print("Error Exporting: \(error)")
             } else {
                 guard exporter.status == .completed else { return }
+                print("Finished exporting")
                 strongSelf.urlOnDisk = exporter.outputURL
             }
         }

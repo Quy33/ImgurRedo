@@ -105,6 +105,8 @@ class CommentCell: UITableViewCell {
         bottomSeparator = makeUIView(color: .clear)
         
         bottomStv = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 0, alignment: .center)
+        
+        playerView.showControls = true
         //UpperStv
         userNameLbl = makeLabel(numberOfLines: 0,bgColor: .clear, textColor: .white, font: smallFont)
         userNameLbl.numberOfLines = 2
@@ -252,7 +254,7 @@ class CommentCell: UITableViewCell {
         playerView.isHidden = !comment.hasVideoLink
         if comment.hasVideoLink {
             playerView.image = comment.videoData?.thumbnail ?? ToolBox.placeHolderImg
-            playerView.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: false)
+            playerView.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: true)
         }
         
         updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count, isTop: comment.isTop)
@@ -342,6 +344,9 @@ class CommentCell: UITableViewCell {
     }
     func setPlayerViewDelegate(_ delegator: BasicPlayerViewDelegate) {
         playerView.delegate = delegator
+    }
+    func printStatus() {
+        print(playerView.playerLayer?.player?.status)
     }
 }
 

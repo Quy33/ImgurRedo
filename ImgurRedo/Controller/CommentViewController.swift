@@ -36,7 +36,15 @@ class CommentViewController: UIViewController {
     }
     //Temp fix
     override func viewWillDisappear(_ animated: Bool) {
-        dataSource.forEach{ $0.isCollapsed = false }
+        super.viewWillDisappear(animated)
+        guard !dataSource.isEmpty else { return }
+        for (index,data) in dataSource.enumerated() {
+            data.isCollapsed = false
+            let indexPath = IndexPath(row: index, section: 0)
+            if let commentCell = (commentTableView.cellForRow(at: indexPath) as? CommentCell), (data.hasVideoLink && !playerVC.isBeingPresented) {
+                commentCell.cleanup()
+            }
+        }
     }
     
     private func registerCell() {
@@ -196,7 +204,7 @@ extension CommentViewController: UITableViewDelegate {
         guard let commentCell = cell as? CommentCell else { return }
         let comment = dataSource[indexPath.row]
         if comment.hasVideoLink {
-            commentCell.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: false)
+            commentCell.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: true)
         }
     }
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {

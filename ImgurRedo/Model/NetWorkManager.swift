@@ -19,6 +19,7 @@ struct NetWorkManager {
         guard var urlComponents = URLComponents(string: "\(baseURL)/gallery/\(p.section)/\(p.sort)/\(p.window)/\(p.page)") else {
             throw NetworkingError.invalidData
         }
+                
         urlComponents.queryItems = [
             URLQueryItem(name: p.showViral.key, value: "\(p.showViral.value)"),
             URLQueryItem(name: p.mature.key, value: "\(p.mature.value)"),
