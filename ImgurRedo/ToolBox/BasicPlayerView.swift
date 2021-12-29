@@ -54,6 +54,7 @@ class BasicPlayerView: UIImageView {
     private func initialSetup() {
         if let layer = layer as? AVPlayerLayer {
             layer.videoGravity = .resizeAspectFill
+            
             playerLayer = layer
             self.contentMode = .scaleAspectFit
             self.isUserInteractionEnabled = true
@@ -82,7 +83,7 @@ class BasicPlayerView: UIImageView {
         ])
     }
     private func setupShowViewBtn() {
-        let buttonImage = UIImage(systemName: "mount.fill")
+        let buttonImage = UIImage(systemName: "rectangle.expand.vertical")
 
         showViewBtn.frame = playerUIFrame
         showViewBtn.translatesAutoresizingMaskIntoConstraints = false
@@ -111,7 +112,7 @@ class BasicPlayerView: UIImageView {
         ])
     }
     private func setupPlayPauseBtn() {
-        let playImg = UIImage(systemName: "play.fill")
+        let playImg = UIImage(systemName: "play")
         
         playPauseBtn.translatesAutoresizingMaskIntoConstraints = false
         playPauseBtn.backgroundColor = playerUIColor
@@ -209,15 +210,12 @@ class BasicPlayerView: UIImageView {
                     strongSelf.showViewBtn.isHidden = false
                     strongSelf.playPauseBtn.isHidden = false
                 }
-            }
-            exportVideo(asset: asset)
-            if shouldPlayImmediately {
-                DispatchQueue.main.async { [weak self] in
-                    guard let strongSelf = self else { return }
+                if shouldPlayImmediately {
                     player.playImmediately(atRate: 1.0)
                     strongSelf.updatePlayBtn()
                 }
             }
+            exportVideo(asset: asset)
         }
     }
 //MARK: Player Function
@@ -244,8 +242,8 @@ class BasicPlayerView: UIImageView {
     }
     func updatePlayBtn() {
         guard let status = avPlayer?.timeControlStatus else { return }
-        let playImg = UIImage(systemName: "play.fill")
-        let pauseImg = UIImage(systemName: "pause.fill")
+        let playImg = UIImage(systemName: "play")
+        let pauseImg = UIImage(systemName: "pause")
         var newImage: UIImage?
         switch status {
         case .paused:
