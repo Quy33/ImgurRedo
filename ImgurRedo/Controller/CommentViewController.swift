@@ -17,7 +17,7 @@ class CommentViewController: UIViewController {
     private var dataSource: [Comment] = []
     private let networkManager = NetWorkManager()
     private let playerVC = AVPlayerViewController()
-    private var playerViewMethod: (()->Void)?
+    private var playerViewMethod: ((Bool)->Void)?
 
     @IBOutlet weak var commentTableView: UITableView!
     
@@ -204,7 +204,7 @@ extension CommentViewController: UITableViewDelegate {
         guard let commentCell = cell as? CommentCell else { return }
         let comment = dataSource[indexPath.row]
         if comment.hasVideoLink {
-            commentCell.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: true)
+            commentCell.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: false)
         }
     }
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -217,7 +217,16 @@ extension CommentViewController: UITableViewDelegate {
 }
 //MARK: Video Player Extension
 extension CommentViewController: BasicPlayerViewDelegate {
-    func presentAVPlayerVC(url: URL, playFunction: @escaping (() -> Void)) {
+    func pauseAllCurrentPlayer() {
+        for (index,comment) in dataSource.enumerated() {
+            let indexPath = IndexPath(row: index, section: 0)
+            if let commentCell = commentTableView.cellForRow(at: indexPath) as? CommentCell, comment.hasVideoLink {
+                commentCell.pause()
+            }
+            
+        }
+    }
+    func presentAVPlayerVC(url: URL, playFunction: @escaping ((Bool) -> Void)) {
         let player = AVPlayer(url: url)
         playerVC.player = player
         playerViewMethod = playFunction
@@ -229,7 +238,7 @@ extension CommentViewController: BasicPlayerViewDelegate {
 extension CommentViewController: AVPlayerViewControllerDelegate {
     func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         if let playerViewMethod = playerViewMethod {
-            playerViewMethod()
+            playerViewMethod(false)
             self.playerViewMethod = nil
         }
     }

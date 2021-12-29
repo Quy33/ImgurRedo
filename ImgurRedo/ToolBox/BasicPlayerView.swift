@@ -10,7 +10,8 @@ import AVKit
 import AVFoundation
 
 protocol BasicPlayerViewDelegate {
-    func presentAVPlayerVC(url: URL,playFunction:@escaping (()->Void))
+    func presentAVPlayerVC(url: URL,playFunction:@escaping ((Bool)->Void))
+    func pauseAllCurrentPlayer()
 }
 
 class BasicPlayerView: UIImageView {
@@ -37,6 +38,7 @@ class BasicPlayerView: UIImageView {
     private let spinner = UIActivityIndicatorView(style: .medium)
     private var showViewBtn = UIButton(type: .system)
     private var playPauseBtn = UIButton(type: .system)
+    private var muteBtn = UIButton(type: .system)
     
     private let playerUIColor = UIColor.black.withAlphaComponent(0.5)
     private let playerUITint = UIColor.white
@@ -61,101 +63,8 @@ class BasicPlayerView: UIImageView {
             if showControls {
                 setupShowViewBtn()
                 setupPlayPauseBtn()
+                setupMuteBtn()
             }
-        }
-    }
-//MARK: UI setup
-    private func setupSpinner() {
-        spinner.frame = playerUIFrame
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-        spinner.color = playerUITint
-        spinner.backgroundColor = playerUIColor
-        spinner.clipsToBounds = true
-        spinner.layer.cornerRadius = spinner.frame.height / 2
-        self.addSubview(spinner)
-        NSLayoutConstraint.activate([
-            spinner.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            spinner.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            spinner.widthAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1),
-            spinner.heightAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1)
-        ])
-    }
-    private func setupShowViewBtn() {
-        let buttonImage = UIImage(systemName: "rectangle.expand.vertical")
-
-        showViewBtn.frame = playerUIFrame
-        showViewBtn.translatesAutoresizingMaskIntoConstraints = false
-        showViewBtn.clipsToBounds = true
-        showViewBtn.tintColor = playerUITint
-        showViewBtn.backgroundColor = playerUIColor
-        showViewBtn.layer.cornerRadius = playerUIFrame.height/3
-        showViewBtn.isHidden = true
-        
-        var config = UIButton.Configuration.plain()
-        config.image = buttonImage
-        config.buttonSize = .mini
-        showViewBtn.configuration = config
-        
-        showViewBtn.addTarget(self, action: #selector(showViewDidPressed(_:)), for: .touchUpInside)
-        self.addSubview(showViewBtn)
-        NSLayoutConstraint.activate([
-            showViewBtn.trailingAnchor.constraint(
-                equalTo: self.trailingAnchor, constant: -5),
-            showViewBtn.bottomAnchor.constraint(
-                equalTo: self.bottomAnchor, constant: -5),
-            showViewBtn.widthAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1),
-            showViewBtn.heightAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1)
-        ])
-    }
-    private func setupPlayPauseBtn() {
-        let playImg = UIImage(systemName: "play")
-        
-        playPauseBtn.translatesAutoresizingMaskIntoConstraints = false
-        playPauseBtn.backgroundColor = playerUIColor
-        playPauseBtn.tintColor = playerUITint
-        playPauseBtn.frame = playerUIFrame
-        playPauseBtn.clipsToBounds = true
-        playPauseBtn.layer.cornerRadius = playPauseBtn.frame.height/3
-        playPauseBtn.isHidden = true
-        playPauseBtn.setImage(playImg, for: .normal)
-        
-        playPauseBtn.addTarget(self, action: #selector(playPauseDidPressed(_:)), for: .touchUpInside)
-        self.addSubview(playPauseBtn)
-        NSLayoutConstraint.activate([
-            playPauseBtn.leadingAnchor.constraint(
-                equalTo: self.leadingAnchor, constant: 5
-            ),
-            playPauseBtn.bottomAnchor.constraint(
-                equalTo: self.bottomAnchor, constant: -5
-            ),
-            playPauseBtn.widthAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1),
-            playPauseBtn.heightAnchor.constraint(
-                equalTo: self.widthAnchor, multiplier: 0.1)
-        ])
-    }
-//MARK: Button Function
-    @objc private func showViewDidPressed(_ sender: UIButton) {
-        if let videoUrl = url {
-            pause()
-            delegate?.presentAVPlayerVC(url: videoUrl, playFunction: play)
-        }
-    }
-    @objc private func playPauseDidPressed(_ sender: UIButton) {
-        guard let avPlayer = avPlayer else {
-            return
-        }
-        switch avPlayer.timeControlStatus {
-        case .paused:
-            play()
-        case .playing:
-            pause()
-        default:
-            break
         }
     }
 //MARK: Setup Player
@@ -200,6 +109,8 @@ class BasicPlayerView: UIImageView {
         if status == .loaded {
             let item = AVPlayerItem(asset: asset)
             let player = AVPlayer(playerItem: item)
+            player.isMuted = true
+            
             playerItem = item
             avPlayer = player
             DispatchQueue.main.async { [weak self] in
@@ -209,23 +120,28 @@ class BasicPlayerView: UIImageView {
                 if strongSelf.showControls {
                     strongSelf.showViewBtn.isHidden = false
                     strongSelf.playPauseBtn.isHidden = false
+                    strongSelf.muteBtn.isHidden = false
                 }
                 if shouldPlayImmediately {
-                    player.playImmediately(atRate: 1.0)
-                    strongSelf.updatePlayBtn()
+                    strongSelf.play()
                 }
             }
             exportVideo(asset: asset)
         }
     }
 //MARK: Player Function
-    func play() {
+    func play(now: Bool = false) {
         guard let avPlayer = avPlayer, avPlayer.timeControlStatus == .paused else {
             return
         }
+        delegate?.pauseAllCurrentPlayer()
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
-            strongSelf.avPlayer?.play()
+            if now {
+                avPlayer.playImmediately(atRate: 1.0)
+            } else {
+                avPlayer.play()
+            }
             strongSelf.updatePlayBtn()
         }
     }
@@ -238,7 +154,20 @@ class BasicPlayerView: UIImageView {
             avPlayer.pause()
             strongSelf.updatePlayBtn()
         }
+    }
+    func toggleMute() {
+        guard let avPlayer = avPlayer else {
+            return
+        }
+        let muted = UIImage(systemName: "volume.slash")
+        let unMute = UIImage(systemName: "volume")
         
+        let muteBtnImg = avPlayer.isMuted ? unMute : muted
+        DispatchQueue.main.async { [weak self] in
+            avPlayer.isMuted = !avPlayer.isMuted
+            guard let strongSelf = self else { return }
+            strongSelf.muteBtn.setImage(muteBtnImg, for: .normal)
+        }
     }
     func updatePlayBtn() {
         guard let status = avPlayer?.timeControlStatus else { return }
@@ -341,9 +270,131 @@ class BasicPlayerView: UIImageView {
         }
         assetExporter = nil
     }
+//MARK: UI setup
+    private func setupSpinner() {
+        spinner.frame = playerUIFrame
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.color = playerUITint
+        spinner.backgroundColor = playerUIColor
+        spinner.clipsToBounds = true
+        spinner.layer.cornerRadius = spinner.frame.height / 2
+        self.addSubview(spinner)
+        NSLayoutConstraint.activate([
+            spinner.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            spinner.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            spinner.widthAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1),
+            spinner.heightAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1)
+        ])
+    }
+    private func setupShowViewBtn() {
+        let buttonImage = UIImage(systemName: "rectangle.expand.vertical")
+
+        showViewBtn.frame = playerUIFrame
+        showViewBtn.translatesAutoresizingMaskIntoConstraints = false
+        showViewBtn.clipsToBounds = true
+        showViewBtn.tintColor = playerUITint
+        showViewBtn.backgroundColor = playerUIColor
+        showViewBtn.layer.cornerRadius = playerUIFrame.height/3
+        showViewBtn.isHidden = true
+        
+        var config = UIButton.Configuration.plain()
+        config.image = buttonImage
+        config.buttonSize = .mini
+        showViewBtn.configuration = config
+        
+        showViewBtn.addTarget(self, action: #selector(showViewDidPressed(_:)), for: .touchUpInside)
+        self.addSubview(showViewBtn)
+        NSLayoutConstraint.activate([
+            showViewBtn.trailingAnchor.constraint(
+                equalTo: self.trailingAnchor, constant: -5),
+            showViewBtn.bottomAnchor.constraint(
+                equalTo: self.bottomAnchor, constant: -5),
+            showViewBtn.widthAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1),
+            showViewBtn.heightAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1)
+        ])
+    }
+    private func setupPlayPauseBtn() {
+        let playImg = UIImage(systemName: "play")
+        
+        playPauseBtn.translatesAutoresizingMaskIntoConstraints = false
+        playPauseBtn.backgroundColor = playerUIColor
+        playPauseBtn.tintColor = playerUITint
+        playPauseBtn.frame = playerUIFrame
+        playPauseBtn.clipsToBounds = true
+        playPauseBtn.layer.cornerRadius = playPauseBtn.frame.height/3
+        playPauseBtn.isHidden = true
+        playPauseBtn.setImage(playImg, for: .normal)
+        
+        playPauseBtn.addTarget(self, action: #selector(playPauseDidPressed(_:)), for: .touchUpInside)
+        self.addSubview(playPauseBtn)
+        NSLayoutConstraint.activate([
+            playPauseBtn.leadingAnchor.constraint(
+                equalTo: self.leadingAnchor, constant: 5
+            ),
+            playPauseBtn.bottomAnchor.constraint(
+                equalTo: self.bottomAnchor, constant: -5
+            ),
+            playPauseBtn.widthAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1),
+            playPauseBtn.heightAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1)
+        ])
+    }
+    private func setupMuteBtn() {
+        let muted = UIImage(systemName: "volume.slash")
+        muteBtn.translatesAutoresizingMaskIntoConstraints = false
+        muteBtn.backgroundColor = playerUIColor
+        muteBtn.tintColor = playerUITint
+        muteBtn.frame = playerUIFrame
+        muteBtn.clipsToBounds = true
+        muteBtn.layer.cornerRadius = muteBtn.frame.height/3
+        muteBtn.isHidden = true
+        muteBtn.setImage(muted, for: .normal)
+        muteBtn.addTarget(self, action: #selector(muteBtnPressed(_:)), for: .touchUpInside)
+        self.addSubview(muteBtn)
+        NSLayoutConstraint.activate([
+            muteBtn.trailingAnchor.constraint(
+                equalTo: self.trailingAnchor, constant: -5
+            ),
+            muteBtn.topAnchor.constraint(
+                equalTo: self.topAnchor, constant: 5
+            ),
+            muteBtn.widthAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1),
+            muteBtn.heightAnchor.constraint(
+                equalTo: self.widthAnchor, multiplier: 0.1)
+        ])
+    }
+//MARK: Button Function
+    @objc private func showViewDidPressed(_ sender: UIButton) {
+        if let videoUrl = url {
+            pause()
+            delegate?.presentAVPlayerVC(url: videoUrl, playFunction: play)
+        }
+    }
+    @objc private func playPauseDidPressed(_ sender: UIButton) {
+        guard let avPlayer = avPlayer else { return }
+        switch avPlayer.timeControlStatus {
+        case .paused:
+            play(now: true)
+        case .playing:
+            pause()
+        default:
+            break
+        }
+    }
+    @objc private func muteBtnPressed(_ sender: UIButton) {
+        toggleMute()
+    }
+
 //MARK: Cleaning up
     func cleanup() {
         pause()
+        toggleMute()
         stopExporter()
         urlAsset?.cancelLoading()
         url = nil

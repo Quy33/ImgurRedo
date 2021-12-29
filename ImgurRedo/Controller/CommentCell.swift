@@ -254,7 +254,7 @@ class CommentCell: UITableViewCell {
         playerView.isHidden = !comment.hasVideoLink
         if comment.hasVideoLink {
             playerView.image = comment.videoData?.thumbnail ?? ToolBox.placeHolderImg
-            playerView.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: true)
+            playerView.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: false)
         }
         
         updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count, isTop: comment.isTop)
@@ -335,6 +335,9 @@ class CommentCell: UITableViewCell {
 //MARK: PlayerView function
     func play() {
         playerView.play()
+    }
+    func pause() {
+        playerView.pause()
     }
     func cleanup() {
         playerView.cleanup()
