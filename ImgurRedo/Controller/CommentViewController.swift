@@ -153,8 +153,6 @@ extension CommentViewController: UITableViewDataSource {
 extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let comment = dataSource[indexPath.row]
-        let cell = tableView.cellForRow(at: indexPath) as? CommentCell
-        cell?.printPlayerStatus()
         guard let commentCell = (tableView.cellForRow(at: indexPath) as? CommentCell),
             (!comment.children.isEmpty) else { return }
         var indexes: [IndexPath] = []

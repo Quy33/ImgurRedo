@@ -26,7 +26,6 @@ class BasicPlayerView: UIImageView {
         set{ playerLayer?.player = newValue }
     }
     var showControls = true
-//    private var loadingPlaced = false
     
     private var url: URL?
     private var urlOnDisk: URL?
@@ -113,11 +112,11 @@ class BasicPlayerView: UIImageView {
             
             playerItem = item
             avPlayer = player
+            avPlayer?.addObserver(self, forKeyPath: "timeControlStatus", options: [.old, .new], context: nil)
             
             DispatchQueue.main.async { [weak self] in
                 guard let strongSelf = self else { return }
                 strongSelf.spinner.stopAnimating()
-                strongSelf.spinner.removeFromSuperview()
                 
                 strongSelf.muteBtn.isHidden = asset.tracks(withMediaType: .audio).isEmpty
                 if strongSelf.showControls {
@@ -131,20 +130,30 @@ class BasicPlayerView: UIImageView {
             exportVideo(asset: asset)
         }
     }
-//    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-//        guard let avPlayer = avPlayer, let asset = urlAsset else {
-//            return
-//        }
-//
-//        if object as AnyObject? === avPlayer {
-//            if keyPath == "timeControlStatus" {
-//                guard !asset.tracks(withMediaType: .audio).isEmpty else {
-//                    return
-//                }
-//                muteBtn.isHidden = false
-//            }
-//        }
-//    }
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        guard let avPlayer = avPlayer else { return }
+        
+        if object as AnyObject? === avPlayer {
+            if keyPath == "timeControlStatus",
+               let change = change,
+               let oldValue = change[NSKeyValueChangeKey.oldKey] as? Int,
+               let newValue = change[NSKeyValueChangeKey.newKey] as? Int
+            {
+                
+                let oldStatus = AVPlayer.TimeControlStatus(rawValue: oldValue)
+                let newStatus = AVPlayer.TimeControlStatus(rawValue: newValue)
+                
+                if newStatus != oldStatus {
+                    if newStatus == .playing || newStatus == .paused {
+                        spinner.stopAnimating()
+                    } else {
+                        spinner.startAnimating()
+                    }
+                    updatePlayBtn()
+                }
+            }
+        }
+    }
 //MARK: Player Function
     func play(now: Bool = false) {
         guard let avPlayer = avPlayer, avPlayer.timeControlStatus == .paused else {
@@ -155,7 +164,6 @@ class BasicPlayerView: UIImageView {
         } else {
             avPlayer.play()
         }
-        updatePlayBtn()
     }
     func pause() {
         guard let avPlayer = avPlayer,
@@ -164,7 +172,6 @@ class BasicPlayerView: UIImageView {
             return
         }
         avPlayer.pause()
-        updatePlayBtn()
     }
     func toggleMute(isMuted: Bool) {
         guard let avPlayer = avPlayer else { return }
@@ -181,7 +188,7 @@ class BasicPlayerView: UIImageView {
         case .paused:
             newImage = Support.play
         case .waitingToPlayAtSpecifiedRate:
-            newImage = Support.pause
+            newImage = Support.play
         case .playing:
             newImage = Support.pause
         @unknown default:
@@ -194,12 +201,14 @@ class BasicPlayerView: UIImageView {
     }
 //MARK: Looping Player & Exporting Video
     @objc private func playerItemDidEndPlaying(_ notification: Notification) {
-        guard (notification.object as? AVPlayerItem == playerItem) else {
-            return
-        }
+        guard (notification.object as? AVPlayerItem == playerItem) else { return }
         avPlayer?.seek(to: .zero)
         avPlayer?.play()
     }
+    @objc private func playerItemStalled(_ notification: Notification) {
+        guard (notification.object as? AVPlayerItem == playerItem) else { return }
+    }
+    
     private func exportVideo(asset: AVURLAsset) {
         let outputUrl = self.documentDir.appendingPathComponent(asset.url.lastPathComponent)
         
@@ -287,6 +296,7 @@ class BasicPlayerView: UIImageView {
         spinner.backgroundColor = Support.playerUIColor
         spinner.clipsToBounds = true
         spinner.layer.cornerRadius = spinner.frame.height / 2
+        spinner.hidesWhenStopped = true
         self.addSubview(spinner)
         NSLayoutConstraint.activate([
             spinner.centerXAnchor.constraint(equalTo: self.centerXAnchor),
@@ -402,12 +412,11 @@ class BasicPlayerView: UIImageView {
         urlAsset = nil
         playerItem = nil
         
-//        if avPlayer?.observationInfo != nil {
-//            avPlayer?.removeObserver(self, forKeyPath: "timeControlStatus")
-//        }
+        if avPlayer?.observationInfo != nil {
+            avPlayer?.removeObserver(self, forKeyPath: "timeControlStatus")
+        }
         avPlayer = nil
         spinner.stopAnimating()
-        spinner.removeFromSuperview()
         
         muteBtn.isHidden = true
         showViewBtn.isHidden = true

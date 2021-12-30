@@ -112,7 +112,6 @@ class CommentCell: UITableViewCell {
         
         bottomStv = makeStackView(axis: .horizontal, distribution: .fill, color: .clear, spacing: 0, alignment: .center)
         
-        playerView.showControls = true
         //UpperStv
         userNameLbl = makeLabel(numberOfLines: 0,bgColor: .clear, textColor: .white, font: smallFont)
         //Collapse Container
@@ -350,9 +349,6 @@ class CommentCell: UITableViewCell {
     }
     func setPlayerViewDelegate(_ delegator: BasicPlayerViewDelegate) {
         playerView.delegate = delegator
-    }
-    func printPlayerStatus() {
-        print(playerView.playerLayer?.player?.timeControlStatus.rawValue)
     }
 }
 
