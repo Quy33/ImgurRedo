@@ -159,10 +159,12 @@ class BasicPlayerView: UIImageView {
         guard let avPlayer = avPlayer, avPlayer.timeControlStatus == .paused else {
             return
         }
-        if now {
-            avPlayer.playImmediately(atRate: 1.0)
-        } else {
-            avPlayer.play()
+        DispatchQueue.main.async {
+            if now {
+                avPlayer.playImmediately(atRate: 1.0)
+            } else {
+                avPlayer.play()
+            }
         }
     }
     func pause() {
@@ -171,7 +173,9 @@ class BasicPlayerView: UIImageView {
          avPlayer.timeControlStatus == .waitingToPlayAtSpecifiedRate) else {
             return
         }
-        avPlayer.pause()
+        DispatchQueue.main.async {
+            avPlayer.pause()
+        }
     }
     func toggleMute(isMuted: Bool) {
         guard let avPlayer = avPlayer else { return }
@@ -184,6 +188,7 @@ class BasicPlayerView: UIImageView {
         guard let status = avPlayer?.timeControlStatus else { return }
         
         var newImage: UIImage?
+        
         switch status {
         case .paused:
             newImage = Support.play
@@ -204,9 +209,6 @@ class BasicPlayerView: UIImageView {
         guard (notification.object as? AVPlayerItem == playerItem) else { return }
         avPlayer?.seek(to: .zero)
         avPlayer?.play()
-    }
-    @objc private func playerItemStalled(_ notification: Notification) {
-        guard (notification.object as? AVPlayerItem == playerItem) else { return }
     }
     
     private func exportVideo(asset: AVURLAsset) {
