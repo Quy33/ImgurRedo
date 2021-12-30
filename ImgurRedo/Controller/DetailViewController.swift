@@ -50,6 +50,10 @@ class DetailViewController: UIViewController {
         loadingFrame?.isHidden = true
         loadDetails()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+//        BasicPlayerView.clearVideos()
+    }
 //MARK: Networking Call
     private func loadDetails(){
         loadUI(isLoading: true, button: commentsBtn, tableView: detailTableView)

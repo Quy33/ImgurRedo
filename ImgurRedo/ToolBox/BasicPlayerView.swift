@@ -26,6 +26,7 @@ class BasicPlayerView: UIImageView {
         set{ playerLayer?.player = newValue }
     }
     var showControls = true
+//    private var loadingPlaced = false
     
     private var url: URL?
     private var urlOnDisk: URL?
@@ -112,6 +113,7 @@ class BasicPlayerView: UIImageView {
             
             playerItem = item
             avPlayer = player
+            
             DispatchQueue.main.async { [weak self] in
                 guard let strongSelf = self else { return }
                 strongSelf.spinner.stopAnimating()
@@ -129,6 +131,20 @@ class BasicPlayerView: UIImageView {
             exportVideo(asset: asset)
         }
     }
+//    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+//        guard let avPlayer = avPlayer, let asset = urlAsset else {
+//            return
+//        }
+//
+//        if object as AnyObject? === avPlayer {
+//            if keyPath == "timeControlStatus" {
+//                guard !asset.tracks(withMediaType: .audio).isEmpty else {
+//                    return
+//                }
+//                muteBtn.isHidden = false
+//            }
+//        }
+//    }
 //MARK: Player Function
     func play(now: Bool = false) {
         guard let avPlayer = avPlayer, avPlayer.timeControlStatus == .paused else {
@@ -385,6 +401,10 @@ class BasicPlayerView: UIImageView {
         url = nil
         urlAsset = nil
         playerItem = nil
+        
+//        if avPlayer?.observationInfo != nil {
+//            avPlayer?.removeObserver(self, forKeyPath: "timeControlStatus")
+//        }
         avPlayer = nil
         spinner.stopAnimating()
         spinner.removeFromSuperview()
@@ -399,7 +419,7 @@ class BasicPlayerView: UIImageView {
     }
 //MARK: UIStuff
     private struct Support {
-        static let playerUIColor = UIColor.black.withAlphaComponent(0.5)
+        static let playerUIColor = UIColor.black.withAlphaComponent(0.25)
         static let playerUITint = UIColor.white
         static let playerUIFrame = CGRect(x: 0, y: 0, width: 40, height: 40)
         static let muted = UIImage(systemName: "volume.slash")

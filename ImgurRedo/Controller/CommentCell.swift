@@ -14,6 +14,7 @@ class CommentCell: UITableViewCell {
     static let barWidth: CGFloat = 2
     static let separatorWidth: CGFloat = 5
     static let outerStvSpacing: CGFloat = 10
+    private let collapsePadding: CGFloat = 5
 //MARK: UI Elements
     private var outerStv = UIStackView()
     private var leftBar = UIView()
@@ -25,21 +26,26 @@ class CommentCell: UITableViewCell {
     private var userNameLbl = PaddingLabel()
     private var collapseLbl = PaddingLabel()
     private var dateLbl = PaddingLabel()
-    private var collapseContainer = UIView()
     private var bottomLeftBar = UIView()
     private var bottomStv = UIStackView()
     private var commentImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.backgroundColor = .white
+        imageView.backgroundColor = .clear
         imageView.image = ToolBox.placeHolderImg
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
         return imageView
     }()
     private var playerView: BasicPlayerView = {
         let view = BasicPlayerView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
+        view.backgroundColor = .clear
+        return view
+    }()
+    private let collapseContainer: UIView = {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 50, height: 30))
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 //MARK: Unused Functions
@@ -85,7 +91,7 @@ class CommentCell: UITableViewCell {
             distribution: .fill,
             color: .black,
             spacing: 0,
-            alignment: .center
+            alignment: .leading
         )
         leftBar = makeUIView(color: .lightGray)
         //CommentStv
@@ -109,9 +115,10 @@ class CommentCell: UITableViewCell {
         playerView.showControls = true
         //UpperStv
         userNameLbl = makeLabel(numberOfLines: 0,bgColor: .clear, textColor: .white, font: smallFont)
-        userNameLbl.numberOfLines = 2
         //Collapse Container
         collapseLbl = makeLabel(bgColor: .link, textAlignment: .center, textColor: .white)
+        collapseLbl.clipsToBounds = true
+        collapseLbl.layer.cornerRadius = (collapseContainer.frame.height - (collapsePadding * 2)) / 2
         //BottomStv
         bottomLeftBar = makeUIView(color: .lightGray)
         bottomBar = makeUIView(color: .darkGray)
@@ -175,8 +182,6 @@ class CommentCell: UITableViewCell {
         constraints.append(commentStv.bottomAnchor.constraint(equalTo: outerStv.bottomAnchor)
         )
         //commentStv arranged subView
-        constraints.append(commentTextView.widthAnchor.constraint(equalTo: commentStv.widthAnchor)
-        )
         constraints.append(upperStv.widthAnchor.constraint(equalTo: commentStv.widthAnchor)
         )
         constraints.append(upperStv.topAnchor.constraint(equalTo: commentStv.topAnchor)
@@ -219,18 +224,22 @@ class CommentCell: UITableViewCell {
         )
         constraints.append(collapseContainer.trailingAnchor.constraint(equalTo: upperStv.trailingAnchor)
         )
-        constraints.append(collapseContainer.heightAnchor.constraint(equalTo: upperStv.heightAnchor)
+        constraints.append(
+            collapseContainer.heightAnchor.constraint(
+                equalToConstant: collapseContainer.frame.height)
         )
-        constraints.append(collapseContainer.widthAnchor.constraint(equalToConstant: 50)
+        constraints.append(
+            collapseContainer.widthAnchor.constraint(
+                equalToConstant: collapseContainer.frame.width)
         )
         //collapseContainer subView
-        constraints.append(collapseLbl.topAnchor.constraint(equalTo: collapseContainer.topAnchor, constant: 5)
+        constraints.append(collapseLbl.topAnchor.constraint(equalTo: collapseContainer.topAnchor, constant: collapsePadding)
         )
-        constraints.append(collapseLbl.bottomAnchor.constraint(equalTo: collapseContainer.bottomAnchor, constant: -5)
+        constraints.append(collapseLbl.bottomAnchor.constraint(equalTo: collapseContainer.bottomAnchor, constant: -collapsePadding)
         )
-        constraints.append(collapseLbl.leadingAnchor.constraint(equalTo: collapseContainer.leadingAnchor, constant: 5)
+        constraints.append(collapseLbl.leadingAnchor.constraint(equalTo: collapseContainer.leadingAnchor, constant: collapsePadding)
         )
-        constraints.append(collapseLbl.trailingAnchor.constraint(equalTo: collapseContainer.trailingAnchor, constant: -5)
+        constraints.append(collapseLbl.trailingAnchor.constraint(equalTo: collapseContainer.trailingAnchor, constant: -collapsePadding)
         )
         
         NSLayoutConstraint.activate(constraints)
@@ -245,7 +254,8 @@ class CommentCell: UITableViewCell {
         commentTextView.text = comment.value
         commentTextView.isHidden = comment.value.isEmpty
                 
-        commentImageView.image = comment.imageData?.image ?? ToolBox.placeHolderImg
+        let commentImg = comment.imageData?.image ?? ToolBox.placeHolderImg
+        commentImageView.image = commentImg
         commentImageView.isHidden = !comment.hasImageLink
 
         userNameLbl.text = comment.author
@@ -259,14 +269,6 @@ class CommentCell: UITableViewCell {
         }
         
         updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count, isTop: comment.isTop)
-        
-        if !comment.children.isEmpty {
-            DispatchQueue.main.async { [weak self] in
-                guard let strongSelf = self else { return }
-                strongSelf.collapseLbl.clipsToBounds = true
-                strongSelf.collapseLbl.layer.cornerRadius = strongSelf.collapseLbl.frame.height/2
-            }
-        }
     }
     func updateCollapsed(isCollapsed: Bool, count: Int, isTop: Bool){
         collapseLbl.text = isCollapsed ? "X" : "\(count)"
@@ -349,8 +351,8 @@ class CommentCell: UITableViewCell {
     func setPlayerViewDelegate(_ delegator: BasicPlayerViewDelegate) {
         playerView.delegate = delegator
     }
-    func printStatus() {
-        print(playerView.playerLayer?.player?.status)
+    func printPlayerStatus() {
+        print(playerView.playerLayer?.player?.timeControlStatus.rawValue)
     }
 }
 

@@ -99,10 +99,13 @@ enum ThumbnailSize: Character {
 extension UIImage {
     func drawImage(toWidth w: CGFloat) -> UIImage {
         let calculatedSize = ToolBox.calculateMediaRatio(self.size, frameWidth: w).size
-        let rect = CGRect(origin: .zero, size: calculatedSize)
+        
+        let rect = CGRect(origin: self.accessibilityFrame.origin, size: calculatedSize)
         
         let renderer = UIGraphicsImageRenderer(size: calculatedSize)
-        let resizedImage = renderer.image { _ in
+        let resizedImage = renderer.image { context in
+            UIColor.black.setFill()
+            context.fill(rect)
             self.draw(in: rect)
         }
         

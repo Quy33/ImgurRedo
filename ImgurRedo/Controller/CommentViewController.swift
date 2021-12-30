@@ -95,7 +95,7 @@ class CommentViewController: UIViewController {
                                  && comment.videoData?.thumbnail == nil)
                 guard imageBool || videoBool else { continue }
                 
-                let cellWidth = calculateWidth(comment)
+                let cellWidth = comment.calculateWidth()
                 do {
                     if let imageLink = comment.imageData?.link {
                         let image = try await networkManager.singleDownload(url: imageLink)
@@ -129,14 +129,6 @@ class CommentViewController: UIViewController {
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
     }
-    private func calculateWidth(_ comment: Comment) -> CGFloat {
-        let leftBarW = comment.isTop ? 0 : CommentCell.barWidth
-        let spacing = CGFloat(comment.level) * CommentCell.outerStvSpacing
-        let screenWidth = UIScreen.main.bounds.width
-        let result = screenWidth - leftBarW - spacing
-        
-        return result
-    }
     
 }
 //MARK: TableView Stuff
@@ -161,6 +153,8 @@ extension CommentViewController: UITableViewDataSource {
 extension CommentViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let comment = dataSource[indexPath.row]
+        let cell = tableView.cellForRow(at: indexPath) as? CommentCell
+        cell?.printPlayerStatus()
         guard let commentCell = (tableView.cellForRow(at: indexPath) as? CommentCell),
             (!comment.children.isEmpty) else { return }
         var indexes: [IndexPath] = []
@@ -180,7 +174,7 @@ extension CommentViewController: UITableViewDelegate {
             let lowerRange = indexes.first!
             let upperRange = indexes.last!
             dataSource.removeSubrange(lowerRange.row...upperRange.row)
-            tableView.deleteRows(at: indexes, with: .fade)
+            tableView.deleteRows(at: indexes, with: .none)
 
             comment.isCollapsed = false
         } else {
@@ -193,7 +187,7 @@ extension CommentViewController: UITableViewDelegate {
                 let newIndex = IndexPath(row: index, section: 0)
                 indexes.append(newIndex)
             }
-            tableView.insertRows(at: indexes, with: .fade)
+            tableView.insertRows(at: indexes, with: .none)
             comment.isCollapsed = true
         }
         commentCell.updateCollapsed(isCollapsed: comment.isCollapsed, count: comment.children.count, isTop: comment.isTop)
@@ -232,5 +226,16 @@ extension CommentViewController: AVPlayerViewControllerDelegate {
             playerViewMethod(false)
             self.playerViewMethod = nil
         }
+    }
+}
+//MARK: Extension to calculateScreenWidth of a Comment cell
+extension Comment {
+    func calculateWidth() -> CGFloat {
+        let leftBarW = self.isTop ? 0 : CommentCell.barWidth
+        let spacing = CGFloat(self.level) * CommentCell.outerStvSpacing
+        let screenWidth = UIScreen.main.bounds.width
+        let result = screenWidth - leftBarW - spacing
+        
+        return result
     }
 }
