@@ -59,11 +59,11 @@ class BasicPlayerView: UIImageView {
             self.contentMode = .scaleAspectFit
             self.isUserInteractionEnabled = true
             
-            setupMuteBtn()
             if showControls {
                 setupShowViewBtn()
                 setupPlayPauseBtn()
             }
+            setupMuteBtn()
         }
     }
 //MARK: Setup Player
@@ -71,14 +71,11 @@ class BasicPlayerView: UIImageView {
         let fileUrl = documentDir.appendingPathComponent(url.lastPathComponent)
         let fileExist = FileManager.default.fileExists(atPath: fileUrl.path)
         
-        let firstCondition = !(self.url == url
-                               && avPlayer != nil
-                               && avPlayer?.error == nil)
-        let secondCondition = !(urlOnDisk == fileUrl
-                                && assetExporter != nil
-                                && assetExporter?.error == nil)
-
-        guard firstCondition || secondCondition else {
+        guard !(self.url == url && avPlayer != nil && avPlayer?.error == nil) else
+        {
+            if let urlAsset = self.urlAsset, (assetExporter?.status == .cancelled) {
+                exportVideo(asset: urlAsset)
+            }
             if shouldPlayImmediately {
                 play()
             }
@@ -132,24 +129,28 @@ class BasicPlayerView: UIImageView {
     }
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         guard let avPlayer = avPlayer else { return }
-        
-        if object as AnyObject? === avPlayer {
-            if keyPath == "timeControlStatus",
-               let change = change,
-               let oldValue = change[NSKeyValueChangeKey.oldKey] as? Int,
-               let newValue = change[NSKeyValueChangeKey.newKey] as? Int
-            {
-                
-                let oldStatus = AVPlayer.TimeControlStatus(rawValue: oldValue)
-                let newStatus = AVPlayer.TimeControlStatus(rawValue: newValue)
-                
-                if newStatus != oldStatus {
-                    if newStatus == .playing || newStatus == .paused {
-                        spinner.stopAnimating()
-                    } else {
-                        spinner.startAnimating()
+        if let anyObject = object as AnyObject? {
+            if anyObject === avPlayer {
+                if keyPath == "timeControlStatus",
+                   let change = change,
+                   let oldValue = change[NSKeyValueChangeKey.oldKey] as? Int,
+                   let newValue = change[NSKeyValueChangeKey.newKey] as? Int
+                {
+                    
+                    let oldStatus = AVPlayer.TimeControlStatus(rawValue: oldValue)
+                    let newStatus = AVPlayer.TimeControlStatus(rawValue: newValue)
+                    
+                    if newStatus != oldStatus {
+                        switch newStatus {
+                        case .paused, .playing:
+                            spinner.stopAnimating()
+                        case .waitingToPlayAtSpecifiedRate:
+                            spinner.startAnimating()
+                        default:
+                            break
+                        }
+                        updatePlayBtn()
                     }
-                    updatePlayBtn()
                 }
             }
         }
@@ -214,10 +215,9 @@ class BasicPlayerView: UIImageView {
     private func exportVideo(asset: AVURLAsset) {
         let outputUrl = self.documentDir.appendingPathComponent(asset.url.lastPathComponent)
         
-        let firstCondition = (asset.isExportable && !FileManager.default.fileExists(atPath: outputUrl.path))
-        let secondCondition = (assetExporter != nil && assetExporter?.error == nil)
-        
-        guard firstCondition && !secondCondition else {
+        guard (asset.isExportable &&
+               !FileManager.default.fileExists(atPath: outputUrl.path) &&
+               assetExporter?.status != .exporting) else {
             return
         }
         stopExporter()
