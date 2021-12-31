@@ -39,10 +39,13 @@ class CommentViewController: UIViewController {
         super.viewWillDisappear(animated)
         guard !dataSource.isEmpty else { return }
         for (index,data) in dataSource.enumerated() {
-            data.isCollapsed = false
             let indexPath = IndexPath(row: index, section: 0)
-            if let commentCell = (commentTableView.cellForRow(at: indexPath) as? CommentCell), (data.hasVideoLink && !playerVC.isBeingPresented) {
-                commentCell.cleanup()
+            if let commentCell = (commentTableView.cellForRow(at: indexPath) as? CommentCell) {
+                guard !playerVC.isBeingPresented else { return }
+                data.isCollapsed = false
+                if data.hasVideoLink {
+                    commentCell.cleanup()
+                }
             }
         }
     }
@@ -134,9 +137,6 @@ class CommentViewController: UIViewController {
 //MARK: TableView Stuff
 extension CommentViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard !dataSource.isEmpty else {
-            return 1
-        }
         return dataSource.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

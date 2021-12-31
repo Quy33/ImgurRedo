@@ -262,7 +262,7 @@ class CommentCell: UITableViewCell {
         
         playerView.isHidden = !comment.hasVideoLink
         if comment.hasVideoLink {
-            playerView.showControls = false
+            playerView.showControls = true
             playerView.image = comment.videoData?.thumbnail ?? ToolBox.placeHolderImg
             playerView.prepareToPlay(url: comment.videoData!.link, shouldPlayImmediately: true)
         }
