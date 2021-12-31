@@ -23,13 +23,17 @@ class DetailViewController: UIViewController {
     private var heights: [CGFloat] = []
     private var isCached = false
     private var errorTuple: ErrorTuple = (isError: false, description: nil)
-    private var comments: [Comment] = []
+    private var commentsUrl: URL? {
+        get {
+            networkManager.concatCommentLink(withGalleryInfo: galleryGot)
+        }
+    }
         
 //    var galleryGot = (isAlbum: true, id: "2eOWNGV")
 //    var galleryGot = (isAlbum: true, id: "bVdwhbk")
 //    var galleryGot = (isAlbum: true, id: "ftt1IUE")
 //    var galleryGot = (isAlbum: true, id: "yXA62jZ")
-    var galleryGot = (isAlbum: true, id: "YWdwwYH")
+    var galleryGot: GalleryTuple = (isAlBum: true, id: "YWdwwYH")
 //    var galleryGot = (isAlbum: true, id: "9CL3zDX")
 //    var galleryGot = (isAlbum: false, id: "OdJDoCY")
     
@@ -59,11 +63,9 @@ class DetailViewController: UIViewController {
         loadUI(isLoading: true, button: commentsBtn, tableView: detailTableView)
         Task {
             do {
-                let metaData = try await networkManager.requestData(isAlbum: galleryGot.isAlbum, id: galleryGot.id)
-                
-                let detailModel = metaData.detailData
-                
-                if galleryGot.isAlbum {
+                let detailModel = try await networkManager.requestData(isAlbum: galleryGot.isAlBum, id: galleryGot.id)
+                                
+                if galleryGot.isAlBum {
                     albumItem = Album(detailModel.data)
                     let urls = albumItem.images.map{ $0.url }
                     let images = try await networkManager.batchesDownload(urls: urls)
@@ -81,13 +83,13 @@ class DetailViewController: UIViewController {
                     self.detailTableView?.reloadData()
                 }
                 //Comments
-                let commentsData = metaData.commentData
-                for commentData in commentsData.data {
-                    var array: [Comment] = []
-                    appendNode(container: &array, commentData) { $0.append(Comment(data: $1)) }
-                    let result = makeTree(array)
-                    comments.append(result)
-                }
+//                let commentsData = metaData.commentData
+//                for commentData in commentsData.data {
+//                    var array: [Comment] = []
+//                    appendNode(container: &array, commentData) { $0.append(Comment(data: $1)) }
+//                    let result = makeTree(array)
+//                    comments.append(result)
+//                }
             } catch {
                 DispatchQueue.main.async {
                     print("Error: \(error)")
@@ -102,24 +104,24 @@ class DetailViewController: UIViewController {
         }
     }
 //MARK: Comments Functions
-    func appendNode(container: inout [Comment], _ data: RawCommentData,_ visit: (inout [Comment], RawCommentData)->Void ) {
-        visit(&container, data)
-        data.children.forEach {
-            appendNode(container: &container, $0, visit)
-        }
-    }
-    func makeTree(_ container: [Comment]) -> Comment {
-        for (index,item) in container.enumerated() {
-            var nextCount = index + 1
-            while nextCount < container.count {
-                if item.id == container[nextCount].parentId {
-                    item.add(container[nextCount])
-                }
-                nextCount += 1
-            }
-        }
-        return container.first!
-    }
+//    func appendNode(container: inout [Comment], _ data: RawCommentData,_ visit: (inout [Comment], RawCommentData)->Void ) {
+//        visit(&container, data)
+//        data.children.forEach {
+//            appendNode(container: &container, $0, visit)
+//        }
+//    }
+//    func makeTree(_ container: [Comment]) -> Comment {
+//        for (index,item) in container.enumerated() {
+//            var nextCount = index + 1
+//            while nextCount < container.count {
+//                if item.id == container[nextCount].parentId {
+//                    item.add(container[nextCount])
+//                }
+//                nextCount += 1
+//            }
+//        }
+//        return container.first!
+//    }
 //MARK: Cell registration
     private func registerCell(tableView: UITableView?) {
         guard let tableView = tableView else {
@@ -180,13 +182,14 @@ class DetailViewController: UIViewController {
         reload(tableView: detailTableView)
     }
     @IBAction func commentsBtnPressed(_ sender: UIButton) {
-        if !comments.isEmpty {
+        if commentsUrl != nil {
             performSegue(withIdentifier: CommentViewController.identifier, sender: self)
         }
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let destinationVC = segue.destination as? CommentViewController {
-            destinationVC.commentsGot = comments
+        if let destinationVC = segue.destination as? CommentViewController,
+           let safeUrl = commentsUrl {
+            destinationVC.linkGot = safeUrl
         }
     }
 //MARK: Video Player
@@ -205,7 +208,7 @@ class DetailViewController: UIViewController {
         let vPadding: CGFloat = 20
         let hPadding: CGFloat = 10
         
-        if galleryGot.isAlbum {
+        if galleryGot.isAlBum {
             let itemCount = albumItem.images.count
             var albumConfig: ConfigTuple = (top: albumItem.title,
                                         title: nil,
@@ -291,7 +294,7 @@ extension DetailViewController: UITableViewDataSource {
         guard !heights.isEmpty else {
             return 0
         }
-        if galleryGot.isAlbum {
+        if galleryGot.isAlBum {
             return albumItem.images.count
         } else {
             return 1
@@ -304,7 +307,7 @@ extension DetailViewController: UITableViewDataSource {
             return cell
         }
         
-        if !galleryGot.isAlbum {
+        if !galleryGot.isAlBum {
             
             let configuration: ConfigTuple = (top: imageItem.title,
                                               title: nil,
@@ -372,7 +375,7 @@ extension DetailViewController: UITableViewDelegate {
         return heights[indexPath.row]
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if galleryGot.isAlbum {
+        if galleryGot.isAlBum {
             if albumItem.images[indexPath.row].animated {
                 if let mp4Link = URL(string: albumItem.images[indexPath.row].mp4!) {
                     print(mp4Link)

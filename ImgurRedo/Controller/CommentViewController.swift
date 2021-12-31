@@ -13,7 +13,7 @@ import AVKit
 class CommentViewController: UIViewController {
 
     static let identifier = "CommentViewController"
-    var commentsGot: [Comment] = []
+    var linkGot: URL?
     private var dataSource: [Comment] = []
     private let networkManager = NetWorkManager()
     private let playerVC = AVPlayerViewController()
@@ -25,7 +25,6 @@ class CommentViewController: UIViewController {
         super.viewDidLoad()
         setNavBar()
         playerVC.delegate = self
-        dataSource = commentsGot
         
         registerCell()
         commentTableView.dataSource = self
@@ -42,7 +41,6 @@ class CommentViewController: UIViewController {
             let indexPath = IndexPath(row: index, section: 0)
             if let commentCell = (commentTableView.cellForRow(at: indexPath) as? CommentCell) {
                 guard !playerVC.isBeingPresented else { return }
-                data.isCollapsed = false
                 if data.hasVideoLink {
                     commentCell.cleanup()
                 }

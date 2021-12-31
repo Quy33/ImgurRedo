@@ -53,7 +53,7 @@ class ToolBox {
 //MARK: Tuples
 typealias ErrorTuple = (isError: Bool, description: String?)
 typealias ConfigTuple = (top: String?, title: String?, image: UIImage, description: String?, bottom: String?, isBottom: Bool, animated: Bool)
-
+typealias GalleryTuple = (isAlBum: Bool, id: String)
 //MARK: String Extension
 extension String {
     func searchExtension() -> ExtensionType? {

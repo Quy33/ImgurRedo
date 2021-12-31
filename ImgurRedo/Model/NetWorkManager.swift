@@ -125,21 +125,26 @@ struct NetWorkManager {
         return results
     }
 //MARK: Detail Screen Networking
-    func requestData(isAlbum: Bool, id: String) async throws -> (detailData: RawDetail, commentData: RawComment) {
+    func requestData(isAlbum: Bool, id: String) async throws -> RawDetail {
         
         let detail = isAlbum ? "album" : "image"
         let detailUrlString = "\(baseURL)/\(detail)/\(id)"
-        let commentUrlString = detailUrlString + "/comments"
         
-        guard let detailUrl = URL(string: detailUrlString),
-              let commentUrl = URL(string: commentUrlString) else {
-                  throw NetworkingError.invalidData
-              }
+        guard let detailUrl = URL(string: detailUrlString) else {
+            throw NetworkingError.invalidData
+        }
         
         let detailData = try await downloadData(detailUrl)
-        let commentData = try await downloadData(commentUrl)
         
-        return (detailData: try parseJson(detailData), commentData: try parseJson(commentData))
+        return try parseJson(detailData)
+    }
+//MARK: Comment Screen Networking
+    func concatCommentLink(withGalleryInfo info: GalleryTuple) -> URL? {
+        guard !info.id.isEmpty else { return nil }
+        let detail = info.isAlBum ? "album" : "image"
+        let detailUrlString = "\(baseURL)/\(detail)/\(info.id)"
+        let commentUrlString = detailUrlString + "/comments"
+        return URL(string: commentUrlString)
     }
 }
 //MARK: NetWorking Error Enums

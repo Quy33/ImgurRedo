@@ -242,10 +242,9 @@ extension ViewController: UICollectionViewDelegate {
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let gallery = galleries[indexPathToMove.item]
-        let galleryTuple = (isAlbum: gallery.isAlbum, id: gallery.id)
         
         if let destination = segue.destination as? DetailViewController {
-            destination.galleryGot = galleryTuple
+            destination.galleryGot = (isAlBum: gallery.isAlbum, id: gallery.id)
         }
     }
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
