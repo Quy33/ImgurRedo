@@ -82,14 +82,6 @@ class DetailViewController: UIViewController {
                     self.loadUI(isLoading: false, button: self.commentsBtn, tableView: self.detailTableView)
                     self.detailTableView?.reloadData()
                 }
-                //Comments
-//                let commentsData = metaData.commentData
-//                for commentData in commentsData.data {
-//                    var array: [Comment] = []
-//                    appendNode(container: &array, commentData) { $0.append(Comment(data: $1)) }
-//                    let result = makeTree(array)
-//                    comments.append(result)
-//                }
             } catch {
                 DispatchQueue.main.async {
                     print("Error: \(error)")
@@ -103,25 +95,6 @@ class DetailViewController: UIViewController {
             }
         }
     }
-//MARK: Comments Functions
-//    func appendNode(container: inout [Comment], _ data: RawCommentData,_ visit: (inout [Comment], RawCommentData)->Void ) {
-//        visit(&container, data)
-//        data.children.forEach {
-//            appendNode(container: &container, $0, visit)
-//        }
-//    }
-//    func makeTree(_ container: [Comment]) -> Comment {
-//        for (index,item) in container.enumerated() {
-//            var nextCount = index + 1
-//            while nextCount < container.count {
-//                if item.id == container[nextCount].parentId {
-//                    item.add(container[nextCount])
-//                }
-//                nextCount += 1
-//            }
-//        }
-//        return container.first!
-//    }
 //MARK: Cell registration
     private func registerCell(tableView: UITableView?) {
         guard let tableView = tableView else {

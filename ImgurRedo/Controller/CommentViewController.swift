@@ -18,12 +18,47 @@ class CommentViewController: UIViewController {
     private let networkManager = NetWorkManager()
     private let playerVC = AVPlayerViewController()
     private var playerViewMethod: ((Bool)->Void)?
+    private var loadCommentsError: Error?
+    
     private let activityIndicator: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView(style: .large)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.color = .white
-        view.backgroundColor = .clear
+        view.backgroundColor = .black
         view.hidesWhenStopped = true
+        return view
+    }()
+    private let errorStv: UIStackView = {
+        let view = UIStackView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.contentMode = .center
+        view.axis = .vertical
+        view.backgroundColor = .clear
+        view.spacing = 10
+        view.distribution = .fillProportionally
+        return view
+    }()
+    private let errorLbl: UILabel = {
+        let label = UILabel()
+        label.backgroundColor = .clear
+        label.textColor = .white
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Error"
+        return label
+    }()
+    private let reloadErrBtn: UIButton = {
+        let button = UIButton(type: .system)
+        button.backgroundColor = .gray
+        button.tintColor = .white
+        button.setTitle("Reload", for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    private let reloadBtnFrame: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
@@ -32,13 +67,14 @@ class CommentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setNavBar()
+        
         playerVC.delegate = self
+        reloadErrBtn.addTarget(self, action: #selector(reloadErrorBtnPressed(_:)), for: .touchUpInside)
         
         registerCell()
         commentTableView.dataSource = self
         commentTableView.delegate = self
         
-        showLoading(isLoading: true)
         requestData()
     }
     //Clean up video cell
@@ -63,6 +99,7 @@ class CommentViewController: UIViewController {
 //MARK: Comment API Call
     private func requestData() {
         guard let url = linkGot else { return }
+        showLoading(isLoading: true)
         Task {
             do {
                 let rawData = try await networkManager.requestComment(url)
@@ -76,12 +113,18 @@ class CommentViewController: UIViewController {
                 DispatchQueue.main.async { [weak self] in
                     guard let strongSelf = self else { return }
                     strongSelf.showLoading(isLoading: false)
+                    strongSelf.detectMediaLink()
+                    strongSelf.commentTableView.reloadData()
                 }
-                detectMediaLink()
-                commentTableView.reloadData()
                 downloadCellImage()
             } catch {
                 print("Failed to fetch comments: \(error)")
+                loadCommentsError = error
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.showLoading(isLoading: false)
+                    strongSelf.showError()
+                }
             }
         }
     }
@@ -190,10 +233,14 @@ class CommentViewController: UIViewController {
             commentTableView.isHidden = isLoading
             view.addSubview(activityIndicator)
             NSLayoutConstraint.activate([
-                activityIndicator.centerXAnchor.constraint(
-                    equalTo: view.centerXAnchor),
-                activityIndicator.centerYAnchor.constraint(
-                    equalTo: view.centerYAnchor)
+                activityIndicator.topAnchor.constraint(
+                    equalTo: view.topAnchor),
+                activityIndicator.bottomAnchor.constraint(
+                    equalTo: view.bottomAnchor),
+                activityIndicator.leadingAnchor.constraint(
+                    equalTo: view.leadingAnchor),
+                activityIndicator.trailingAnchor.constraint(
+                    equalTo: view.trailingAnchor)
             ])
             activityIndicator.startAnimating()
         } else {
@@ -201,6 +248,41 @@ class CommentViewController: UIViewController {
             activityIndicator.removeFromSuperview()
             commentTableView.isHidden = isLoading
         }
+    }
+    private func showError() {
+        if let error = loadCommentsError {
+            errorLbl.text = error.localizedDescription
+        }
+        
+        view.addSubview(errorStv)
+        errorStv.addArrangedSubview(errorLbl)
+        errorStv.addArrangedSubview(reloadBtnFrame)
+        reloadBtnFrame.addSubview(reloadErrBtn)
+        
+        NSLayoutConstraint.activate([
+            errorStv.widthAnchor.constraint(
+                equalTo: view.widthAnchor, multiplier: 0.75),
+            errorStv.heightAnchor.constraint(
+                equalTo: view.heightAnchor, multiplier: 0.25),
+            errorStv.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            errorStv.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            errorLbl.widthAnchor.constraint(equalTo: errorStv.widthAnchor),
+            errorLbl.topAnchor.constraint(equalTo: errorStv.topAnchor),
+            reloadBtnFrame.heightAnchor.constraint(equalToConstant: 50),
+            reloadBtnFrame.bottomAnchor.constraint(equalTo: errorStv.bottomAnchor),
+            reloadErrBtn.topAnchor.constraint(equalTo: reloadBtnFrame.topAnchor, constant: 5),
+            reloadErrBtn.bottomAnchor.constraint(equalTo: reloadBtnFrame.bottomAnchor, constant: -5),
+            reloadErrBtn.leadingAnchor.constraint(equalTo: reloadBtnFrame.leadingAnchor, constant: 20),
+            reloadErrBtn.trailingAnchor.constraint(equalTo: reloadBtnFrame.trailingAnchor, constant: -20)
+        ])
+    }
+//MARK: Button function
+    @objc private func reloadErrorBtnPressed(_ sender: UIButton) {
+        reloadErrBtn.removeFromSuperview()
+        reloadBtnFrame.removeFromSuperview()
+        errorLbl.removeFromSuperview()
+        errorStv.removeFromSuperview()
+        requestData()
     }
 }
 //MARK: TableView Stuff
