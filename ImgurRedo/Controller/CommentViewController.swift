@@ -18,6 +18,14 @@ class CommentViewController: UIViewController {
     private let networkManager = NetWorkManager()
     private let playerVC = AVPlayerViewController()
     private var playerViewMethod: ((Bool)->Void)?
+    private let activityIndicator: UIActivityIndicatorView = {
+        let view = UIActivityIndicatorView(style: .large)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.color = .white
+        view.backgroundColor = .clear
+        view.hidesWhenStopped = true
+        return view
+    }()
 
     @IBOutlet weak var commentTableView: UITableView!
     
@@ -29,20 +37,21 @@ class CommentViewController: UIViewController {
         registerCell()
         commentTableView.dataSource = self
         commentTableView.delegate = self
-        detectMediaLink()
-        commentTableView.reloadData()
-        downloadCellImage()
+        
+        showLoading(isLoading: true)
+        requestData()
     }
-    //Temp fix
+    //Clean up video cell
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         guard !dataSource.isEmpty else { return }
         for (index,data) in dataSource.enumerated() {
             let indexPath = IndexPath(row: index, section: 0)
             if let commentCell = (commentTableView.cellForRow(at: indexPath) as? CommentCell) {
-                guard !playerVC.isBeingPresented else { return }
-                if data.hasVideoLink {
-                    commentCell.cleanup()
+                if !(playerVC.isBeingPresented) {
+                    if data.hasVideoLink {
+                        commentCell.cleanup()
+                    }
                 }
             }
         }
@@ -50,6 +59,50 @@ class CommentViewController: UIViewController {
     
     private func registerCell() {
         commentTableView.register(CommentCell.self, forCellReuseIdentifier: CommentCell.identifier)
+    }
+//MARK: Comment API Call
+    private func requestData() {
+        guard let url = linkGot else { return }
+        Task {
+            do {
+                let rawData = try await networkManager.requestComment(url)
+                for commentData in rawData.data {
+                    var array: [Comment] = []
+                    appendNode(container: &array, commentData) { $0.append(Comment(data: $1))
+                    }
+                    let result = makeTree(array)
+                    dataSource.append(result)
+                }
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.showLoading(isLoading: false)
+                }
+                detectMediaLink()
+                commentTableView.reloadData()
+                downloadCellImage()
+            } catch {
+                print("Failed to fetch comments: \(error)")
+            }
+        }
+    }
+//MARK: Transform rawData to Comment
+    func appendNode(container: inout [Comment], _ data: RawCommentData,_ visit: (inout [Comment], RawCommentData)->Void ) {
+        visit(&container, data)
+        data.children.forEach {
+            appendNode(container: &container, $0, visit)
+        }
+    }
+    func makeTree(_ container: [Comment]) -> Comment {
+        for (index,item) in container.enumerated() {
+            var nextCount = index + 1
+            while nextCount < container.count {
+                if item.id == container[nextCount].parentId {
+                    item.add(container[nextCount])
+                }
+                nextCount += 1
+            }
+        }
+        return container.first!
     }
     
 //MARK: Functions to detect & download comments image link
@@ -115,7 +168,8 @@ class CommentViewController: UIViewController {
             }
         }
     }
-    
+
+//MARK: UI Functions
     private func updateCell(for row: Int) {
         let indexPath = IndexPath(row: row, section: 0)
         DispatchQueue.main.async {
@@ -131,6 +185,23 @@ class CommentViewController: UIViewController {
         navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
     }
     
+    private func showLoading(isLoading: Bool) {
+        if isLoading {
+            commentTableView.isHidden = isLoading
+            view.addSubview(activityIndicator)
+            NSLayoutConstraint.activate([
+                activityIndicator.centerXAnchor.constraint(
+                    equalTo: view.centerXAnchor),
+                activityIndicator.centerYAnchor.constraint(
+                    equalTo: view.centerYAnchor)
+            ])
+            activityIndicator.startAnimating()
+        } else {
+            activityIndicator.stopAnimating()
+            activityIndicator.removeFromSuperview()
+            commentTableView.isHidden = isLoading
+        }
+    }
 }
 //MARK: TableView Stuff
 extension CommentViewController: UITableViewDataSource {

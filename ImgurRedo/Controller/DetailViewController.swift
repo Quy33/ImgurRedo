@@ -63,7 +63,7 @@ class DetailViewController: UIViewController {
         loadUI(isLoading: true, button: commentsBtn, tableView: detailTableView)
         Task {
             do {
-                let detailModel = try await networkManager.requestData(isAlbum: galleryGot.isAlBum, id: galleryGot.id)
+                let detailModel = try await networkManager.requestDetail(isAlbum: galleryGot.isAlBum, id: galleryGot.id)
                                 
                 if galleryGot.isAlBum {
                     albumItem = Album(detailModel.data)

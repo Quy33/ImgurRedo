@@ -125,8 +125,7 @@ struct NetWorkManager {
         return results
     }
 //MARK: Detail Screen Networking
-    func requestData(isAlbum: Bool, id: String) async throws -> RawDetail {
-        
+    func requestDetail(isAlbum: Bool, id: String) async throws -> RawDetail {
         let detail = isAlbum ? "album" : "image"
         let detailUrlString = "\(baseURL)/\(detail)/\(id)"
         
@@ -145,6 +144,10 @@ struct NetWorkManager {
         let detailUrlString = "\(baseURL)/\(detail)/\(info.id)"
         let commentUrlString = detailUrlString + "/comments"
         return URL(string: commentUrlString)
+    }
+    func requestComment(_ url: URL) async throws -> RawComment {
+        let detailData = try await downloadData(url)
+        return try parseJson(detailData)
     }
 }
 //MARK: NetWorking Error Enums
