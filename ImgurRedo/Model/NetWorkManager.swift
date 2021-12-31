@@ -102,7 +102,7 @@ struct NetWorkManager {
             group -> [UIImage] in
             
             for (index,url) in urls.enumerated() {
-                group.addTaskUnlessCancelled {
+                group.addTask {
                     try Task.checkCancellation()
                     let image = try await singleDownload(url: url)
                     let tuple = (index: index, image: image)

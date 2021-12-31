@@ -76,12 +76,13 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="rcN-8D-qb4">
-                        <barButtonItem key="rightBarButtonItem" style="plain" id="M8g-VL-Hyv">
+                        <barButtonItem key="rightBarButtonItem" id="M8g-VL-Hyv">
                             <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="s7E-Bu-LLr">
                                 <rect key="frame" x="288" y="5" width="106" height="34.5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <state key="normal" title="Button"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="arrow.down" catalog="system"/>
                                 <buttonConfiguration key="configuration" style="plain" image="arrow.down" catalog="system"/>
                                 <connections>
                                     <action selector="goBottomPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="iGc-a2-rGj"/>

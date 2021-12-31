@@ -84,7 +84,7 @@ class CommentViewController: UIViewController {
         for (index,data) in dataSource.enumerated() {
             let indexPath = IndexPath(row: index, section: 0)
             if let commentCell = (commentTableView.cellForRow(at: indexPath) as? CommentCell) {
-                if !(playerVC.isBeingPresented) {
+                if !playerVC.isBeingPresented {
                     if data.hasVideoLink {
                         commentCell.cleanup()
                     }

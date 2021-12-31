@@ -310,26 +310,21 @@ class BasicPlayerView: UIImageView {
         ])
     }
     private func setupShowViewBtn() {
-        showViewBtn.frame = Support.playerUIFrame
         showViewBtn.translatesAutoresizingMaskIntoConstraints = false
-        showViewBtn.clipsToBounds = true
-        showViewBtn.tintColor = Support.playerUITint
-        showViewBtn.backgroundColor = Support.playerUIColor
-        showViewBtn.layer.cornerRadius = Support.playerUIFrame.height/3
+        showViewBtn.backgroundColor = .clear
         showViewBtn.isHidden = true
         
-        showViewBtn.setImage(Support.expand, for: .normal)
         showViewBtn.addTarget(self, action: #selector(showViewDidPressed(_:)), for: .touchUpInside)
         self.addSubview(showViewBtn)
         NSLayoutConstraint.activate([
-            showViewBtn.trailingAnchor.constraint(
-                equalTo: self.trailingAnchor, constant: -5),
+            showViewBtn.topAnchor.constraint(
+                equalTo: self.topAnchor),
             showViewBtn.bottomAnchor.constraint(
-                equalTo: self.bottomAnchor, constant: -5),
-            showViewBtn.widthAnchor.constraint(
-                equalToConstant: showViewBtn.frame.width),
-            showViewBtn.heightAnchor.constraint(
-                equalToConstant: showViewBtn.frame.height)
+                equalTo: self.bottomAnchor),
+            showViewBtn.leadingAnchor.constraint(
+                equalTo: self.leadingAnchor),
+            showViewBtn.trailingAnchor.constraint(
+                equalTo: self.trailingAnchor)
         ])
     }
     private func setupPlayPauseBtn() {
